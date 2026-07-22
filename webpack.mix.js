@@ -22,6 +22,8 @@ mix.js('resources/js/bootstrap.js', 'public/js')
     'public/vendor/jquery/select2.min.js',
     'public/vendor/jquery/plugins.bundle.min.js',
     'public/vendor/jquery/scripts.bundle.min.js',
+    // NOTE: helper.js is intentionally bundled into main.js. Do NOT add a separate <script> tag for it in layouts,
+    // because it declares global identifiers (historyPush) that conflict if loaded twice.
     'public/vendor/froiden-helper/helper.js',
 
     'node_modules/dropify/src/js/dropify.js',

@@ -104,38 +104,46 @@
 
 
             if (opt.messagePosition == "toastr") {
-                Swal.fire({
-                    icon: type,
-                    text: msg,
+                try {
+                    Swal.fire({
+                        icon: type,
+                        text: msg,
 
-                    toast: true,
-                    position: "top-end",
-                    timer: 3000,
-                    timerProgressBar: true,
-                    showConfirmButton: false,
+                        toast: true,
+                        position: "top-end",
+                        timer: 3000,
+                        timerProgressBar: true,
+                        showConfirmButton: false,
 
-                    customClass: {
-                        confirmButton: "btn btn-primary",
-                    },
-                    showClass: {
-                        popup: "swal2-noanimation",
-                        backdrop: "swal2-noanimation",
-                    },
-                });
+                        customClass: {
+                            confirmButton: "btn btn-primary",
+                        },
+                        showClass: {
+                            popup: "swal2-noanimation",
+                            backdrop: "swal2-noanimation",
+                        },
+                    });
+                } catch (e) {
+                    console.error("SweetAlert error:", e);
+                }
             } else if (opt.messagePosition == "pop") {
-                Swal.fire({
-                    icon: type,
-                    html: msg,
+                try {
+                    Swal.fire({
+                        icon: type,
+                        html: msg,
 
-                    customClass: {
-                        confirmButton: "btn btn-primary",
-                    },
-                    showClass: {
-                        popup: "swal2-noanimation",
-                        backdrop: "swal2-noanimation",
-                    },
-                    buttonsStyling: false,
-                });
+                        customClass: {
+                            confirmButton: "btn btn-primary",
+                        },
+                        showClass: {
+                            popup: "swal2-noanimation",
+                            backdrop: "swal2-noanimation",
+                        },
+                        buttonsStyling: false,
+                    });
+                } catch (e) {
+                    console.error("SweetAlert error:", e);
+                }
             } else {
                 var ele = $(opt.container).find("#alert");
                 var html =
@@ -207,6 +215,7 @@
             error: opt.error,
             complete: opt.complete,
             cache: false,
+            timeout: 30000,
             success: function (response) {
                 if (typeof response !== "undefined") {
                     // Show success message

@@ -544,6 +544,7 @@ Route::prefix('travel-reports')->name('travel-reports.')->group(function () {
     Route::resource('appreciations', AppreciationController::class);
 
     /* KnowledgeBase */
+    Route::resource('knowledgebase', KnowledgeBaseController::class)->except(['create']);
     Route::get('knowledgebase/create/{id?}', [KnowledgeBaseController::class, 'create'])->name('knowledgebase.create');
 
 

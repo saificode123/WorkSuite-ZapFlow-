@@ -6,7 +6,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <link rel="icon" type="image/png" sizes="16x16" href="{{ $globalSetting->favicon_url }}">
-    <link rel="manifest" href="{{ $globalSetting->favicon_url }}">
+    <link rel="manifest" href="{{ asset('manifest.json') }}">
     <meta name="msapplication-TileColor" content="#ffffff">
     <meta name="msapplication-TileImage" content="{{ $globalSetting->favicon_url }}">
     <meta name="theme-color" content="#ffffff">
@@ -23,7 +23,6 @@
 
     @stack('styles')
     <script src="{{ asset('vendor/jquery/jquery.min.js') }}"></script>
-    <script src="{{ asset('vendor/froiden-helper/helper.js') }}"></script>
 
     <style defer="defer">
         .login_header {
