@@ -818,6 +818,16 @@ if (!function_exists('sidebar_user_perms')) {
                 'view_lead_report',
                 'view_sales_report',
                 'view_deals',
+                // Travel-agency module permissions (added to fix Undefined array key 500 error)
+                'view_hotel',
+                'view_service_provider',
+                'view_booking',
+                'view_voucher',
+                'view_ticket_invoice',
+                'view_travel_payment',
+                'view_cash_receipt',
+                // Accounts / Chart of Accounts
+                'view_chart_of_account',
             ];
 
 

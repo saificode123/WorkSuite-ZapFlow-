@@ -53,11 +53,12 @@ class DashboardController extends AccountBaseController
      */
     public function index()
     {
-
+        \Log::info('DashboardController@index start');
         $this->isCheckScript();
+        \Log::info('DashboardController@index after isCheckScript');
         session()->forget(['qr_clock_in']);
         if (in_array('employee', user_roles())) {
-
+            \Log::info('DashboardController@index before employeeDashboard');
             $this->viewOverviewDashboard = user()->permission('view_overview_dashboard');
             $this->viewProjectDashboard = user()->permission('view_project_dashboard');
             $this->viewClientDashboard = user()->permission('view_client_dashboard');

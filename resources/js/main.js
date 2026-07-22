@@ -370,9 +370,9 @@ function closeTaskDetail() {
 //         },
 //         "paging": true,
 //         "ordering": false,
-//         "info": false
-//     });
-
 // })
+
+window.Swal = window.Sweetalert2;
+
 
 

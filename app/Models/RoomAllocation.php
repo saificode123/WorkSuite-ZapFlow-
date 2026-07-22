@@ -2,12 +2,11 @@
 
 namespace App\Models;
 
-use App\Traits\HasCompany;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-class RoomAllocation extends BaseModel
+class RoomAllocation extends Model
 {
-    use HasCompany;
 
     protected $table = 'room_allocations';
     protected $guarded = ['id'];

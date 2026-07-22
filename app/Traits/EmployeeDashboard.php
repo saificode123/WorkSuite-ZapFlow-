@@ -45,6 +45,7 @@ trait EmployeeDashboard
      */
     public function employeeDashboard()
     {
+        \Log::info('employeeDashboard start');
         $user = user();
 
         $completedTaskColumn = TaskboardColumn::completeColumn();
@@ -639,7 +640,7 @@ trait EmployeeDashboard
 
         }
 
-
+        \Log::info('employeeDashboard end before view');
         return view('dashboard.employee.index', $this->data);
     }
 
