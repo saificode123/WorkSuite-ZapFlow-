@@ -3,6 +3,13 @@
 namespace App\Providers;
 
 use App\Models\Company;
+use App\Models\Passenger;
+use App\Models\Voucher;
+use App\Observers\PassengerObserver;
+use App\Observers\VoucherObserver;
+use App\Services\BookingImportService;
+use App\Services\DoubleEntryService;
+use App\Services\PackageCalculationService;
 use Barryvdh\LaravelIdeHelper\IdeHelperServiceProvider;
 use Carbon\CarbonInterval;
 use Illuminate\Database\Eloquent\Model;
@@ -17,11 +24,8 @@ class AppServiceProvider extends ServiceProvider
 
     /**
      * Register any application services.
-     *
-     * @return void
      */
-
-    public function register()
+    public function register(): void
     {
         Cashier::ignoreMigrations();
         Sanctum::ignoreMigrations();
@@ -29,9 +33,14 @@ class AppServiceProvider extends ServiceProvider
         if (config('app.redirect_https')) {
             $this->app['request']->server->set('HTTPS', true);
         }
+
+        // Bind travel agency services as singletons
+        $this->app->singleton(DoubleEntryService::class);
+        $this->app->singleton(BookingImportService::class);
+        $this->app->singleton(PackageCalculationService::class);
     }
 
-    public function boot()
+    public function boot(): void
     {
         Cashier::useCustomerModel(Company::class);
 
@@ -45,6 +54,12 @@ class AppServiceProvider extends ServiceProvider
             $this->app->register(IdeHelperServiceProvider::class);
         }
 
+        // ---------------------------------------------------------------
+        // Register Model Observers (Travel Agency)
+        // ---------------------------------------------------------------
+        Voucher::observe(VoucherObserver::class);
+        Passenger::observe(PassengerObserver::class);
+
         CarbonInterval::macro('formatHuman', function ($totalMinutes, $seconds = false): string {
 
             if ($seconds) {
@@ -56,8 +71,7 @@ class AppServiceProvider extends ServiceProvider
             /** @phpstan-ignore-line */
         });
 
-            //    Model::preventLazyLoading(app()->environment('development'));
-
+        //    Model::preventLazyLoading(app()->environment('development'));
     }
 
 }

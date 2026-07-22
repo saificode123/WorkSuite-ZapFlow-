@@ -58,6 +58,12 @@ class IndexedLogReader extends BaseLogReader implements LogReaderInterface
             return $this;
         }
 
+        if ($this->index()->requiresRebuild()) {
+            // A partially-evicted index cannot be resumed (the scan position is at the end
+            // of the file) or re-scanned in place (surviving chunks would duplicate entries).
+            $force = true;
+        }
+
         if ($this->numberOfNewBytes() < 0) {
             // the file reduced in size... something must've gone wrong, so let's
             // force a full re-index.
@@ -146,8 +152,14 @@ class IndexedLogReader extends BaseLogReader implements LogReaderInterface
         $this->file->setMetadata('name', $this->file->name);
         $this->file->setMetadata('path', $this->file->path);
         $this->file->setMetadata('size', $this->file->size());
-        $this->file->setMetadata('earliest_timestamp', $this->index()->getEarliestTimestamp());
-        $this->file->setMetadata('latest_timestamp', $this->index()->getLatestTimestamp());
+        // Use the local variables that track ALL logs scanned, not just those matching the query
+        // This ensures file-level metadata represents the entire file, not filtered results
+        if (isset($earliest_timestamp)) {
+            $this->file->setMetadata('earliest_timestamp', $earliest_timestamp);
+        }
+        if (isset($latest_timestamp)) {
+            $this->file->setMetadata('latest_timestamp', $latest_timestamp);
+        }
         $this->file->setMetadata('last_scanned_file_position', ftell($this->fileHandle));
         $this->file->addRelatedIndex($logIndex);
 
@@ -236,9 +248,9 @@ class IndexedLogReader extends BaseLogReader implements LogReaderInterface
     {
         $page = $page ?: Paginator::resolveCurrentPage('page');
 
-        if (! is_null($this->onlyShowIndex)) {
+        if (! is_null($this->onlyShowIndex) && $index = $this->reset()->getLogAtIndex($this->onlyShowIndex)) {
             return new LengthAwarePaginator(
-                [$this->reset()->getLogAtIndex($this->onlyShowIndex)],
+                [$index],
                 1,
                 $perPage,
                 $page
@@ -268,6 +280,20 @@ class IndexedLogReader extends BaseLogReader implements LogReaderInterface
 
     public function requiresScan(): bool
     {
+        if ($this->index()->requiresRebuild()) {
+            // A cached index chunk was lost; rebuild on the next scan.
+            return true;
+        }
+
+        // File metadata can outlive index cache entries; rebuild when the index was lost.
+        if ($this->file->size() > 0) {
+            $index = $this->index();
+
+            if ($index->getLastScannedFilePosition() === 0 && $index->count() === 0) {
+                return true;
+            }
+        }
+
         if (isset($this->mtimeBeforeScan) && ($this->file->mtime() > $this->mtimeBeforeScan || $this->file->mtime() === time())) {
             // The file has been modified since the last scan in this request.
             // Let's only request another scan if it's not the last chunk (smaller than lazyScanChunkSize).
@@ -291,7 +317,9 @@ class IndexedLogReader extends BaseLogReader implements LogReaderInterface
 
     protected function getLogAtIndex(int $index): ?Log
     {
-        $position = $this->index()->getPositionForIndex($index);
+        if (! $position = $this->index()->getPositionForIndex($index)) {
+            return null;
+        }
 
         $text = $this->getLogTextAtPosition($position);
 

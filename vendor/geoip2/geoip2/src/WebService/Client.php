@@ -20,7 +20,7 @@ use MaxMind\Exception\WebServiceException;
 use MaxMind\WebService\Client as WsClient;
 
 /**
- * This class provides a client API for all the GeoIP2 web services.
+ * This class provides a client API for all the GeoIP web services.
  * The services are Country, City Plus, and Insights. Each service returns
  * a different set of data about an IP address, with Country returning the
  * least data and Insights the most.
@@ -51,14 +51,10 @@ use MaxMind\WebService\Client as WsClient;
  */
 class Client implements ProviderInterface
 {
-    /**
-     * @var array<string>
-     */
-    private array $locales;
-    private WsClient $client;
+    private readonly WsClient $client;
     private static string $basePath = '/geoip/v2.1';
 
-    public const VERSION = 'v3.1.0';
+    public const VERSION = 'v3.4.0';
 
     /**
      * Constructor.
@@ -69,11 +65,11 @@ class Client implements ProviderInterface
      *                                         from most preferred to least preferred
      * @param array<string, mixed> $options    array of options. Valid options include:
      *                                         * `host` - The host to use when querying the web
-     *                                         service. To query the GeoLite2 web service
-     *                                         instead of the GeoIP2 web service, set the
+     *                                         service. To query the GeoLite web service
+     *                                         instead of the GeoIP web service, set the
      *                                         host to `geolite.info`. To query the Sandbox
-     *                                         GeoIP2 web service instead of the production
-     *                                         GeoIP2 web service, set the host to
+     *                                         GeoIP web service instead of the production
+     *                                         GeoIP web service, set the host to
      *                                         `sandbox.maxmind.com`. The sandbox allows you to
      *                                         experiment with the API without affecting your
      *                                         production data.
@@ -86,11 +82,10 @@ class Client implements ProviderInterface
     public function __construct(
         int $accountId,
         string $licenseKey,
-        array $locales = ['en'],
+        /** @var list<string> */
+        public readonly array $locales = ['en'], // Promoted and readonly
         array $options = []
     ) {
-        $this->locales = $locales;
-
         // This is for backwards compatibility. Do not remove except for a
         // major version bump.
         // @phpstan-ignore-next-line
@@ -98,9 +93,7 @@ class Client implements ProviderInterface
             $options = ['host' => $options];
         }
 
-        if (!isset($options['host'])) {
-            $options['host'] = 'geoip.maxmind.com';
-        }
+        $options['host'] ??= 'geoip.maxmind.com';
 
         $options['userAgent'] = $this->userAgent();
 
@@ -139,7 +132,6 @@ class Client implements ProviderInterface
      */
     public function city(string $ipAddress = 'me'): City
     {
-        // @phpstan-ignore-next-line
         return $this->responseFor('city', City::class, $ipAddress);
     }
 
@@ -175,7 +167,7 @@ class Client implements ProviderInterface
 
     /**
      * This method calls the Insights service. Insights is only supported by
-     * the GeoIP2 web service. The GeoLite2 web service does not support it.
+     * the GeoIP web service. The GeoLite web service does not support it.
      *
      * @param string $ipAddress IPv4 or IPv6 address as a string. If no
      *                          address is provided, the address that the web service is called
@@ -201,11 +193,29 @@ class Client implements ProviderInterface
      */
     public function insights(string $ipAddress = 'me'): Insights
     {
-        // @phpstan-ignore-next-line
         return $this->responseFor('insights', Insights::class, $ipAddress);
     }
 
-    private function responseFor(string $endpoint, string $class, string $ipAddress): Country
+    /**
+     * Generic helper method to call an endpoint and return the corresponding model.
+     *
+     * @template TModel of City|Country|Insights
+     *
+     * @param 'city'|'country'|'insights' $endpoint  the endpoint name
+     * @param class-string<TModel>        $class     The specific model class string (e.g., City::class)
+     * @param string                      $ipAddress the IP address or 'me'
+     *
+     * @throws AddressNotFoundException
+     * @throws AuthenticationException
+     * @throws OutOfQueriesException
+     * @throws InvalidRequestException
+     * @throws HttpException
+     * @throws GeoIp2Exception
+     * @throws \InvalidArgumentException
+     *
+     * @return TModel the corresponding model object, matching the passed class string
+     */
+    private function responseFor(string $endpoint, string $class, string $ipAddress): City|Country|Insights
     {
         if ($ipAddress !== 'me' && !filter_var($ipAddress, \FILTER_VALIDATE_IP)) {
             throw new \InvalidArgumentException(
@@ -216,7 +226,7 @@ class Client implements ProviderInterface
 
         try {
             $service = (new \ReflectionClass($class))->getShortName();
-            $body = $this->client->get('GeoIP2 ' . $service, $path);
+            $body = $this->client->get('GeoIP ' . $service, $path);
         } catch (IpAddressNotFoundException $ex) {
             throw new AddressNotFoundException(
                 $ex->getMessage(),

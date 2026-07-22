@@ -7,7 +7,7 @@ namespace GeoIp2\Model;
 use GeoIp2\Util;
 
 /**
- * This class provides the GeoLite2 ASN model.
+ * This class provides the GeoLite ASN model.
  */
 class Asn implements \JsonSerializable
 {
@@ -45,8 +45,8 @@ class Asn implements \JsonSerializable
     public function __construct(array $raw)
     {
         $this->autonomousSystemNumber = $raw['autonomous_system_number'] ?? null;
-        $this->autonomousSystemOrganization =
-            $raw['autonomous_system_organization'] ?? null;
+        $this->autonomousSystemOrganization
+            = $raw['autonomous_system_organization'] ?? null;
         $ipAddress = $raw['ip_address'];
         $this->ipAddress = $ipAddress;
         $this->network = Util::cidr($ipAddress, $raw['prefix_len']);

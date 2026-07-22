@@ -14,6 +14,7 @@ namespace Symfony\Component\Cache\Adapter;
 use Symfony\Component\Cache\Exception\CacheException;
 use Symfony\Component\Cache\Exception\InvalidArgumentException;
 use Symfony\Component\Cache\PruneableInterface;
+use Symfony\Component\Cache\Traits\CachedValueInterface;
 use Symfony\Component\Cache\Traits\FilesystemCommonTrait;
 use Symfony\Component\VarExporter\VarExporter;
 
@@ -30,6 +31,7 @@ class PhpFilesAdapter extends AbstractAdapter implements PruneableInterface
     }
 
     private \Closure $includeHandler;
+    private bool $appendOnly;
     private array $values = [];
     private array $files = [];
 
@@ -37,17 +39,14 @@ class PhpFilesAdapter extends AbstractAdapter implements PruneableInterface
     private static array $valuesCache = [];
 
     /**
-     * @param bool $appendOnly Set to `true` to gain extra performance when the items stored in this pool never expire.
-     *                         Doing so is encouraged because it fits perfectly OPcache's memory model.
+     * @param $appendOnly Set to `true` to gain extra performance when the items stored in this pool never expire.
+     *                    Doing so is encouraged because it fits perfectly OPcache's memory model.
      *
      * @throws CacheException if OPcache is not enabled
      */
-    public function __construct(
-        string $namespace = '',
-        int $defaultLifetime = 0,
-        ?string $directory = null,
-        private bool $appendOnly = false,
-    ) {
+    public function __construct(string $namespace = '', int $defaultLifetime = 0, ?string $directory = null, bool $appendOnly = false)
+    {
+        $this->appendOnly = $appendOnly;
         self::$startTime ??= $_SERVER['REQUEST_TIME'] ?? time();
         parent::__construct('', $defaultLifetime);
         $this->init($namespace, $directory);
@@ -56,7 +55,10 @@ class PhpFilesAdapter extends AbstractAdapter implements PruneableInterface
         };
     }
 
-    public static function isSupported(): bool
+    /**
+     * @return bool
+     */
+    public static function isSupported()
     {
         self::$startTime ??= $_SERVER['REQUEST_TIME'] ?? time();
 
@@ -113,8 +115,10 @@ class PhpFilesAdapter extends AbstractAdapter implements PruneableInterface
                 $values[$id] = null;
             } elseif (!\is_object($value)) {
                 $values[$id] = $value;
+            } elseif ($value instanceof CachedValueInterface) {
+                $values[$id] = $value->getValue();
             } elseif (!$value instanceof LazyValue) {
-                $values[$id] = $value();
+                $values[$id] = $value;
             } elseif (false === $values[$id] = include $value->file) {
                 unset($values[$id], $this->values[$id]);
                 $missingIds[] = $id;
@@ -151,7 +155,7 @@ class PhpFilesAdapter extends AbstractAdapter implements PruneableInterface
                     if ($now >= $expiresAt) {
                         unset($this->values[$id], $missingIds[$k], self::$valuesCache[$file]);
                     }
-                } catch (\ErrorException $e) {
+                } catch (\ErrorException) {
                     unset($missingIds[$k]);
                 }
             }
@@ -235,7 +239,7 @@ class PhpFilesAdapter extends AbstractAdapter implements PruneableInterface
             if ($isStaticValue) {
                 $value = "return [{$expiry}, {$value}];";
             } elseif ($this->appendOnly) {
-                $value = "return [{$expiry}, static fn () => {$value}];";
+                $value = "return [{$expiry}, new class() implements \\".CachedValueInterface::class." { public function getValue(): mixed { return {$value}; } }];";
             } else {
                 // We cannot use a closure here because of https://bugs.php.net/76982
                 $value = str_replace('\Symfony\Component\VarExporter\Internal\\', '', $value);
@@ -276,7 +280,10 @@ class PhpFilesAdapter extends AbstractAdapter implements PruneableInterface
         return $this->doCommonDelete($ids);
     }
 
-    protected function doUnlink(string $file): bool
+    /**
+     * @return bool
+     */
+    protected function doUnlink(string $file)
     {
         unset(self::$valuesCache[$file]);
 
@@ -305,8 +312,10 @@ class PhpFilesAdapter extends AbstractAdapter implements PruneableInterface
  */
 class LazyValue
 {
-    public function __construct(
-        public string $file,
-    ) {
+    public string $file;
+
+    public function __construct(string $file)
+    {
+        $this->file = $file;
     }
 }

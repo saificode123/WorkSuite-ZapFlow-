@@ -16,7 +16,7 @@ use Vonage\Client\ClientAwareInterface;
 use Vonage\Client\ClientAwareTrait;
 use Vonage\Client\Exception as ClientException;
 use Vonage\Client\Exception\Exception;
-use Vonage\Client\Exception\Server;
+use Vonage\Client\Exception\ServerException;
 use Vonage\Entity\Filter\EmptyFilter;
 use Vonage\Entity\Filter\FilterInterface;
 
@@ -192,9 +192,9 @@ class IterableAPICollection implements ClientAwareInterface, Iterator, Countable
             return [];
         }
 
-        $collectionName = $this->getApiResource()->getCollectionName();
+        $collectionName = $this->api->getCollectionName();
 
-        if ($this->getApiResource()->isHAL()) {
+        if ($this->api->isHAL()) {
             if ($this->isHalNoCollection() === true) {
                 return $this->pageData['_embedded'];
             }
@@ -202,7 +202,7 @@ class IterableAPICollection implements ClientAwareInterface, Iterator, Countable
             return $this->pageData['_embedded'][$collectionName];
         }
 
-        if (!empty($this->getApiResource()->getCollectionName())) {
+        if (!empty($this->api->getCollectionName())) {
             return $this->pageData[$collectionName];
         }
 
@@ -214,8 +214,8 @@ class IterableAPICollection implements ClientAwareInterface, Iterator, Countable
      *
      * @throws ClientExceptionInterface
      * @throws ClientException\Exception
-     * @throws ClientException\Request
-     * @throws ClientException\Server
+     * @throws ClientException\RequestException
+     * @throws ClientException\ServerException
      */
     #[\ReturnTypeWillChange]
     public function current()
@@ -254,8 +254,8 @@ class IterableAPICollection implements ClientAwareInterface, Iterator, Countable
      *
      * @throws ClientExceptionInterface
      * @throws ClientException\Exception
-     * @throws ClientException\Request
-     * @throws ClientException\Server
+     * @throws ClientException\RequestException
+     * @throws ClientException\ServerException
      */
     public function valid(): bool
     {
@@ -267,8 +267,8 @@ class IterableAPICollection implements ClientAwareInterface, Iterator, Countable
         //all hal collections have an `_embedded` object, we expect there to be a property matching the collection name
         if (
             $this->isHalNoCollection() === false &&
-            $this->getApiResource()->isHAL() &&
-            !isset($this->pageData['_embedded'][$this->getApiResource()->getCollectionName()])
+            $this->api->isHAL() &&
+            !isset($this->pageData['_embedded'][$this->api->getCollectionName()])
         ) {
             return false;
         }
@@ -304,7 +304,7 @@ class IterableAPICollection implements ClientAwareInterface, Iterator, Countable
             if ($this->current === count($this->getResourceRoot())) {
                 $this->index++;
                 $this->current = 0;
-                $this->fetchPage($this->getApiResource()->getBaseUri());
+                $this->fetchPage($this->api->getBaseUri());
 
                 return !($this->count() === 0);
             }
@@ -320,13 +320,13 @@ class IterableAPICollection implements ClientAwareInterface, Iterator, Countable
      *
      * @throws ClientExceptionInterface
      * @throws ClientException\Exception
-     * @throws ClientException\Request
-     * @throws ClientException\Server
+     * @throws ClientException\RequestException
+     * @throws ClientException\ServerException
      */
     public function rewind(): void
     {
         $this->current = 0;
-        $this->fetchPage($this->getApiResource()->getBaseUri());
+        $this->fetchPage($this->api->getBaseUri());
     }
 
     /**
@@ -339,8 +339,15 @@ class IterableAPICollection implements ClientAwareInterface, Iterator, Countable
         return $this;
     }
 
+    /**
+     * @deprecated This method will be removed in the next major version.
+     */
     public function getApiResource(): APIResource
     {
+        trigger_error(
+            'Vonage\\Entity\\IterableAPICollection::getApiResource() is deprecated and will be removed in the next major version.',
+            E_USER_DEPRECATED
+        );
         return $this->api;
     }
 
@@ -349,8 +356,8 @@ class IterableAPICollection implements ClientAwareInterface, Iterator, Countable
      *
      * @throws ClientExceptionInterface
      * @throws ClientException\Exception
-     * @throws ClientException\Request
-     * @throws ClientException\Server
+     * @throws ClientException\RequestException
+     * @throws ClientException\ServerException
      */
     public function count(): int
     {
@@ -423,8 +430,8 @@ class IterableAPICollection implements ClientAwareInterface, Iterator, Countable
     /**
      * @throws ClientExceptionInterface
      * @throws ClientException\Exception
-     * @throws ClientException\Request
-     * @throws ClientException\Server
+     * @throws ClientException\RequestException
+     * @throws ClientException\ServerException
      */
     public function getPageData(): ?array
     {
@@ -489,8 +496,8 @@ class IterableAPICollection implements ClientAwareInterface, Iterator, Countable
      * Fetch a page using the current filter if no query is provided.
      *
      * @throws ClientException\Exception
-     * @throws ClientException\Request
-     * @throws ClientException\Server
+     * @throws ClientException\RequestException
+     * @throws ClientException\ServerException
      * @throws ClientExceptionInterface
      */
     protected function fetchPage($absoluteUri): void
@@ -524,7 +531,7 @@ class IterableAPICollection implements ClientAwareInterface, Iterator, Countable
         $requestUri = $absoluteUri;
 
         if (filter_var($absoluteUri, FILTER_VALIDATE_URL) === false) {
-            $requestUri = $this->getApiResource()->getBaseUrl() . $absoluteUri;
+            $requestUri = $this->api->getBaseUrl() . $absoluteUri;
         }
 
         $cacheKey = md5((string) $requestUri);
@@ -536,15 +543,15 @@ class IterableAPICollection implements ClientAwareInterface, Iterator, Countable
 
         $request = new Request($requestUri, 'GET');
 
-        if ($this->getApiResource()->getAuthHandlers()) {
-            $request = $this->getApiResource()->addAuth($request);
+        if ($this->api->getAuthHandlers()) {
+            $request = $this->api->addAuth($request);
         }
 
         $response = $this->client->send($request);
 
-        $this->getApiResource()->setLastRequest($request);
+        $this->api->setLastRequest($request);
         $this->response = $response;
-        $this->getApiResource()->setLastResponse($response);
+        $this->api->setLastResponse($response);
 
         $body = $this->response->getBody()->getContents();
         $json = json_decode($body, true);
@@ -556,7 +563,7 @@ class IterableAPICollection implements ClientAwareInterface, Iterator, Countable
         }
     }
 
-    protected function getException(ResponseInterface $response): ClientException\Request|ClientException\Server
+    protected function getException(ResponseInterface $response): ClientException\RequestException|ClientException\ServerException
     {
         $response->getBody()->rewind();
         $body = json_decode($response->getBody()->getContents(), true);
@@ -570,9 +577,9 @@ class IterableAPICollection implements ClientAwareInterface, Iterator, Countable
         $errorTitle = $body['error-code-label'] ?? $body['error_title'] ?? $body['title'] ?? 'Unexpected error';
 
         if ($status >= 400 && $status < 500) {
-            $e = new ClientException\Request($errorTitle, $status);
+            $e = new ClientException\RequestException($errorTitle, $status);
         } elseif ($status >= 500 && $status < 600) {
-            $e = new ClientException\Server($errorTitle, $status);
+            $e = new ClientException\ServerException($errorTitle, $status);
         } else {
             $e = new ClientException\Exception('Unexpected HTTP Status Code');
             throw $e;

@@ -7,5 +7,5 @@ use Froiden\Envato\Traits\AppBoot;
 
 class PurchaseVerificationController extends Controller
 {
-   use AppBoot;
+    use AppBoot;
 }

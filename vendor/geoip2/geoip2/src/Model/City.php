@@ -13,7 +13,7 @@ use GeoIp2\Record\Subdivision;
  * Model class for the data returned by City Plus web service and City
  * database.
  *
- * See https://dev.maxmind.com/geoip/docs/web-services?lang=en for more
+ * See https://dev.maxmind.com/geoip/docs/web-services/?lang=en for more
  * details.
  */
 class City extends Country
@@ -43,18 +43,18 @@ class City extends Country
     public readonly Postal $postal;
 
     /**
-     * @var array<\GeoIp2\Record\Subdivision> An array of \GeoIp2\Record\Subdivision
-     *                                        objects representing the country
-     *                                        subdivisions for the requested IP
-     *                                        address. The number and type of
-     *                                        subdivisions varies by country,
-     *                                        but a subdivision is typically a
-     *                                        state, province, county, etc.
-     *                                        Subdivisions are ordered from most
-     *                                        general (largest) to most specific
-     *                                        (smallest). If the response did
-     *                                        not contain any subdivisions, this
-     *                                        method returns an empty array.
+     * @var array<Subdivision> An array of \GeoIp2\Record\Subdivision
+     *                         objects representing the country
+     *                         subdivisions for the requested IP
+     *                         address. The number and type of
+     *                         subdivisions varies by country,
+     *                         but a subdivision is typically a
+     *                         state, province, county, etc.
+     *                         Subdivisions are ordered from most
+     *                         general (largest) to most specific
+     *                         (smallest). If the response did
+     *                         not contain any subdivisions, this
+     *                         method returns an empty array.
      */
     public readonly array $subdivisions;
 
@@ -72,24 +72,24 @@ class City extends Country
         $this->location = new Location($raw['location'] ?? []);
         $this->postal = new Postal($raw['postal'] ?? []);
 
-        if (!isset($raw['subdivisions'])) {
+        if (empty($raw['subdivisions'])) {
             $this->subdivisions = [];
-            $this->mostSpecificSubdivision =
-                    new Subdivision([], $locales);
+            $this->mostSpecificSubdivision
+                    = new Subdivision([], $locales);
 
             return;
         }
 
         $subdivisions = [];
         foreach ($raw['subdivisions'] as $sub) {
-            $subdivisions[] =
-                new Subdivision($sub, $locales)
+            $subdivisions[]
+                = new Subdivision($sub, $locales)
             ;
         }
 
         // Not using end as we don't want to modify internal pointer.
-        $this->mostSpecificSubdivision =
-            $subdivisions[\count($subdivisions) - 1];
+        $this->mostSpecificSubdivision
+            = $subdivisions[\count($subdivisions) - 1];
         $this->subdivisions = $subdivisions;
     }
 
@@ -110,8 +110,8 @@ class City extends Country
             $js['location'] = $location;
         }
 
-        $postal =
-         $this->postal->jsonSerialize();
+        $postal
+         = $this->postal->jsonSerialize();
         if (!empty($postal)) {
             $js['postal'] = $postal;
         }

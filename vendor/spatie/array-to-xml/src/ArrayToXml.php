@@ -172,11 +172,11 @@ class ArrayToXml
             if (! $sequential) {
                 if (($key === '_attributes') || ($key === '@attributes')) {
                     $this->addAttributes($element, $data);
-                } elseif ((($key === '_value') || ($key === '@value')) && is_string($data)) {
+                } elseif ((($key === '_value') || ($key === '@value')) && is_scalar($data)) {
                     $element->nodeValue = htmlspecialchars($data);
-                } elseif ((($key === '_cdata') || ($key === '@cdata')) && is_string($data)) {
+                } elseif ((($key === '_cdata') || ($key === '@cdata')) && is_scalar($data)) {
                     $element->appendChild($this->document->createCDATASection($data));
-                } elseif ((($key === '_mixed') || ($key === '@mixed')) && is_string($data)) {
+                } elseif ((($key === '_mixed') || ($key === '@mixed')) && is_scalar($data)) {
                     $fragment = $this->document->createDocumentFragment();
                     $fragment->appendXML($data);
                     $element->appendChild($fragment);
@@ -184,6 +184,10 @@ class ArrayToXml
                     $this->addNumericNode($element, $data);
                 } elseif (str_starts_with($key, '__custom:')) {
                     $this->addNode($element, str_replace('\:', ':', preg_split('/(?<!\\\):/', $key)[1]), $data);
+                } elseif (str_starts_with($key, '_comment') || str_starts_with($key, '@comment')) {
+                    if ($data !== null && $data !== '') {
+                        $element->appendChild(new \DOMComment($data));
+                    }
                 } else {
                     $this->addNode($element, $key, $data);
                 }
@@ -306,7 +310,7 @@ class ArrayToXml
                 continue;
             }
 
-            $this->addAttributes($element, $rootElement[$key]);
+            $this->addAttributes($element, $value);
         }
 
         return $element;

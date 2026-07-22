@@ -10,34 +10,17 @@ use Sentry\Laravel\ServiceProvider;
 
 class PublishCommand extends Command
 {
-    /**
-     * The name and signature of the console command.
-     *
-     * @var string
-     */
-    protected $signature = 'sentry:publish {--dsn=}
-                                           {--without-performance-monitoring}
-                                           {--without-test}
-                                           {--without-javascript-sdk}';
+    protected $signature = <<<COMMAND
+sentry:publish 
+    { --dsn= : The DSN to configure }
+    { --without-test : Do not send a test event }
+    { --with-send-default-pii : Include information such as request headers, IP address and the authenticated user to events collected by the SDK }
+    { --without-performance-monitoring : Do not enable performance monitoring }
+    { --without-javascript-sdk : Do not enable the JavaScript SDK (deprecated; option unused) }
+COMMAND;
 
-    /**
-     * The console command description.
-     *
-     * @var string
-     */
     protected $description = 'Publishes and configures the Sentry config.';
 
-    protected const SDK_CHOICE_BROWSER = 'JavaScript (default)';
-    protected const SDK_CHOICE_VUE     = 'Vue.js';
-    protected const SDK_CHOICE_REACT   = 'React';
-    protected const SDK_CHOICE_ANGULAR = 'Angular';
-    protected const SDK_CHOICE_SVELTE  = 'Svelte';
-
-    /**
-     * Execute the console command.
-     *
-     * @return int
-     */
     public function handle(): int
     {
         $arg = [];
@@ -60,6 +43,17 @@ class PublishCommand extends Command
 
             $env['SENTRY_LARAVEL_DSN'] = $dsn;
             $arg['--dsn']              = $dsn;
+        }
+
+        $sendDefaultPii = $this->confirm(
+            "Do you want to include information such as request headers, IP address and the authenticated user to events collected by the SDK?\n You can read more about this on https://docs.sentry.io/platforms/php/guides/laravel/data-management/data-collected/",
+            $this->option('with-send-default-pii') === true
+        );
+
+        if ($sendDefaultPii) {
+            $env['SENTRY_SEND_DEFAULT_PII'] = 'true';
+        } elseif ($this->isEnvKeySet('SENTRY_SEND_DEFAULT_PII')) {
+            $env['SENTRY_SEND_DEFAULT_PII'] = 'false';
         }
 
         $testCommandPrompt = 'Do you want to send a test event to Sentry?';
@@ -107,10 +101,14 @@ class PublishCommand extends Command
         if (count($values) > 0) {
             foreach ($values as $envKey => $envValue) {
                 if ($this->isEnvKeySet($envKey, $envFileContents)) {
-                    $envFileContents = preg_replace("/^{$envKey}=\"?.*?\"?(\s|$)/m", "{$envKey}={$envValue}\n", $envFileContents);
+                    $envFileContents = preg_replace($this->getEnvKeyPattern($envKey), "{$envKey}={$envValue}\n", $envFileContents);
 
                     $this->info("Updated {$envKey} with new value in your `.env` file.");
                 } else {
+                    // Ensure there is a newline before writing env variables
+                    if (substr($envFileContents, -1) !== "\n") {
+                        $envFileContents .= "\n";
+                    }
                     $envFileContents .= "{$envKey}={$envValue}\n";
 
                     $this->info("Added {$envKey} to your `.env` file.");
@@ -131,7 +129,12 @@ class PublishCommand extends Command
     {
         $envFileContents = $envFileContents ?? file_get_contents(app()->environmentFilePath());
 
-        return (bool)preg_match("/^{$envKey}=\"?.*?\"?(\s|$)/m", $envFileContents);
+        return (bool)preg_match($this->getEnvKeyPattern($envKey), $envFileContents);
+    }
+
+    private function getEnvKeyPattern(string $envKey): string
+    {
+        return '/^' . preg_quote($envKey, '/') . '="?.*?"?(\s|$)/m';
     }
 
     private function askForDsnInput(): string

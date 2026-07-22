@@ -9,11 +9,6 @@ use Sentry\State\HubInterface;
 
 class LogChannel extends LogManager
 {
-    /**
-     * @param array $config
-     *
-     * @return Logger
-     */
     public function __invoke(array $config = []): Logger
     {
         $handler = new SentryHandler(

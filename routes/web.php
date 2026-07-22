@@ -28,6 +28,9 @@ use App\Http\Controllers\EstimateController;
 use App\Http\Controllers\LeadFileController;
 use App\Http\Controllers\LeadNoteController;
 use App\Http\Controllers\PassportController;
+use App\Http\Controllers\CommandPaletteController;
+use App\Http\Controllers\IntegrationSettingController;
+use App\Http\Controllers\CashReceiptController;
 use App\Http\Controllers\ProposalController;
 use App\Http\Controllers\SettingsController;
 use App\Http\Controllers\TaskFileController;
@@ -50,6 +53,39 @@ use App\Http\Controllers\StickyNoteController;
 use App\Http\Controllers\TaskReportController;
 use App\Http\Controllers\TicketFileController;
 use App\Http\Controllers\BankAccountController;
+use App\Http\Controllers\AccountController;
+use App\Http\Controllers\FinancialYearController;
+use App\Http\Controllers\ChartOfAccountController;
+use App\Http\Controllers\JournalVoucherController;
+use App\Http\Controllers\AccountOpeningController;
+use App\Http\Controllers\ExchangeRateController;
+use App\Http\Controllers\ServiceProviderController;
+use App\Http\Controllers\IataController;
+use App\Http\Controllers\VisaCompanyController;
+use App\Http\Controllers\TransporterController;
+use App\Http\Controllers\AirlineController;
+use App\Http\Controllers\HotelController;
+use App\Http\Controllers\PackageController;
+use App\Http\Controllers\DiscountController;
+use App\Http\Controllers\TransportTypeController;
+use App\Http\Controllers\TransportRouteController;
+use App\Http\Controllers\FlightController;
+use App\Http\Controllers\SectorController;
+use App\Http\Controllers\RelationController;
+use App\Http\Controllers\BookingController;
+use App\Http\Controllers\VoucherController;
+use App\Http\Controllers\TicketInvoiceController;
+use App\Http\Controllers\CustomerTypeController;
+use App\Http\Controllers\UmrahSetupController;
+use App\Http\Controllers\TransportRateController;
+use App\Http\Controllers\VisaPipelineController;
+use App\Http\Controllers\RoomAllocationController;
+use App\Http\Controllers\TravelPaymentController;
+use App\Http\Controllers\HotelRoomController;
+use App\Http\Controllers\InsurancePolicyController;
+use App\Http\Controllers\InsuranceSaleController;
+use App\Http\Controllers\TravelReportController;
+
 use App\Http\Controllers\DesignationController;
 use App\Http\Controllers\EmployeeDocController;
 use App\Http\Controllers\LeadCategoryController;
@@ -381,15 +417,135 @@ Route::group(['middleware' => 'auth', 'prefix' => 'account'], function () {
             Route::get('awards/quick-create', [AwardController::class, 'quickCreate'])->name('awards.quick-create');
             Route::post('awards/quick-store', [AwardController::class, 'quickStore'])->name('awards.quick-store');
             Route::resource('awards', AwardController::class);
-        });
+});
+
+// Customer Types
+Route::resource('customer-types', CustomerTypeController::class);
+
+// Accounts (Financial/Accounting Engine)
+Route::resource('accounts', AccountController::class);
+Route::resource('financial-years', FinancialYearController::class);
+Route::get('chart-of-accounts/tree', [ChartOfAccountController::class, 'tree'])->name('chart-of-accounts.tree');
+Route::resource('chart-of-accounts', ChartOfAccountController::class);
+Route::resource('journal-vouchers', JournalVoucherController::class);
+Route::get('journal-vouchers/{id}/print', [JournalVoucherController::class, 'print'])->name('journal-vouchers.print');
+Route::resource('account-openings', AccountOpeningController::class);
+Route::resource('exchange-rates', ExchangeRateController::class);
+Route::get('accounts/trial-balance', [AccountController::class, 'trialBalance'])->name('accounts.trial_balance');
+Route::get('accounts/ledger', [AccountController::class, 'ledger'])->name('accounts.ledger');
+
+// Service Providers
+Route::resource('service-providers', ServiceProviderController::class);
+
+// IATA
+Route::resource('iata', IataController::class);
+
+// Visa Companies
+Route::resource('visa-companies', VisaCompanyController::class);
+
+// Transporters
+Route::resource('transporters', TransporterController::class);
+
+// Airlines
+Route::resource('airlines', AirlineController::class);
+
+// Hotels
+Route::resource('hotels', HotelController::class);
+
+// Packages
+Route::resource('packages', PackageController::class);
+
+// Discounts
+Route::resource('discounts', DiscountController::class);
+
+// Lookup Tables
+Route::resource('transport-types', TransportTypeController::class);
+Route::resource('transport-routes', TransportRouteController::class);
+Route::resource('flights', FlightController::class);
+Route::resource('sectors', SectorController::class);
+Route::resource('relations', RelationController::class);
+
+// Umrah Setup (grouped lookup management)
+Route::get('umrah-setup', [UmrahSetupController::class, 'index'])->name('umrah-setup.index');
+
+// ── Bookings ─────────────────────────────────────────────────────────────────
+Route::resource('bookings', BookingController::class);
+Route::post('bookings/{id}/passengers', [BookingController::class, 'addPassenger'])->name('bookings.passengers.add');
+Route::delete('bookings/{booking}/passengers/{passenger}', [BookingController::class, 'removePassenger'])->name('bookings.passengers.remove');
+Route::get('bookings/import', [BookingController::class, 'importPage'])->name('bookings.import.page');
+Route::post('bookings/import/parse', [BookingController::class, 'importParse'])->name('bookings.import.parse');
+Route::post('bookings/import/commit', [BookingController::class, 'importCommit'])->name('bookings.import.commit');
+
+// ── Vouchers ──────────────────────────────────────────────────────────────────
+Route::resource('vouchers', VoucherController::class);
+Route::post('vouchers/{id}/issue',       [VoucherController::class, 'issue'])->name('vouchers.issue');
+Route::post('vouchers/{id}/lock',        [VoucherController::class, 'lock'])->name('vouchers.lock');
+Route::get('vouchers/{id}/pdf',          [VoucherController::class, 'generatePdf'])->name('vouchers.pdf');
+Route::get('vouchers/{id}/qr',           [VoucherController::class, 'qrCode'])->name('vouchers.qr');
+
+// ── Ticketing ─────────────────────────────────────────────────────────────────
+Route::resource('ticketing', TicketInvoiceController::class);
+Route::post('ticketing/{id}/refund',     [TicketInvoiceController::class, 'refund'])->name('ticketing.refund');
+
+// ── Visa Pipeline Kanban ──────────────────────────────────────────────────────
+Route::get('visa-pipeline',              [VisaPipelineController::class, 'index'])->name('visa-pipeline.index');
+Route::post('visa-pipeline/move',        [VisaPipelineController::class, 'move'])->name('visa-pipeline.move');
+Route::post('visa-pipeline/mofa-ref',    [VisaPipelineController::class, 'setMofaRef'])->name('visa-pipeline.mofa-ref');
+
+// ── Room Allocation Grid ──────────────────────────────────────────────────────
+Route::get('room-allocation',            [RoomAllocationController::class, 'index'])->name('room-allocation.index');
+Route::post('room-allocation/assign',    [RoomAllocationController::class, 'assign'])->name('room-allocation.assign');
+Route::post('room-allocation/remove',    [RoomAllocationController::class, 'remove'])->name('room-allocation.remove');
+
+// ── Travel Payments ───────────────────────────────────────────────────────────
+Route::prefix('travel-payments')->name('travel-payments.')->group(function () {
+    Route::get('receive',         [TravelPaymentController::class, 'receiveIndex'])->name('receive.index');
+    Route::get('receive/create',  [TravelPaymentController::class, 'receiveCreate'])->name('receive.create');
+    Route::post('receive',        [TravelPaymentController::class, 'receiveStore'])->name('receive.store');
+    Route::get('make',            [TravelPaymentController::class, 'makeIndex'])->name('make.index');
+    Route::get('make/create',     [TravelPaymentController::class, 'makeCreate'])->name('make.create');
+    Route::post('make',           [TravelPaymentController::class, 'makeStore'])->name('make.store');
+    Route::post('{id}/cancel',    [TravelPaymentController::class, 'cancel'])->name('cancel');
+});
+
+// ── Command Palette ───────────────────────────────────────────────────────────
+Route::get('command-palette/search', [CommandPaletteController::class, 'search'])->name('command-palette.search');
+
+// ── Integration Settings ──────────────────────────────────────────────────────
+Route::prefix('integration-settings')->name('integration-settings.')->group(function () {
+    Route::get('/', [IntegrationSettingController::class, 'index'])->name('index');
+    Route::post('update', [IntegrationSettingController::class, 'update'])->name('update');
+    Route::post('test-connection', [IntegrationSettingController::class, 'testConnection'])->name('test');
+});
+
+// ── Hotel Room Management ─────────────────────────────────────────────────────
+Route::resource('hotel-rooms', HotelRoomController::class);
+
+// ── Insurance ─────────────────────────────────────────────────────────────────
+Route::resource('insurance-policies', InsurancePolicyController::class);
+Route::resource('insurance-sales',    InsuranceSaleController::class);
+
+// ── Cash Receipts ─────────────────────────────────────────────────────────────
+Route::resource('cash-receipts', CashReceiptController::class);
+
+// ── Travel Reports ────────────────────────────────────────────────────────────
+Route::prefix('travel-reports')->name('travel-reports.')->group(function () {
+    Route::get('trial-balance',   [TravelReportController::class, 'trialBalance'])->name('trial-balance');
+    Route::get('profit-loss',     [TravelReportController::class, 'profitLoss'])->name('profit-loss');
+    Route::get('monthly-pl',      [TravelReportController::class, 'monthlyProfitLoss'])->name('monthly-pl');
+    Route::get('ageing',          [TravelReportController::class, 'ageing'])->name('ageing');
+    Route::get('receivables',     [TravelReportController::class, 'receivables'])->name('receivables');
+    Route::get('payables',        [TravelReportController::class, 'payables'])->name('payables');
+    Route::get('umrah-wise-pl',   [TravelReportController::class, 'umrahWisePl'])->name('umrah-wise-pl');
+    Route::get('export/{report}', [TravelReportController::class, 'export'])->name('export');
+});
+
     Route::post('appreciations/apply-quick-action', [AppreciationController::class, 'applyQuickAction'])->name('appreciations.apply_quick_action');
     Route::resource('appreciations', AppreciationController::class);
 
     /* KnowledgeBase */
     Route::get('knowledgebase/create/{id?}', [KnowledgeBaseController::class, 'create'])->name('knowledgebase.create');
-    Route::post('knowledgebase/apply-quick-action', [KnowledgeBaseController::class, 'applyQuickAction'])->name('knowledgebase.apply_quick_action');
-    Route::get('knowledgebase/searchquery/{query?}', [KnowledgeBaseController::class, 'searchQuery'])->name('knowledgebase.searchQuery');
-    Route::resource('knowledgebase', KnowledgeBaseController::class)->except(['create']);
+
 
     Route::get('knowledgebase-files/download/{id}', [KnowledgeBaseFileController::class, 'download'])->name('knowledgebase-files.download');
     Route::resource('knowledgebase-files', KnowledgeBaseFileController::class);

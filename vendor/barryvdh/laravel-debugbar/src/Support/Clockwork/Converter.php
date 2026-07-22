@@ -70,12 +70,12 @@ class Converter
                 $controller = $route['uses'];
             }
 
-            $output['controller'] = $controller;
+            $output['controller'] = preg_replace('/<a\b[^>]*>(.*?)<\/a>/i', '', (string) $controller) ?: null;
 
             list($method, $uri) = explode(' ', $route['uri'], 2);
 
             $output['routes'][] = [
-                'action' => $controller,
+                'action' => $output['controller'],
                 'after' => isset($route['after']) ? $route['after'] : null,
                 'before' => isset($route['before']) ? $route['before'] : null,
                 'method' => $method,
@@ -117,7 +117,16 @@ class Converter
             $output['modelsCreated'] = [];
             $output['modelsUpdated'] = [];
             $output['modelsDeleted'] = [];
-            $output['modelsRetrieved'] = $data['models']['data'];
+            $output['modelsRetrieved'] = [];
+
+            foreach ($data['models']['data'] as $model => $value) {
+                foreach ($value as $event => $count) {
+                    $eventKey = 'models' . ucfirst($event);
+                    if (isset($output[$eventKey])) {
+                        $output[$eventKey][$model] = $count;
+                    }
+                }
+            }
         }
 
         if (isset($data['views']['templates'])) {

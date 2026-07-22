@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace Sentry\Tracing;
 
 use Sentry\EventId;
-use Sentry\Metrics\MetricsUnit;
 use Sentry\SentrySdk;
 use Sentry\State\Scope;
+use Sentry\Unit;
 
 /**
  * This class stores all the information about a span.
@@ -22,6 +22,13 @@ use Sentry\State\Scope;
  */
 class Span
 {
+    /**
+     * Maximum number of flags allowed. We only track the first flags set.
+     *
+     * @internal
+     */
+    public const MAX_FLAGS = 10;
+
     /**
      * @var SpanId Span ID
      */
@@ -61,6 +68,11 @@ class Span
      * @var array<string, string> A List of tags associated to this span
      */
     protected $tags = [];
+
+    /**
+     * @var array<string, bool> A List of flags associated to this span
+     */
+    protected $flags = [];
 
     /**
      * @var array<string, mixed> An arbitrary mapping of additional metadata
@@ -288,7 +300,7 @@ class Span
      */
     public function setHttpStatus(int $statusCode)
     {
-        SentrySdk::getCurrentHub()->configureScope(function (Scope $scope) use ($statusCode) {
+        SentrySdk::getCurrentHub()->configureScope(static function (Scope $scope) use ($statusCode) {
             $scope->setContext('response', [
                 'status_code' => $statusCode,
             ]);
@@ -324,6 +336,20 @@ class Span
     public function setTags(array $tags)
     {
         $this->tags = array_merge($this->tags, $tags);
+
+        return $this;
+    }
+
+    /**
+     * Sets a feature flag associated to this span.
+     *
+     * @return $this
+     */
+    public function setFlag(string $key, bool $result)
+    {
+        if (\count($this->flags) < self::MAX_FLAGS) {
+            $this->flags[$key] = $result;
+        }
 
         return $this;
     }
@@ -369,7 +395,13 @@ class Span
     public function getData(?string $key = null, $default = null)
     {
         if ($key === null) {
-            return $this->data;
+            $data = $this->data;
+
+            foreach ($this->flags as $flagKey => $flagValue) {
+                $data["flag.evaluation.{$flagKey}"] = $flagValue;
+            }
+
+            return $data;
         }
 
         return $this->data[$key] ?? $default;
@@ -394,7 +426,7 @@ class Span
      *
      * @return array<string, mixed>
      *
-     * @psalm-return array{
+     * @phpstan-return array{
      *     data?: array<string, mixed>,
      *     description?: string,
      *     op?: string,
@@ -516,7 +548,7 @@ class Span
         string $type,
         string $key,
         $value,
-        MetricsUnit $unit,
+        Unit $unit,
         array $tags
     ): void {
     }
@@ -565,19 +597,12 @@ class Span
 
     /**
      * Returns a string that can be used for the W3C `traceparent` header & meta tag.
+     *
+     * @deprecated since version 4.12. To be removed in version 5.0.
      */
     public function toW3CTraceparent(): string
     {
-        $sampled = '';
-
-        if ($this->sampled !== null) {
-            $sampled = $this->sampled ? '01' : '00';
-        } else {
-            // If no sampling decision was made, set the flag to 00
-            $sampled = '00';
-        }
-
-        return \sprintf('00-%s-%s-%s', (string) $this->traceId, (string) $this->spanId, $sampled);
+        return '';
     }
 
     /**

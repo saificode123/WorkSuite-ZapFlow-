@@ -111,12 +111,12 @@ final class CodeCoverage
 
         if ($codeCoverageFilterRegistry->get()->isEmpty()) {
             if (!$codeCoverageFilterRegistry->configured()) {
-                EventFacade::emitter()->testRunnerTriggeredWarning(
+                EventFacade::emitter()->testRunnerTriggeredPhpunitWarning(
                     'No filter is configured, code coverage will not be processed',
                 );
             } else {
-                EventFacade::emitter()->testRunnerTriggeredWarning(
-                    'Incorrect filter configuration, code coverage will not be processed',
+                EventFacade::emitter()->testRunnerTriggeredPhpunitWarning(
+                    'Configured filter does not match any files, code coverage will not be processed',
                 );
             }
 
@@ -370,7 +370,7 @@ final class CodeCoverage
                 $filter,
             );
         } catch (CodeCoverageException $e) {
-            EventFacade::emitter()->testRunnerTriggeredWarning(
+            EventFacade::emitter()->testRunnerTriggeredPhpunitWarning(
                 $e->getMessage(),
             );
         }

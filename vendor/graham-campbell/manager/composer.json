@@ -1,0 +1,40 @@
+{
+    "name": "graham-campbell/manager",
+    "description": "Manager Provides Some Manager Functionality For Laravel",
+    "keywords": ["laravel", "framework", "manager", "connector", "interface", "Manager", "Laravel Manager", "Laravel-Manager", "Graham Campbell", "GrahamCampbell"],
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Graham Campbell",
+            "email": "hello@gjcampbell.co.uk",
+            "homepage": "https://github.com/GrahamCampbell"
+        }
+    ],
+    "require": {
+        "php": "^7.4.15 || ^8.0.2",
+        "illuminate/contracts": "^8.75 || ^9.0 || ^10.0 || ^11.0 || ^12.0 || ^13.0",
+        "illuminate/support": "^8.75 || ^9.0 || ^10.0 || ^11.0 || ^12.0 || ^13.0"
+    },
+    "require-dev": {
+        "graham-campbell/analyzer": "^4.2.1 || ^5.1",
+        "graham-campbell/testbench-core": "^4.3",
+        "mockery/mockery": "^1.6.12",
+        "phpunit/phpunit": "^9.6.34 || ^10.5.63 || ^11.5.55 || ^12.5.14"
+    },
+    "autoload": {
+        "psr-4": {
+            "GrahamCampbell\\Manager\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "GrahamCampbell\\Tests\\Manager\\": "tests/"
+        }
+    },
+    "config": {
+        "audit": {
+            "ignore": ["PKSA-8qx3-n5y5-vvnd"]
+        },
+        "preferred-install": "dist"
+    }
+}

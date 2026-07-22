@@ -32,13 +32,15 @@ class LogViewerServiceProvider extends ServiceProvider
     {
         $this->mergeConfigFrom(self::basePath("/config/{$this->name}.php"), $this->name);
 
-        $this->app->bind('log-viewer', LogViewerService::class);
-        $this->app->bind('log-viewer-cache', function () {
+        $bindMethod = method_exists($this->app, 'scoped') ? 'scoped' : 'singleton';
+
+        $this->app->$bindMethod('log-viewer', LogViewerService::class);
+        $this->app->$bindMethod('log-viewer-cache', function () {
             return Cache::driver(config('log-viewer.cache_driver'));
         });
 
         if (! $this->app->bound(LogTypeRegistrar::class)) {
-            $this->app->singleton(LogTypeRegistrar::class, function () {
+            $this->app->$bindMethod(LogTypeRegistrar::class, function () {
                 return new LogTypeRegistrar;
             });
         }
@@ -110,10 +112,14 @@ class LogViewerServiceProvider extends ServiceProvider
         $this->loadViewsFrom(self::basePath('/resources/views'), 'log-viewer');
     }
 
+    /**
+     * @deprecated Publishing assets is no longer required. Assets are now served directly from the vendor directory.
+     *             This method will be removed in the next major version.
+     */
     protected function defineAssetPublishing()
     {
         $this->publishes([
-            self::basePath('/public') => public_path('vendor/log-viewer'),
+            self::basePath('/public') => public_path(config('log-viewer.assets_path')),
         ], 'log-viewer-assets');
     }
 

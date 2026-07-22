@@ -30,7 +30,7 @@ use Google\Cloud\Spanner\SpannerClient;
 use Google\Cloud\Speech\SpeechClient as DeprecatedSpeechClient;
 use Google\Cloud\Speech\V2\Client\SpeechClient;
 use Google\Cloud\Storage\StorageClient;
-use Google\Cloud\Trace\TraceClient;
+use Google\Cloud\Trace\V2\Client\TraceServiceClient;
 use Google\Cloud\Translate\V2\TranslateClient as DeprecatedTranslateClient;
 use Google\Cloud\Translate\V3\Client\TranslationServiceClient;
 use Google\Cloud\Vision\V1\Client\ImageAnnotatorClient;
@@ -88,12 +88,8 @@ class ServiceBuilder
      *           requests specifically for authentication.
      *     @type callable $httpHandler A handler used to deliver Psr7 requests.
      *           Only valid for requests sent over REST.
-     *     @type array $keyFile The contents of the service account credentials
-     *           .json file retrieved from the Google Developer's Console.
-     *           Ex: `json_decode(file_get_contents($path), true)`.
-     *     @type string $keyFilePath The full path to your service account
-     *           credentials .json file retrieved from the Google Developers
-     *           Console.
+     *     @type array $keyFile [DEPRECATED]
+     *     @type string $keyFilePath [DEPRECATED]
      *     @type int $retries Number of retries for a failed request.
      *           **Defaults to** `3`.
      *     @type array $scopes Scopes to be used for the request.
@@ -261,7 +257,7 @@ class ServiceBuilder
      *
      * Example:
      * ```
-     * $spanner = $cloud->spanner();
+     * $spanner = $cloud->spanner(['projectId' => 'my-project']);
      * ```
      *
      * @param array $config [optional] {
@@ -315,22 +311,16 @@ class ServiceBuilder
     }
 
     /**
-     * Google Stackdriver Trace allows you to collect latency data from your applications
-     * and display it in the Google Cloud Platform Console. Find more information at
-     * [Stackdriver Trace API docs](https://cloud.google.com/trace/docs/).
-     *
-     * Example:
-     * ```
-     * $trace = $cloud->trace();
-     * ```
-     *
-     * @param array $config [optional] Configuration options. See
-     *        {@see \Google\Cloud\Core\ServiceBuilder::__construct()} for the available options.
-     * @return TraceClient
+     * @deprecated
+     * @see TraceServiceClient
+     * @throws \BadMethodCallException
      */
     public function trace(array $config = [])
     {
-        return $this->createClient(TraceClient::class, 'trace', $config);
+        throw new \BadMethodCallException(sprintf(
+            'This method is no longer supported, create %s directly instead.',
+            TraceServiceClient::class
+        ));
     }
 
     /**

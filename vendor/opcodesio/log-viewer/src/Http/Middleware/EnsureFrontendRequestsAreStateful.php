@@ -2,7 +2,13 @@
 
 namespace Opcodes\LogViewer\Http\Middleware;
 
+use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
+use Illuminate\Cookie\Middleware\EncryptCookies;
+use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
+use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Illuminate\Routing\Pipeline;
+use Illuminate\Session\Middleware\StartSession;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
 
@@ -16,9 +22,9 @@ class EnsureFrontendRequestsAreStateful
     /**
      * Handle the incoming requests.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param  Request  $request
      * @param  callable  $next
-     * @return \Illuminate\Http\Response
+     * @return Response
      */
     public function handle($request, $next)
     {
@@ -30,10 +36,10 @@ class EnsureFrontendRequestsAreStateful
 
                 return $next($request);
             },
-            config('sanctum.middleware.encrypt_cookies', \Illuminate\Cookie\Middleware\EncryptCookies::class),
-            \Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse::class,
-            \Illuminate\Session\Middleware\StartSession::class,
-            config('sanctum.middleware.verify_csrf_token', \Illuminate\Foundation\Http\Middleware\VerifyCsrfToken::class),
+            static::resolveMiddleware('sanctum.middleware.encrypt_cookies', EncryptCookies::class),
+            AddQueuedCookiesToResponse::class,
+            StartSession::class,
+            static::resolveMiddleware('sanctum.middleware.verify_csrf_token', VerifyCsrfToken::class),
         ] : [])->then(function ($request) use ($next) {
             return $next($request);
         });
@@ -55,7 +61,7 @@ class EnsureFrontendRequestsAreStateful
     /**
      * Determine if the given request is from the first-party application frontend.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param  Request  $request
      * @return bool
      */
     public static function fromFrontend($request)
@@ -72,9 +78,54 @@ class EnsureFrontendRequestsAreStateful
 
         $stateful = array_filter(config('log-viewer.api_stateful_domains') ?? config('sanctum.stateful') ?? self::defaultStatefulDomains());
 
-        return Str::is(Collection::make($stateful)->map(function ($uri) {
+        $matchesStatefulDomains = Str::is(Collection::make($stateful)->map(function ($uri) {
             return trim($uri).'/*';
         })->all(), $domain);
+
+        if ($matchesStatefulDomains) {
+            return true;
+        }
+
+        // If APP_URL is not configured, allow same-domain requests as a fallback
+        if (empty(config('app.url'))) {
+            return self::isSameDomainRequest($request, $domain);
+        }
+
+        return false;
+    }
+
+    /**
+     * Check if the referer/origin domain matches the current request's domain.
+     *
+     * @param  Request  $request
+     * @param  string  $refererDomain
+     * @return bool
+     */
+    protected static function isSameDomainRequest($request, $refererDomain)
+    {
+        $currentHost = $request->getHost();
+        $currentPort = $request->getPort();
+
+        // Build current domain with port if not default
+        $currentDomain = $currentHost;
+        if (! in_array($currentPort, [80, 443])) {
+            $currentDomain .= ':'.$currentPort;
+        }
+
+        // Extract host:port from referer domain (strip path)
+        $refererHostPort = explode('/', $refererDomain)[0];
+
+        return $refererHostPort === $currentDomain;
+    }
+
+    /**
+     * Resolve middleware class from config with fallback.
+     */
+    protected static function resolveMiddleware(string $configKey, string $default): string
+    {
+        $middleware = config($configKey, $default);
+
+        return class_exists($middleware) ? $middleware : $default;
     }
 
     protected static function defaultStatefulDomains(): array

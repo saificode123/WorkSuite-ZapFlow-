@@ -6,8 +6,8 @@
 namespace Google\Protobuf;
 
 use Google\Protobuf\Internal\GPBType;
-use Google\Protobuf\Internal\RepeatedField;
 use Google\Protobuf\Internal\GPBUtil;
+use Google\Protobuf\RepeatedField;
 
 /**
  * Wrapper message for `int32`.
@@ -59,7 +59,7 @@ class Int32Value extends \Google\Protobuf\Internal\Message
      * @param int $var
      * @return $this
      */
-    public function setValue($var)
+    public function setValue(int $var)
     {
         GPBUtil::checkInt32($var);
         $this->value = $var;

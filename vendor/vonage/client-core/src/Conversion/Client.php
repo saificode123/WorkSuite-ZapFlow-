@@ -23,8 +23,16 @@ class Client implements ClientAwareInterface, APIClient
     {
     }
 
+    /**
+     * @deprecated This method will be removed in the next major version.
+     *             The APIResource is injected and should not be accessed directly from outside the client.
+     */
     public function getAPIResource(): APIResource
     {
+        trigger_error(
+            'Vonage\\Conversion\\Client::getAPIResource() is deprecated and will be removed in the next major version.',
+            E_USER_DEPRECATED
+        );
         return $this->api;
     }
 
@@ -35,8 +43,8 @@ class Client implements ClientAwareInterface, APIClient
      *
      * @throws ClientExceptionInterface
      * @throws ClientException\Exception
-     * @throws ClientException\Request
-     * @throws ClientException\Server
+     * @throws ClientException\RequestException
+     * @throws ClientException\ServerException
      */
     public function sms($message_id, $delivered, $timestamp = null): void
     {
@@ -50,8 +58,8 @@ class Client implements ClientAwareInterface, APIClient
      *
      * @throws ClientExceptionInterface
      * @throws ClientException\Exception
-     * @throws ClientException\Request
-     * @throws ClientException\Server
+     * @throws ClientException\RequestException
+     * @throws ClientException\ServerException
      */
     public function voice($message_id, $delivered, $timestamp = null): void
     {
@@ -65,8 +73,8 @@ class Client implements ClientAwareInterface, APIClient
      * @param $timestamp
      *
      * @throws ClientException\Exception
-     * @throws ClientException\Request
-     * @throws ClientException\Server
+     * @throws ClientException\RequestException
+     * @throws ClientException\ServerException
      * @throws ClientExceptionInterface
      */
     protected function sendConversion($type, $message_id, $delivered, $timestamp = null): void
@@ -82,26 +90,26 @@ class Client implements ClientAwareInterface, APIClient
 
         $uri = $type . '?' . http_build_query($params);
 
-        $this->getAPIResource()->create([], $uri);
-        $response = $this->getAPIResource()->getLastResponse();
+        $this->api->create([], $uri);
+        $response = $this->api->getLastResponse();
 
         if (null === $response || (int)$response->getStatusCode() !== 200) {
             throw $this->getException($response);
         }
     }
 
-    protected function getException(ResponseInterface $response): ClientException\Exception|ClientException\Request|ClientException\Server
+    protected function getException(ResponseInterface $response): ClientException\Exception|ClientException\RequestException|ClientException\ServerException
     {
         $body = json_decode($response->getBody()->getContents(), true);
         $status = $response->getStatusCode();
 
         if ($status === 402) {
-            $e = new ClientException\Request('This endpoint may need activating on your account. ' .
+            $e = new ClientException\RequestException('This endpoint may need activating on your account. ' .
                 'Please email support@Vonage.com for more information', $status);
         } elseif ($status >= 400 && $status < 500) {
-            $e = new ClientException\Request($body['error_title'], $status);
+            $e = new ClientException\RequestException($body['error_title'], $status);
         } elseif ($status >= 500 && $status < 600) {
-            $e = new ClientException\Server($body['error_title'], $status);
+            $e = new ClientException\ServerException($body['error_title'], $status);
         } else {
             $e = new ClientException\Exception('Unexpected HTTP Status Code (' . $status . ')');
         }

@@ -7,8 +7,9 @@ use Illuminate\Support\Facades\Schema;
 return new class extends Migration {
     public function up(): void {
         Schema::create('bugherd_tasks', function (Blueprint $t) {
-            $t->id(); // local id
-            $t->foreignId('project_id')->constrained()->cascadeOnDelete();
+            $t->increments('id');
+            $t->integer('project_id')->unsigned()->nullable();
+            $t->foreign('project_id')->references('id')->on('projects')->onDelete('cascade');
             $t->unsignedBigInteger('bugherd_task_id')->index();     // remote id
             $t->string('status')->nullable();
             $t->string('priority')->nullable();
@@ -24,3 +25,4 @@ return new class extends Migration {
         Schema::dropIfExists('bugherd_tasks');
     }
 };
+

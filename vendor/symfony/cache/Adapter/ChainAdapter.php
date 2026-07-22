@@ -35,6 +35,7 @@ class ChainAdapter implements AdapterInterface, CacheInterface, PruneableInterfa
 
     private array $adapters = [];
     private int $adapterCount;
+    private int $defaultLifetime;
 
     private static \Closure $syncItem;
 
@@ -42,10 +43,8 @@ class ChainAdapter implements AdapterInterface, CacheInterface, PruneableInterfa
      * @param CacheItemPoolInterface[] $adapters        The ordered list of adapters used to fetch cached items
      * @param int                      $defaultLifetime The default lifetime of items propagated from lower adapters to upper ones
      */
-    public function __construct(
-        array $adapters,
-        private int $defaultLifetime = 0,
-    ) {
+    public function __construct(array $adapters, int $defaultLifetime = 0)
+    {
         if (!$adapters) {
             throw new InvalidArgumentException('At least one adapter must be specified.');
         }
@@ -65,6 +64,7 @@ class ChainAdapter implements AdapterInterface, CacheInterface, PruneableInterfa
             }
         }
         $this->adapterCount = \count($this->adapters);
+        $this->defaultLifetime = $defaultLifetime;
 
         self::$syncItem ??= \Closure::bind(
             static function ($sourceItem, $item, $defaultLifetime, $sourceMetadata = null) {
@@ -79,6 +79,7 @@ class ChainAdapter implements AdapterInterface, CacheInterface, PruneableInterfa
                     $item->expiresAt(\DateTimeImmutable::createFromFormat('U.u', \sprintf('%.6F', $item->metadata[CacheItem::METADATA_EXPIRY])));
                 } elseif (0 < $defaultLifetime) {
                     $item->expiresAfter($defaultLifetime);
+                    $item->newMetadata[CacheItem::METADATA_EXPIRY] = $item->expiry;
                 }
 
                 return $item;
@@ -106,7 +107,7 @@ class ChainAdapter implements AdapterInterface, CacheInterface, PruneableInterfa
                 $callback = $wrap;
                 $beta = \INF === $beta ? \INF : 0;
             }
-            if ($adapter instanceof CacheInterface) {
+            if ($adapter instanceof CacheInterface && $i !== $this->adapterCount) {
                 $value = $adapter->get($key, $callback, $beta, $metadata);
             } else {
                 $value = $this->doGet($adapter, $key, $callback, $beta, $metadata);
@@ -280,7 +281,10 @@ class ChainAdapter implements AdapterInterface, CacheInterface, PruneableInterfa
         return $pruned;
     }
 
-    public function reset(): void
+    /**
+     * @return void
+     */
+    public function reset()
     {
         foreach ($this->adapters as $adapter) {
             if ($adapter instanceof ResetInterface) {

@@ -14,7 +14,22 @@ final class RateLimiter
     /**
      * @var string
      */
+    public const DATA_CATEGORY_PROFILE = 'profile';
+
+    /**
+     * @var string
+     */
     private const DATA_CATEGORY_ERROR = 'error';
+
+    /**
+     * @var string
+     */
+    private const DATA_CATEGORY_LOG_ITEM = 'log_item';
+
+    /**
+     * @var string
+     */
+    private const DATA_CATEGORY_CHECK_IN = 'monitor';
 
     /**
      * The name of the header to look at to know the rate limits for the events
@@ -93,22 +108,30 @@ final class RateLimiter
         return false;
     }
 
-    public function isRateLimited(EventType $eventType): bool
+    /**
+     * @param string|EventType $eventType
+     */
+    public function isRateLimited($eventType): bool
     {
-        $disabledUntil = $this->getDisabledUntil($eventType);
-
-        return $disabledUntil > time();
+        return $this->getDisabledUntil($eventType) > time();
     }
 
-    public function getDisabledUntil(EventType $eventType): int
+    /**
+     * @param string|EventType $eventType
+     */
+    public function getDisabledUntil($eventType): int
     {
-        $category = (string) $eventType;
+        $eventType = $eventType instanceof EventType ? (string) $eventType : $eventType;
 
-        if ($eventType === EventType::event()) {
-            $category = self::DATA_CATEGORY_ERROR;
+        if ($eventType === 'event') {
+            $eventType = self::DATA_CATEGORY_ERROR;
+        } elseif ($eventType === 'log') {
+            $eventType = self::DATA_CATEGORY_LOG_ITEM;
+        } elseif ($eventType === 'check_in') {
+            $eventType = self::DATA_CATEGORY_CHECK_IN;
         }
 
-        return max($this->rateLimits['all'] ?? 0, $this->rateLimits[$category] ?? 0);
+        return max($this->rateLimits['all'] ?? 0, $this->rateLimits[$eventType] ?? 0);
     }
 
     private function parseRetryAfterHeader(int $currentTime, string $header): int

@@ -149,8 +149,64 @@
         </x-menu-item>
     @endif
 
+<!-- NAV ITEM - TRAVEL AGENCY MODULES -->
+    @if (!in_array('client', user_roles()) && (in_array('umrah_setup', user_modules()) || in_array('service_providers', user_modules()) || in_array('bookings', user_modules()) || in_array('vouchers', user_modules()) || in_array('ticketing', user_modules())) && ($sidebarUserPermissions['view_hotel'] != 5 || $sidebarUserPermissions['view_service_provider'] != 5 || $sidebarUserPermissions['view_booking'] != 5 || $sidebarUserPermissions['view_voucher'] != 5 || $sidebarUserPermissions['view_ticket_invoice'] != 5))
+        <x-menu-item icon="globe" :text="__('app.menu.travel')">
+            <x-slot name="iconPath">
+                <path d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8zm7.5-6.923c-.67.204-1.335.82-1.887 1.855A7.97 7.97 0 0 0 5.145 4H7.5V1.077zM4.09 4a9.267 9.267 0 0 1 .64-1.539 6.7 6.7 0 0 1 .597-.933A7.025 7.025 0 0 0 2.255 4H4.09zm-.582 3.5c.03-.877.138-1.718.312-2.5H1.674a6.958 6.958 0 0 0-.656 2.5h2.49zM4.847 4a7.963 7.963 0 0 0-.599 3.5h2.753V4H4.847zM8.5 4v3.5h2.752a7.963 7.963 0 0 0-.599-3.5H8.5zm3.41 0h1.735a6.958 6.958 0 0 1 .656 2.5h-2.49c.174.782.282 1.623.312 2.5h2.49a6.958 6.958 0 0 1-.656 2.5H14.09a7.025 7.025 0 0 0 1.527-5H11.91zm-1.363 0a9.267 9.267 0 0 1 .64 1.539c.311.571.511 1.1.663 1.461h-2.35V4h1.047zm-6.23 7a6.96 6.96 0 0 1-1.527-5H4.09a7.025 7.025 0 0 0 1.637 5h-1.31zm.428 0a7.963 7.963 0 0 1-.599-3.5H4.847a7.963 7.963 0 0 1 .599 3.5h1.553zm.416 1c.132.652.322 1.222.56 1.694.531 1.062 1.132 1.806 1.69 2.029V12h-2.25zm2.25 0v3.723c.558-.223 1.16-.967 1.69-2.029.239-.472.429-1.042.56-1.694H8.5zm1.553 0a7.963 7.963 0 0 1 .599 3.5H11.15a7.025 7.025 0 0 0 1.637-5h-2.735zm2.657 0h1.31a7.025 7.025 0 0 0 1.637-5h-2.49c.174.782.282 1.623.312 2.5h2.178a6.96 6.96 0 0 1-1.527 5h-1.64z"/>
+            </x-slot>
+            <div class="accordionItemContent">
+                @if (in_array('umrah_setup', user_modules()) && $sidebarUserPermissions['view_hotel'] != 5 && $sidebarUserPermissions['view_hotel'] != 'none')
+                    <x-sub-menu-item :link="route('umrah-setup.index')" :text="__('app.menu.umrahSetup')" />
+                @endif
+                @if (in_array('service_providers', user_modules()) && $sidebarUserPermissions['view_service_provider'] != 5 && $sidebarUserPermissions['view_service_provider'] != 'none')
+                    <x-sub-menu-item :link="route('service-providers.index')" :text="__('app.menu.serviceProviders')" />
+                @endif
+                @if (in_array('bookings', user_modules()) && $sidebarUserPermissions['view_booking'] != 5 && $sidebarUserPermissions['view_booking'] != 'none')
+                    <x-sub-menu-item :link="route('bookings.index')" :text="__('app.menu.bookings')" />
+                @endif
+                @if (in_array('vouchers', user_modules()) && $sidebarUserPermissions['view_voucher'] != 5 && $sidebarUserPermissions['view_voucher'] != 'none')
+                    <x-sub-menu-item :link="route('vouchers.index')" :text="__('app.menu.vouchers')" />
+                @endif
+                @if (in_array('ticketing', user_modules()) && $sidebarUserPermissions['view_ticket_invoice'] != 5 && $sidebarUserPermissions['view_ticket_invoice'] != 'none')
+                    <x-sub-menu-item :link="route('ticketing.index')" :text="__('app.menu.ticketing')" />
+                @endif
+                @if (in_array('bookings', user_modules()) && $sidebarUserPermissions['view_travel_payment'] != 5 && $sidebarUserPermissions['view_travel_payment'] != 'none')
+                    <x-sub-menu-item :link="route('travel-payments.receive.index')" :text="__('app.menu.receivePayments')" />
+                    <x-sub-menu-item :link="route('travel-payments.make.index')" :text="__('app.menu.makePayments')" />
+                @endif
+                @if (in_array('accounting', user_modules()) && $sidebarUserPermissions['view_cash_receipt'] != 5)
+                    <x-sub-menu-item :link="route('cash-receipts.index')" :text="__('app.menu.cashReceipts')" />
+                @endif
+                @if (in_array('booking', user_modules()) && $sidebarUserPermissions['view_booking'] != 5)
+                    <x-sub-menu-item :link="route('insurance-policies.index')" :text="__('app.menu.insurancePolicies')" />
+                    <x-sub-menu-item :link="route('insurance-sales.index')" :text="__('app.menu.insuranceSales')" />
+                @endif
+                @if (in_array('bookings', user_modules()) && $sidebarUserPermissions['view_booking'] != 5)
+                    <x-sub-menu-item :link="route('visa-pipeline.index')" :text="__('app.menu.visaPipeline')" />
+                    <x-sub-menu-item :link="route('room-allocation.index')" :text="__('app.menu.roomAllocation')" />
+                @endif
+                @if (in_array('accounting', user_modules()))
+                    <x-sub-menu-item :link="route('travel-reports.trial-balance')" :text="__('app.menu.trialBalance')" />
+                    <x-sub-menu-item :link="route('travel-reports.profit-loss')" :text="__('app.menu.profitLoss')" />
+                    <x-sub-menu-item :link="route('travel-reports.monthly-pl')" :text="__('app.menu.monthlyPL')" />
+                    <x-sub-menu-item :link="route('travel-reports.ageing')" :text="__('app.menu.ageing')" />
+                    <x-sub-menu-item :link="route('travel-reports.receivables')" :text="__('app.menu.receivables')" />
+                    <x-sub-menu-item :link="route('travel-reports.payables')" :text="__('app.menu.payables')" />
+                    <x-sub-menu-item :link="route('travel-reports.umrah-wise-pl')" :text="__('app.menu.umrahWisePL')" />
+                @endif
+            </div>
+        </x-menu-item>
+    @elseif (!in_array('client', user_roles()) && in_array('umrah_setup', user_modules()) && $sidebarUserPermissions['view_hotel'] != 5 && $sidebarUserPermissions['view_hotel'] != 'none')
+        <x-menu-item icon="globe" :text="__('app.menu.umrahSetup')" :link="route('umrah-setup.index')">
+            <x-slot name="iconPath">
+                <path d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8zm7.5-6.923c-.67.204-1.335.82-1.887 1.855A7.97 7.97 0 0 0 5.145 4H7.5V1.077zM4.09 4a9.267 9.267 0 0 1 .64-1.539 6.7 6.7 0 0 1 .597-.933A7.025 7.025 0 0 0 2.255 4H4.09zm-.582 3.5c.03-.877.138-1.718.312-2.5H1.674a6.958 6.958 0 0 0-.656 2.5h2.49zM4.847 4a7.963 7.963 0 0 0-.599 3.5h2.753V4H4.847zM8.5 4v3.5h2.752a7.963 7.963 0 0 0-.599-3.5H8.5zm3.41 0h1.735a6.958 6.958 0 0 1 .656 2.5h-2.49c.174.782.282 1.623.312 2.5h2.49a6.958 6.958 0 0 1-.656 2.5H14.09a7.025 7.025 0 0 0 1.527-5H11.91zm-1.363 0a9.267 9.267 0 0 1 .64 1.539c.311.571.511 1.1.663 1.461h-2.35V4h1.047zm-6.23 7a6.96 6.96 0 0 1-1.527-5H4.09a7.025 7.025 0 0 0 1.637 5h-1.31zm.428 0a7.963 7.963 0 0 1-.599-3.5H4.847a7.963 7.963 0 0 1 .599 3.5h1.553zm.416 1c.132.652.322 1.222.56 1.694.531 1.062 1.132 1.806 1.69 2.029V12h-2.25zm2.25 0v3.723c.558-.223 1.16-.967 1.69-2.029.239-.472.429-1.042.56-1.694H8.5zm1.553 0a7.963 7.963 0 0 1 .599 3.5H11.15a7.025 7.025 0 0 0 1.637-5h-2.735zm2.657 0h1.31a7.025 7.025 0 0 0 1.637-5h-2.49c.174.782.282 1.623.312 2.5h2.178a6.96 6.96 0 0 1-1.527 5h-1.64z"/>
+            </x-slot>
+        </x-menu-item>
+    @endif
+
 <!-- NAV ITEM - FINANCE COLLAPASE MENU -->
-    @if ((in_array('estimates', user_modules()) || in_array('invoices', user_modules()) || in_array('payments', user_modules()) || in_array('expenses', user_modules()) || in_array('bankaccount', user_modules())) && ($sidebarUserPermissions['view_estimates'] != 5 || $sidebarUserPermissions['view_invoices'] != 5 || $sidebarUserPermissions['view_payments'] != 5 || $sidebarUserPermissions['view_expenses'] != 5 || $sidebarUserPermissions['view_lead_proposals'] != 5 || $sidebarUserPermissions['view_bankaccount'] != 5) && ($sidebarUserPermissions['view_estimates'] != 'none' || $sidebarUserPermissions['view_invoices'] != 'none' || $sidebarUserPermissions['view_payments'] != 'none' || $sidebarUserPermissions['view_expenses'] != 'none' || $sidebarUserPermissions['view_lead_proposals'] != 'none' || $sidebarUserPermissions['view_bankaccount'] != 'none'))
+    @if ((in_array('estimates', user_modules()) || in_array('invoices', user_modules()) || in_array('payments', user_modules()) || in_array('expenses', user_modules()) || in_array('bankaccount', user_modules()) || in_array('accounts', user_modules())) && ($sidebarUserPermissions['view_estimates'] != 5 || $sidebarUserPermissions['view_invoices'] != 5 || $sidebarUserPermissions['view_payments'] != 5 || $sidebarUserPermissions['view_expenses'] != 5 || $sidebarUserPermissions['view_lead_proposals'] != 5 || $sidebarUserPermissions['view_bankaccount'] != 5 || $sidebarUserPermissions['view_chart_of_account'] != 5) && ($sidebarUserPermissions['view_estimates'] != 'none' || $sidebarUserPermissions['view_invoices'] != 'none' || $sidebarUserPermissions['view_payments'] != 'none' || $sidebarUserPermissions['view_expenses'] != 'none' || $sidebarUserPermissions['view_lead_proposals'] != 'none' || $sidebarUserPermissions['view_bankaccount'] != 'none' || $sidebarUserPermissions['view_chart_of_account'] != 'none'))
         <x-menu-item icon="cash-coin" :active="($currentRouteName === 'payments.index')"
                      :text="__('app.menu.finance')">
             <x-slot name="iconPath">
@@ -181,6 +237,9 @@
 
                 @if (in_array('bankaccount', user_modules()) && $sidebarUserPermissions['view_bankaccount'] != 5 && $sidebarUserPermissions['view_bankaccount'] != 'none')
                     <x-sub-menu-item :link="route('bankaccounts.index')" :text="__('app.menu.bankaccount')" />
+                @endif
+                @if (in_array('accounts', user_modules()) && $sidebarUserPermissions['view_chart_of_account'] != 5 && $sidebarUserPermissions['view_chart_of_account'] != 'none')
+                    <x-sub-menu-item :link="route('accounts.index')" :text="__('app.menu.accounts')" />
                 @endif
                 <!-- NAV ITEM - CUSTOM MODULES  -->
                 @foreach ($worksuitePlugins as $item)
@@ -386,6 +445,13 @@
                 d="M9.796 1.343c-.527-1.79-3.065-1.79-3.592 0l-.094.319a.873.873 0 0 1-1.255.52l-.292-.16c-1.64-.892-3.433.902-2.54 2.541l.159.292a.873.873 0 0 1-.52 1.255l-.319.094c-1.79.527-1.79 3.065 0 3.592l.319.094a.873.873 0 0 1 .52 1.255l-.16.292c-.892 1.64.901 3.434 2.541 2.54l.292-.159a.873.873 0 0 1 1.255.52l.094.319c.527 1.79 3.065 1.79 3.592 0l.094-.319a.873.873 0 0 1 1.255-.52l.292.16c1.64.893 3.434-.902 2.54-2.541l-.159-.292a.873.873 0 0 1 .52-1.255l.319-.094c1.79-.527 1.79-3.065 0-3.592l-.319-.094a.873.873 0 0 1-.52-1.255l.16-.292c.893-1.64-.902-3.433-2.541-2.54l-.292.159a.873.873 0 0 1-1.255-.52l-.094-.319zm-2.633.283c.246-.835 1.428-.835 1.674 0l.094.319a1.873 1.873 0 0 0 2.693 1.115l.291-.16c.764-.415 1.6.42 1.184 1.185l-.159.292a1.873 1.873 0 0 0 1.116 2.692l.318.094c.835.246.835 1.428 0 1.674l-.319.094a1.873 1.873 0 0 0-1.115 2.693l.16.291c.415.764-.42 1.6-1.185 1.184l-.291-.159a1.873 1.873 0 0 0-2.693 1.116l-.094.318c-.246.835-1.428.835-1.674 0l-.094-.319a1.873 1.873 0 0 0-2.692-1.115l-.292.16c-.764.415-1.6-.42-1.184-1.185l.159-.291A1.873 1.873 0 0 0 1.945 8.93l-.319-.094c-.835-.246-.835-1.428 0-1.674l.319-.094A1.873 1.873 0 0 0 3.06 4.377l-.16-.292c-.415-.764.42-1.6 1.185-1.184l.292.159a1.873 1.873 0 0 0 2.692-1.115l.094-.319z" />
         </x-slot>
     </x-menu-item>
+    @if(in_array('admin', user_roles()))
+        <x-menu-item icon="shuffle" :text="__('app.menu.integrationSettings')" :link="route('integration-settings.index')">
+            <x-slot name="iconPath">
+                <path d="M4.5 2.5a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1-.5-.5V3a.5.5 0 0 1 .5-.5h2zm0 8a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1-.5-.5v-2a.5.5 0 0 1 .5-.5h2zm7.5-1a3.5 3.5 0 1 1-7 0 3.5 3.5 0 0 1 7 0z"/>
+            </x-slot>
+        </x-menu-item>
+    @endif
 
 
 </ul>

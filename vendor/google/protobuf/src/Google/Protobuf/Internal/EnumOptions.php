@@ -7,9 +7,9 @@ namespace Google\Protobuf\Internal;
 
 use Google\Protobuf\Internal\GPBType;
 use Google\Protobuf\Internal\GPBWire;
-use Google\Protobuf\Internal\RepeatedField;
 use Google\Protobuf\Internal\InputStream;
 use Google\Protobuf\Internal\GPBUtil;
+use Google\Protobuf\RepeatedField;
 
 /**
  * Generated from protobuf message <code>google.protobuf.EnumOptions</code>
@@ -86,7 +86,7 @@ class EnumOptions extends \Google\Protobuf\Internal\Message
      *           WARNING: This field should only be used by protobuf plugins or special
      *           cases like the proto compiler. Other uses are discouraged and
      *           developers should rely on the protoreflect APIs for their client language.
-     *     @type array<\Google\Protobuf\Internal\UninterpretedOption>|\Google\Protobuf\Internal\RepeatedField $uninterpreted_option
+     *     @type \Google\Protobuf\Internal\UninterpretedOption[] $uninterpreted_option
      *           The parser stores options it doesn't recognize here. See above.
      * }
      */
@@ -125,9 +125,8 @@ class EnumOptions extends \Google\Protobuf\Internal\Message
      * @param bool $var
      * @return $this
      */
-    public function setAllowAlias($var)
+    public function setAllowAlias(bool $var)
     {
-        GPBUtil::checkBool($var);
         $this->allow_alias = $var;
 
         return $this;
@@ -167,9 +166,8 @@ class EnumOptions extends \Google\Protobuf\Internal\Message
      * @param bool $var
      * @return $this
      */
-    public function setDeprecated($var)
+    public function setDeprecated(bool $var)
     {
-        GPBUtil::checkBool($var);
         $this->deprecated = $var;
 
         return $this;
@@ -222,10 +220,9 @@ class EnumOptions extends \Google\Protobuf\Internal\Message
      * @return $this
      * @deprecated
      */
-    public function setDeprecatedLegacyJsonFieldConflicts($var)
+    public function setDeprecatedLegacyJsonFieldConflicts(bool $var)
     {
         @trigger_error('deprecated_legacy_json_field_conflicts is deprecated.', E_USER_DEPRECATED);
-        GPBUtil::checkBool($var);
         $this->deprecated_legacy_json_field_conflicts = $var;
 
         return $this;
@@ -265,9 +262,8 @@ class EnumOptions extends \Google\Protobuf\Internal\Message
      * @param \Google\Protobuf\Internal\FeatureSet $var
      * @return $this
      */
-    public function setFeatures($var)
+    public function setFeatures(\Google\Protobuf\Internal\FeatureSet|null $var)
     {
-        GPBUtil::checkMessage($var, \Google\Protobuf\Internal\FeatureSet::class);
         $this->features = $var;
 
         return $this;
@@ -277,7 +273,7 @@ class EnumOptions extends \Google\Protobuf\Internal\Message
      * The parser stores options it doesn't recognize here. See above.
      *
      * Generated from protobuf field <code>repeated .google.protobuf.UninterpretedOption uninterpreted_option = 999;</code>
-     * @return \Google\Protobuf\Internal\RepeatedField
+     * @return RepeatedField<\Google\Protobuf\Internal\UninterpretedOption>
      */
     public function getUninterpretedOption()
     {
@@ -288,10 +284,10 @@ class EnumOptions extends \Google\Protobuf\Internal\Message
      * The parser stores options it doesn't recognize here. See above.
      *
      * Generated from protobuf field <code>repeated .google.protobuf.UninterpretedOption uninterpreted_option = 999;</code>
-     * @param array<\Google\Protobuf\Internal\UninterpretedOption>|\Google\Protobuf\Internal\RepeatedField $var
+     * @param \Google\Protobuf\Internal\UninterpretedOption[] $var
      * @return $this
      */
-    public function setUninterpretedOption($var)
+    public function setUninterpretedOption(array|RepeatedField $var)
     {
         $arr = GPBUtil::checkRepeatedField($var, \Google\Protobuf\Internal\GPBType::MESSAGE, \Google\Protobuf\Internal\UninterpretedOption::class);
         $this->uninterpreted_option = $arr;

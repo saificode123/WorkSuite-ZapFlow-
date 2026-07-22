@@ -5,6 +5,8 @@ namespace Opcodes\LogViewer\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\URL;
+use Opcodes\LogViewer\Enums\SortingMethod;
+use Opcodes\LogViewer\Enums\SortingOrder;
 use Opcodes\LogViewer\Facades\LogViewer;
 use Opcodes\LogViewer\Http\Resources\LogFolderResource;
 use Opcodes\LogViewer\LogFile;
@@ -15,13 +17,26 @@ class FoldersController
     {
         $folders = LogViewer::getFilesGroupedByFolder();
 
-        if ($request->query('direction', 'desc') === 'asc') {
-            $folders = $folders->sortByEarliestFirstIncludingFiles();
-        } else {
-            $folders = $folders->sortByLatestFirstIncludingFiles();
-        }
+        $sortingMethod = config('log-viewer.defaults.folder_sorting_method', SortingMethod::ModifiedTime);
+        $sortingOrder = config('log-viewer.defaults.folder_sorting_order', SortingOrder::Descending);
+
+        $fileSortingMethod = config('log-viewer.defaults.file_sorting_method', SortingMethod::ModifiedTime);
+        $fileSortingOrder = $this->validateDirection($request->query('direction'));
+
+        $folders->sortUsing($sortingMethod, $sortingOrder);
+
+        $folders->each(fn ($folder) => $folder->files()->sortUsing($fileSortingMethod, $fileSortingOrder));
 
         return LogFolderResource::collection($folders->values());
+    }
+
+    private function validateDirection(?string $direction): string
+    {
+        if ($direction === SortingOrder::Ascending) {
+            return SortingOrder::Ascending;
+        }
+
+        return SortingOrder::Descending;
     }
 
     public function requestDownload(Request $request, string $folderIdentifier)

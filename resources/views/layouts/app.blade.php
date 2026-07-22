@@ -721,6 +721,8 @@
     </script>
 @endif
 
+@include('partials.command-palette')
+
 </body>
 
 </html>

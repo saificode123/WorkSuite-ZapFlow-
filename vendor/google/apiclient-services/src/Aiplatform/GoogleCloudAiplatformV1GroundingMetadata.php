@@ -20,21 +20,71 @@ namespace Google\Service\Aiplatform;
 class GoogleCloudAiplatformV1GroundingMetadata extends \Google\Collection
 {
   protected $collection_key = 'webSearchQueries';
+  /**
+   * Optional. Output only. Deprecated: The Google Maps contextual widget
+   * behavior in Grounding with Google Maps is being deprecated; this field is
+   * planned for removal and will no longer be populated once removed. A token
+   * that can be used to render a Google Maps widget with the contextual data.
+   * This field is populated only when the grounding source is Google Maps.
+   *
+   * @deprecated
+   * @var string
+   */
+  public $googleMapsWidgetContextToken;
   protected $groundingChunksType = GoogleCloudAiplatformV1GroundingChunk::class;
   protected $groundingChunksDataType = 'array';
   protected $groundingSupportsType = GoogleCloudAiplatformV1GroundingSupport::class;
   protected $groundingSupportsDataType = 'array';
+  /**
+   * Optional. The image search queries that were used to generate the content.
+   * This field is populated only when the grounding source is Google Search
+   * with the Image Search search_type enabled.
+   *
+   * @var string[]
+   */
+  public $imageSearchQueries;
   protected $retrievalMetadataType = GoogleCloudAiplatformV1RetrievalMetadata::class;
   protected $retrievalMetadataDataType = '';
   protected $searchEntryPointType = GoogleCloudAiplatformV1SearchEntryPoint::class;
   protected $searchEntryPointDataType = '';
+  protected $sourceFlaggingUrisType = GoogleCloudAiplatformV1GroundingMetadataSourceFlaggingUri::class;
+  protected $sourceFlaggingUrisDataType = 'array';
   /**
+   * Optional. The web search queries that were used to generate the content.
+   * This field is populated only when the grounding source is Google Search.
+   *
    * @var string[]
    */
   public $webSearchQueries;
 
   /**
-   * @param GoogleCloudAiplatformV1GroundingChunk[]
+   * Optional. Output only. Deprecated: The Google Maps contextual widget
+   * behavior in Grounding with Google Maps is being deprecated; this field is
+   * planned for removal and will no longer be populated once removed. A token
+   * that can be used to render a Google Maps widget with the contextual data.
+   * This field is populated only when the grounding source is Google Maps.
+   *
+   * @deprecated
+   * @param string $googleMapsWidgetContextToken
+   */
+  public function setGoogleMapsWidgetContextToken($googleMapsWidgetContextToken)
+  {
+    $this->googleMapsWidgetContextToken = $googleMapsWidgetContextToken;
+  }
+  /**
+   * @deprecated
+   * @return string
+   */
+  public function getGoogleMapsWidgetContextToken()
+  {
+    return $this->googleMapsWidgetContextToken;
+  }
+  /**
+   * A list of supporting references retrieved from the grounding source. This
+   * field is populated when the grounding source is Google Search, Vertex AI
+   * Search, or Google Maps.
+   *
+   * @param GoogleCloudAiplatformV1GroundingChunk[] $groundingChunks
    */
   public function setGroundingChunks($groundingChunks)
   {
@@ -48,7 +98,11 @@ class GoogleCloudAiplatformV1GroundingMetadata extends \Google\Collection
     return $this->groundingChunks;
   }
   /**
-   * @param GoogleCloudAiplatformV1GroundingSupport[]
+   * Optional. A list of grounding supports that connect the generated content
+   * to the grounding chunks. This field is populated when the grounding source
+   * is Google Search or Vertex AI Search.
+   *
+   * @param GoogleCloudAiplatformV1GroundingSupport[] $groundingSupports
    */
   public function setGroundingSupports($groundingSupports)
   {
@@ -62,7 +116,27 @@ class GoogleCloudAiplatformV1GroundingMetadata extends \Google\Collection
     return $this->groundingSupports;
   }
   /**
-   * @param GoogleCloudAiplatformV1RetrievalMetadata
+   * Optional. The image search queries that were used to generate the content.
+   * This field is populated only when the grounding source is Google Search
+   * with the Image Search search_type enabled.
+   *
+   * @param string[] $imageSearchQueries
+   */
+  public function setImageSearchQueries($imageSearchQueries)
+  {
+    $this->imageSearchQueries = $imageSearchQueries;
+  }
+  /**
+   * @return string[]
+   */
+  public function getImageSearchQueries()
+  {
+    return $this->imageSearchQueries;
+  }
+  /**
+   * Optional. Output only. Metadata related to the retrieval grounding source.
+   *
+   * @param GoogleCloudAiplatformV1RetrievalMetadata $retrievalMetadata
    */
   public function setRetrievalMetadata(GoogleCloudAiplatformV1RetrievalMetadata $retrievalMetadata)
   {
@@ -76,7 +150,11 @@ class GoogleCloudAiplatformV1GroundingMetadata extends \Google\Collection
     return $this->retrievalMetadata;
   }
   /**
-   * @param GoogleCloudAiplatformV1SearchEntryPoint
+   * Optional. A web search entry point that can be used to display search
+   * results. This field is populated only when the grounding source is Google
+   * Search.
+   *
+   * @param GoogleCloudAiplatformV1SearchEntryPoint $searchEntryPoint
    */
   public function setSearchEntryPoint(GoogleCloudAiplatformV1SearchEntryPoint $searchEntryPoint)
   {
@@ -90,7 +168,28 @@ class GoogleCloudAiplatformV1GroundingMetadata extends \Google\Collection
     return $this->searchEntryPoint;
   }
   /**
-   * @param string[]
+   * Optional. Output only. A list of URIs that can be used to flag a place or
+   * review for inappropriate content. This field is populated only when the
+   * grounding source is Google Maps.
+   *
+   * @param GoogleCloudAiplatformV1GroundingMetadataSourceFlaggingUri[] $sourceFlaggingUris
+   */
+  public function setSourceFlaggingUris($sourceFlaggingUris)
+  {
+    $this->sourceFlaggingUris = $sourceFlaggingUris;
+  }
+  /**
+   * @return GoogleCloudAiplatformV1GroundingMetadataSourceFlaggingUri[]
+   */
+  public function getSourceFlaggingUris()
+  {
+    return $this->sourceFlaggingUris;
+  }
+  /**
+   * Optional. The web search queries that were used to generate the content.
+   * This field is populated only when the grounding source is Google Search.
+   *
+   * @param string[] $webSearchQueries
    */
   public function setWebSearchQueries($webSearchQueries)
   {

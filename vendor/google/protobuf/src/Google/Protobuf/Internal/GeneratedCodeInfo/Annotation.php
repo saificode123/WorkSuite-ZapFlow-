@@ -7,9 +7,9 @@ namespace Google\Protobuf\Internal\GeneratedCodeInfo;
 
 use Google\Protobuf\Internal\GPBType;
 use Google\Protobuf\Internal\GPBWire;
-use Google\Protobuf\Internal\RepeatedField;
 use Google\Protobuf\Internal\InputStream;
 use Google\Protobuf\Internal\GPBUtil;
+use Google\Protobuf\RepeatedField;
 
 /**
  * Generated from protobuf message <code>google.protobuf.GeneratedCodeInfo.Annotation</code>
@@ -55,7 +55,7 @@ class Annotation extends \Google\Protobuf\Internal\Message
      * @param array $data {
      *     Optional. Data for populating the Message object.
      *
-     *     @type array<int>|\Google\Protobuf\Internal\RepeatedField $path
+     *     @type int[] $path
      *           Identifies the element in the original source .proto file. This field
      *           is formatted the same as SourceCodeInfo.Location.path.
      *     @type string $source_file
@@ -80,7 +80,7 @@ class Annotation extends \Google\Protobuf\Internal\Message
      * is formatted the same as SourceCodeInfo.Location.path.
      *
      * Generated from protobuf field <code>repeated int32 path = 1 [packed = true];</code>
-     * @return \Google\Protobuf\Internal\RepeatedField
+     * @return RepeatedField<int>
      */
     public function getPath()
     {
@@ -92,10 +92,10 @@ class Annotation extends \Google\Protobuf\Internal\Message
      * is formatted the same as SourceCodeInfo.Location.path.
      *
      * Generated from protobuf field <code>repeated int32 path = 1 [packed = true];</code>
-     * @param array<int>|\Google\Protobuf\Internal\RepeatedField $var
+     * @param int[] $var
      * @return $this
      */
-    public function setPath($var)
+    public function setPath(array|RepeatedField $var)
     {
         $arr = GPBUtil::checkRepeatedField($var, \Google\Protobuf\Internal\GPBType::INT32);
         $this->path = $arr;
@@ -131,9 +131,9 @@ class Annotation extends \Google\Protobuf\Internal\Message
      * @param string $var
      * @return $this
      */
-    public function setSourceFile($var)
+    public function setSourceFile(string $var)
     {
-        GPBUtil::checkString($var, True);
+        GPBUtil::checkString($var, true);
         $this->source_file = $var;
 
         return $this;
@@ -169,7 +169,7 @@ class Annotation extends \Google\Protobuf\Internal\Message
      * @param int $var
      * @return $this
      */
-    public function setBegin($var)
+    public function setBegin(int $var)
     {
         GPBUtil::checkInt32($var);
         $this->begin = $var;
@@ -209,7 +209,7 @@ class Annotation extends \Google\Protobuf\Internal\Message
      * @param int $var
      * @return $this
      */
-    public function setEnd($var)
+    public function setEnd(int $var)
     {
         GPBUtil::checkInt32($var);
         $this->end = $var;
@@ -219,7 +219,7 @@ class Annotation extends \Google\Protobuf\Internal\Message
 
     /**
      * Generated from protobuf field <code>optional .google.protobuf.GeneratedCodeInfo.Annotation.Semantic semantic = 5;</code>
-     * @return int
+     * @return int one of the values in {@see \Google\Protobuf\Internal\GeneratedCodeInfo\Annotation\Semantic}
      */
     public function getSemantic()
     {
@@ -238,10 +238,10 @@ class Annotation extends \Google\Protobuf\Internal\Message
 
     /**
      * Generated from protobuf field <code>optional .google.protobuf.GeneratedCodeInfo.Annotation.Semantic semantic = 5;</code>
-     * @param int $var
+     * @param int $var one of the values in {@see \Google\Protobuf\Internal\GeneratedCodeInfo\Annotation\Semantic}
      * @return $this
      */
-    public function setSemantic($var)
+    public function setSemantic(int $var)
     {
         GPBUtil::checkEnum($var, \Google\Protobuf\Internal\GeneratedCodeInfo\Annotation\Semantic::class);
         $this->semantic = $var;

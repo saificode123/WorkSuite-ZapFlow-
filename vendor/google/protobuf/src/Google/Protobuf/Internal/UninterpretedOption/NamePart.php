@@ -7,9 +7,9 @@ namespace Google\Protobuf\Internal\UninterpretedOption;
 
 use Google\Protobuf\Internal\GPBType;
 use Google\Protobuf\Internal\GPBWire;
-use Google\Protobuf\Internal\RepeatedField;
 use Google\Protobuf\Internal\InputStream;
 use Google\Protobuf\Internal\GPBUtil;
+use Google\Protobuf\RepeatedField;
 
 /**
  * The name of the uninterpreted option.  Each string represents a segment in
@@ -70,9 +70,9 @@ class NamePart extends \Google\Protobuf\Internal\Message
      * @param string $var
      * @return $this
      */
-    public function setNamePart($var)
+    public function setNamePart(string $var)
     {
-        GPBUtil::checkString($var, True);
+        GPBUtil::checkString($var, true);
         $this->name_part = $var;
 
         return $this;
@@ -102,9 +102,8 @@ class NamePart extends \Google\Protobuf\Internal\Message
      * @param bool $var
      * @return $this
      */
-    public function setIsExtension($var)
+    public function setIsExtension(bool $var)
     {
-        GPBUtil::checkBool($var);
         $this->is_extension = $var;
 
         return $this;

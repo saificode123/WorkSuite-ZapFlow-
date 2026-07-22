@@ -33,7 +33,6 @@ trait ModuleVerify
 
     public function isLocalHost($module)
     {
-        return true;
         // Check if verification is required for this module or not
         if (!config($module . '.verification_required')) {
             return true;

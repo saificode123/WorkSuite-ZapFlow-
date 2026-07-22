@@ -5,8 +5,8 @@
 namespace Google\Api;
 
 use Google\Protobuf\Internal\GPBType;
-use Google\Protobuf\Internal\RepeatedField;
 use Google\Protobuf\Internal\GPBUtil;
+use Google\Protobuf\RepeatedField;
 
 /**
  * Required information for every language.
@@ -31,6 +31,7 @@ class CommonLanguageSettings extends \Google\Protobuf\Internal\Message
     private $destinations;
     /**
      * Configuration for which RPCs should be generated in the GAPIC client.
+     * Note: This field should not be used in most cases.
      *
      * Generated from protobuf field <code>.google.api.SelectiveGapicGeneration selective_gapic_generation = 3;</code>
      */
@@ -45,10 +46,11 @@ class CommonLanguageSettings extends \Google\Protobuf\Internal\Message
      *     @type string $reference_docs_uri
      *           Link to automatically generated reference documentation.  Example:
      *           https://cloud.google.com/nodejs/docs/reference/asset/latest
-     *     @type array<int>|\Google\Protobuf\Internal\RepeatedField $destinations
+     *     @type int[] $destinations
      *           The destination where API teams want this client library to be published.
      *     @type \Google\Api\SelectiveGapicGeneration $selective_gapic_generation
      *           Configuration for which RPCs should be generated in the GAPIC client.
+     *           Note: This field should not be used in most cases.
      * }
      */
     public function __construct($data = NULL) {
@@ -66,7 +68,9 @@ class CommonLanguageSettings extends \Google\Protobuf\Internal\Message
      */
     public function getReferenceDocsUri()
     {
-        @trigger_error('reference_docs_uri is deprecated.', E_USER_DEPRECATED);
+        if ($this->reference_docs_uri !== '') {
+            @trigger_error('reference_docs_uri is deprecated.', E_USER_DEPRECATED);
+        }
         return $this->reference_docs_uri;
     }
 
@@ -92,7 +96,7 @@ class CommonLanguageSettings extends \Google\Protobuf\Internal\Message
      * The destination where API teams want this client library to be published.
      *
      * Generated from protobuf field <code>repeated .google.api.ClientLibraryDestination destinations = 2;</code>
-     * @return \Google\Protobuf\Internal\RepeatedField
+     * @return RepeatedField<int>
      */
     public function getDestinations()
     {
@@ -103,7 +107,7 @@ class CommonLanguageSettings extends \Google\Protobuf\Internal\Message
      * The destination where API teams want this client library to be published.
      *
      * Generated from protobuf field <code>repeated .google.api.ClientLibraryDestination destinations = 2;</code>
-     * @param array<int>|\Google\Protobuf\Internal\RepeatedField $var
+     * @param int[] $var
      * @return $this
      */
     public function setDestinations($var)
@@ -116,6 +120,7 @@ class CommonLanguageSettings extends \Google\Protobuf\Internal\Message
 
     /**
      * Configuration for which RPCs should be generated in the GAPIC client.
+     * Note: This field should not be used in most cases.
      *
      * Generated from protobuf field <code>.google.api.SelectiveGapicGeneration selective_gapic_generation = 3;</code>
      * @return \Google\Api\SelectiveGapicGeneration|null
@@ -137,6 +142,7 @@ class CommonLanguageSettings extends \Google\Protobuf\Internal\Message
 
     /**
      * Configuration for which RPCs should be generated in the GAPIC client.
+     * Note: This field should not be used in most cases.
      *
      * Generated from protobuf field <code>.google.api.SelectiveGapicGeneration selective_gapic_generation = 3;</code>
      * @param \Google\Api\SelectiveGapicGeneration $var

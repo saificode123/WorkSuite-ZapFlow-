@@ -9,8 +9,8 @@ use Vonage\Client\APIClient;
 use Vonage\Client\APIResource;
 use Vonage\Client\Exception as ClientException;
 use Vonage\Client\Exception\Exception;
-use Vonage\Client\Exception\Request;
-use Vonage\Client\Exception\Server;
+use Vonage\Client\Exception\RequestException;
+use Vonage\Client\Exception\ServerException;
 use Vonage\Client\Exception\ThrottleException;
 use Vonage\Entity\Filter\FilterInterface;
 use Vonage\Entity\IterableAPICollection;
@@ -28,8 +28,16 @@ class Client implements APIClient
     {
     }
 
+    /**
+     * @deprecated This method will be removed in the next major version.
+     *             The APIResource is injected and should not be accessed directly from outside the client.
+     */
     public function getApiResource(): APIResource
     {
+        trigger_error(
+            'Vonage\\Numbers\\Client::getApiResource() is deprecated and will be removed in the next major version.',
+            E_USER_DEPRECATED
+        );
         return $this->api;
     }
 
@@ -59,7 +67,7 @@ class Client implements APIClient
 
         unset($body['features'], $body['type']);
 
-        $api = $this->getApiResource();
+        $api = $this->api;
         $api->submit($body, '/number/update');
 
         if (isset($update)) {
@@ -84,8 +92,8 @@ class Client implements APIClient
      *
      * @throws ClientExceptionInterface
      * @throws ClientException\Exception
-     * @throws ClientException\Request
-     * @throws ClientException\Server
+     * @throws ClientException\RequestException
+     * @throws ClientException\ServerException
      */
     public function get(string $number): Number
     {
@@ -94,7 +102,7 @@ class Client implements APIClient
         // This is legacy behaviour, so we need to keep it even though
         // it isn't technically the correct message
         if (count($items) !== 1) {
-            throw new ClientException\Request('number not found', 404);
+            throw new ClientException\RequestException('number not found', 404);
         }
 
         return $items[0];
@@ -103,8 +111,8 @@ class Client implements APIClient
     /**
      * @throws ClientExceptionInterface
      * @throws ClientException\Exception
-     * @throws ClientException\Request
-     * @throws ClientException\Server
+     * @throws ClientException\RequestException
+     * @throws ClientException\ServerException
      */
     public function searchAvailable(string $country, ?FilterInterface $options = null): array
     {
@@ -114,7 +122,7 @@ class Client implements APIClient
             ]);
         }
 
-        $api = $this->getApiResource();
+        $api = $this->api;
         $api->setCollectionName('numbers');
 
         $response = $api->search(
@@ -131,8 +139,8 @@ class Client implements APIClient
     /**
      * @throws ClientExceptionInterface
      * @throws ClientException\Exception
-     * @throws ClientException\Request
-     * @throws ClientException\Server
+     * @throws ClientException\RequestException
+     * @throws ClientException\ServerException
      */
     public function searchOwned($number = null, ?FilterInterface $options = null): array
     {
@@ -146,7 +154,7 @@ class Client implements APIClient
             }
         }
 
-        $api = $this->getApiResource();
+        $api = $this->api;
         $api->setCollectionName('numbers');
 
         $response = $api->search($options, '/account/numbers');
@@ -158,8 +166,8 @@ class Client implements APIClient
 
     /**
      * @throws ClientException\Exception
-     * @throws ClientException\Request
-     * @throws ClientException\Server
+     * @throws ClientException\RequestException
+     * @throws ClientException\ServerException
      * @throws ClientExceptionInterface
      */
     private function handleNumberSearchResult(IterableAPICollection $response, $number = null): array
@@ -212,7 +220,7 @@ class Client implements APIClient
             ];
         }
 
-        $api = $this->getApiResource();
+        $api = $this->api;
         $api->setBaseUri('/number/buy');
         $api->submit($body);
     }
@@ -220,8 +228,8 @@ class Client implements APIClient
     /**
      * @throws ClientExceptionInterface
      * @throws ClientException\Exception
-     * @throws ClientException\Request
-     * @throws ClientException\Server
+     * @throws ClientException\RequestException
+     * @throws ClientException\ServerException
      */
     public function cancel(string $number, ?string $country = null): void
     {
@@ -232,7 +240,7 @@ class Client implements APIClient
             'country' => $number->getCountry()
         ];
 
-        $api = $this->getApiResource();
+        $api = $this->api;
         $api->setBaseUri('/number/cancel');
         $api->submit($body);
     }

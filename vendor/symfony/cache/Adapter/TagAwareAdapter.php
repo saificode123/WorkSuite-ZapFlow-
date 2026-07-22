@@ -44,19 +44,18 @@ class TagAwareAdapter implements TagAwareAdapterInterface, TagAwareCacheInterfac
     private AdapterInterface $pool;
     private AdapterInterface $tags;
     private array $knownTagVersions = [];
+    private float $knownTagVersionsTtl;
 
     private static \Closure $setCacheItemTags;
     private static \Closure $setTagVersions;
     private static \Closure $getTagsByKey;
     private static \Closure $saveTags;
 
-    public function __construct(
-        AdapterInterface $itemsPool,
-        ?AdapterInterface $tagsPool = null,
-        private float $knownTagVersionsTtl = 0.15,
-    ) {
+    public function __construct(AdapterInterface $itemsPool, ?AdapterInterface $tagsPool = null, float $knownTagVersionsTtl = 0.15)
+    {
         $this->pool = $itemsPool;
         $this->tags = $tagsPool ?? $itemsPool;
+        $this->knownTagVersionsTtl = $knownTagVersionsTtl;
         self::$setCacheItemTags ??= \Closure::bind(
             static function (array $items, array $itemTags) {
                 foreach ($items as $key => $item) {
@@ -207,10 +206,12 @@ class TagAwareAdapter implements TagAwareAdapterInterface, TagAwareCacheInterfac
                     unset($this->deferred[$key]);
                 }
             }
-
-            return $this->pool->clear($prefix);
         } else {
             $this->deferred = [];
+        }
+
+        if ($this->pool instanceof AdapterInterface) {
+            return $this->pool->clear($prefix);
         }
 
         return $this->pool->clear();
@@ -282,20 +283,27 @@ class TagAwareAdapter implements TagAwareAdapterInterface, TagAwareCacheInterfac
         return $this->pool instanceof PruneableInterface && $this->pool->prune();
     }
 
-    public function reset(): void
+    /**
+     * @return void
+     */
+    public function reset()
     {
-        $this->commit();
-        $this->knownTagVersions = [];
-        $this->pool instanceof ResettableInterface && $this->pool->reset();
-        $this->tags instanceof ResettableInterface && $this->tags->reset();
+        try {
+            $this->commit();
+        } finally {
+            $this->knownTagVersions = [];
+            $this->deferred = [];
+            $this->pool instanceof ResettableInterface && $this->pool->reset();
+            $this->tags instanceof ResettableInterface && $this->tags->reset();
+        }
     }
 
-    public function __sleep(): array
+    public function __serialize(): array
     {
         throw new \BadMethodCallException('Cannot serialize '.__CLASS__);
     }
 
-    public function __wakeup(): void
+    public function __unserialize(array $data): void
     {
         throw new \BadMethodCallException('Cannot unserialize '.__CLASS__);
     }
@@ -359,7 +367,7 @@ class TagAwareAdapter implements TagAwareAdapterInterface, TagAwareCacheInterfac
             (self::$saveTags)($this->tags, $newTags);
         }
 
-        while ($now > ($this->knownTagVersions[$tag = array_key_first($this->knownTagVersions)][0] ?? \INF)) {
+        while ($now > ($this->knownTagVersions[$tag = array_key_first($this->knownTagVersions) ?? ''][0] ?? \INF)) {
             unset($this->knownTagVersions[$tag]);
         }
 

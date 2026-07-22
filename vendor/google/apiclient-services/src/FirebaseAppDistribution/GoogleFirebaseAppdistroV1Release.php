@@ -20,38 +20,116 @@ namespace Google\Service\FirebaseAppDistribution;
 class GoogleFirebaseAppdistroV1Release extends \Google\Model
 {
   /**
+   * Default value.
+   */
+  public const ANDROID_PACKAGE_REGISTRATION_STATE_ANDROID_PACKAGE_REGISTRATION_STATE_UNSPECIFIED = 'ANDROID_PACKAGE_REGISTRATION_STATE_UNSPECIFIED';
+  /**
+   * Package is registered with the release binary's certificate fingerprint.
+   */
+  public const ANDROID_PACKAGE_REGISTRATION_STATE_REGISTERED = 'REGISTERED';
+  /**
+   * Package is not registered with any public certificate.
+   */
+  public const ANDROID_PACKAGE_REGISTRATION_STATE_NOT_REGISTERED = 'NOT_REGISTERED';
+  /**
+   * Package is registered with another public certificate fingerprint.
+   */
+  public const ANDROID_PACKAGE_REGISTRATION_STATE_REGISTERED_WITH_ANOTHER_CERTIFICATE_FINGERPRINT = 'REGISTERED_WITH_ANOTHER_CERTIFICATE_FINGERPRINT';
+  /**
+   * Output only. Registration state of the Android package (BinaryType.APK).
+   *
+   * @var string
+   */
+  public $androidPackageRegistrationState;
+  /**
+   * Output only. A signed link (which expires in one hour) to directly download
+   * the app binary (IPA/APK/AAB) file.
+   *
    * @var string
    */
   public $binaryDownloadUri;
   /**
+   * Output only. Build version of the release. For an Android release, the
+   * build version is the `versionCode`. For an iOS release, the build version
+   * is the `CFBundleVersion`.
+   *
    * @var string
    */
   public $buildVersion;
   /**
+   * Output only. The time the release was created.
+   *
    * @var string
    */
   public $createTime;
   /**
+   * Output only. Display version of the release. For an Android release, the
+   * display version is the `versionName`. For an iOS release, the display
+   * version is the `CFBundleShortVersionString`.
+   *
    * @var string
    */
   public $displayVersion;
   /**
+   * Output only. The time the release will expire.
+   *
+   * @var string
+   */
+  public $expireTime;
+  /**
+   * Output only. A link to the Firebase console displaying a single release.
+   *
    * @var string
    */
   public $firebaseConsoleUri;
   /**
+   * The name of the release resource. Format:
+   * `projects/{project_number}/apps/{app}/releases/{release}`
+   *
    * @var string
    */
   public $name;
   protected $releaseNotesType = GoogleFirebaseAppdistroV1ReleaseNotes::class;
   protected $releaseNotesDataType = '';
   /**
+   * Output only. A link to the release in the tester web clip or Android app
+   * that lets testers (which were granted access to the app) view release notes
+   * and install the app onto their devices.
+   *
    * @var string
    */
   public $testingUri;
+  /**
+   * Output only. The time the release was last updated.
+   *
+   * @var string
+   */
+  public $updateTime;
 
   /**
-   * @param string
+   * Output only. Registration state of the Android package (BinaryType.APK).
+   *
+   * Accepted values: ANDROID_PACKAGE_REGISTRATION_STATE_UNSPECIFIED,
+   * REGISTERED, NOT_REGISTERED, REGISTERED_WITH_ANOTHER_CERTIFICATE_FINGERPRINT
+   *
+   * @param self::ANDROID_PACKAGE_REGISTRATION_STATE_* $androidPackageRegistrationState
+   */
+  public function setAndroidPackageRegistrationState($androidPackageRegistrationState)
+  {
+    $this->androidPackageRegistrationState = $androidPackageRegistrationState;
+  }
+  /**
+   * @return self::ANDROID_PACKAGE_REGISTRATION_STATE_*
+   */
+  public function getAndroidPackageRegistrationState()
+  {
+    return $this->androidPackageRegistrationState;
+  }
+  /**
+   * Output only. A signed link (which expires in one hour) to directly download
+   * the app binary (IPA/APK/AAB) file.
+   *
+   * @param string $binaryDownloadUri
    */
   public function setBinaryDownloadUri($binaryDownloadUri)
   {
@@ -65,7 +143,11 @@ class GoogleFirebaseAppdistroV1Release extends \Google\Model
     return $this->binaryDownloadUri;
   }
   /**
-   * @param string
+   * Output only. Build version of the release. For an Android release, the
+   * build version is the `versionCode`. For an iOS release, the build version
+   * is the `CFBundleVersion`.
+   *
+   * @param string $buildVersion
    */
   public function setBuildVersion($buildVersion)
   {
@@ -79,7 +161,9 @@ class GoogleFirebaseAppdistroV1Release extends \Google\Model
     return $this->buildVersion;
   }
   /**
-   * @param string
+   * Output only. The time the release was created.
+   *
+   * @param string $createTime
    */
   public function setCreateTime($createTime)
   {
@@ -93,7 +177,11 @@ class GoogleFirebaseAppdistroV1Release extends \Google\Model
     return $this->createTime;
   }
   /**
-   * @param string
+   * Output only. Display version of the release. For an Android release, the
+   * display version is the `versionName`. For an iOS release, the display
+   * version is the `CFBundleShortVersionString`.
+   *
+   * @param string $displayVersion
    */
   public function setDisplayVersion($displayVersion)
   {
@@ -107,7 +195,25 @@ class GoogleFirebaseAppdistroV1Release extends \Google\Model
     return $this->displayVersion;
   }
   /**
-   * @param string
+   * Output only. The time the release will expire.
+   *
+   * @param string $expireTime
+   */
+  public function setExpireTime($expireTime)
+  {
+    $this->expireTime = $expireTime;
+  }
+  /**
+   * @return string
+   */
+  public function getExpireTime()
+  {
+    return $this->expireTime;
+  }
+  /**
+   * Output only. A link to the Firebase console displaying a single release.
+   *
+   * @param string $firebaseConsoleUri
    */
   public function setFirebaseConsoleUri($firebaseConsoleUri)
   {
@@ -121,7 +227,10 @@ class GoogleFirebaseAppdistroV1Release extends \Google\Model
     return $this->firebaseConsoleUri;
   }
   /**
-   * @param string
+   * The name of the release resource. Format:
+   * `projects/{project_number}/apps/{app}/releases/{release}`
+   *
+   * @param string $name
    */
   public function setName($name)
   {
@@ -135,7 +244,9 @@ class GoogleFirebaseAppdistroV1Release extends \Google\Model
     return $this->name;
   }
   /**
-   * @param GoogleFirebaseAppdistroV1ReleaseNotes
+   * Notes about the release.
+   *
+   * @param GoogleFirebaseAppdistroV1ReleaseNotes $releaseNotes
    */
   public function setReleaseNotes(GoogleFirebaseAppdistroV1ReleaseNotes $releaseNotes)
   {
@@ -149,7 +260,11 @@ class GoogleFirebaseAppdistroV1Release extends \Google\Model
     return $this->releaseNotes;
   }
   /**
-   * @param string
+   * Output only. A link to the release in the tester web clip or Android app
+   * that lets testers (which were granted access to the app) view release notes
+   * and install the app onto their devices.
+   *
+   * @param string $testingUri
    */
   public function setTestingUri($testingUri)
   {
@@ -161,6 +276,22 @@ class GoogleFirebaseAppdistroV1Release extends \Google\Model
   public function getTestingUri()
   {
     return $this->testingUri;
+  }
+  /**
+   * Output only. The time the release was last updated.
+   *
+   * @param string $updateTime
+   */
+  public function setUpdateTime($updateTime)
+  {
+    $this->updateTime = $updateTime;
+  }
+  /**
+   * @return string
+   */
+  public function getUpdateTime()
+  {
+    return $this->updateTime;
   }
 }
 

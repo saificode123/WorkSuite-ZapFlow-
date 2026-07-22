@@ -9,8 +9,8 @@ use Vonage\Client\APIClient;
 use Vonage\Client\APIResource;
 use Vonage\Client\Exception as ClientException;
 use Vonage\Client\Exception\Exception;
-use Vonage\Client\Exception\Request;
-use Vonage\Client\Exception\Server;
+use Vonage\Client\Exception\RequestException;
+use Vonage\Client\Exception\ServerException;
 use Vonage\Entity\Filter\KeyValueFilter;
 use Vonage\Entity\IterableAPICollection;
 use Vonage\Numbers\Number;
@@ -26,8 +26,16 @@ class Client implements APIClient
     {
     }
 
+    /**
+     * @deprecated This method will be removed in the next major version.
+     *             The APIResource is injected and should not be accessed directly from outside the client.
+     */
     public function getApiResource(): APIResource
     {
+        trigger_error(
+            'Vonage\\Insights\\Client::getApiResource() is deprecated and will be removed in the next major version.',
+            E_USER_DEPRECATED
+        );
         return clone $this->api;
     }
 
@@ -80,8 +88,8 @@ class Client implements APIClient
     /**
      * @throws ClientExceptionInterface
      * @throws ClientException\Exception
-     * @throws ClientException\Request
-     * @throws ClientException\Server
+     * @throws ClientException\RequestException
+     * @throws ClientException\ServerException
      */
     public function standard(string $number): Standard
     {
@@ -95,8 +103,8 @@ class Client implements APIClient
     /**
      * @throws ClientExceptionInterface
      * @throws ClientException\Exception
-     * @throws ClientException\Request
-     * @throws ClientException\Server
+     * @throws ClientException\RequestException
+     * @throws ClientException\ServerException
      */
     public function advanced(string $number): Advanced
     {
@@ -110,8 +118,8 @@ class Client implements APIClient
     /**
      * @throws ClientExceptionInterface
      * @throws ClientException\Exception
-     * @throws ClientException\Request
-     * @throws ClientException\Server
+     * @throws ClientException\RequestException
+     * @throws ClientException\ServerException
      */
     public function advancedAsync(string $number, string $webhook): void
     {
@@ -124,13 +132,13 @@ class Client implements APIClient
      * Common code for generating a request
      *
      * @throws ClientException\Exception
-     * @throws ClientException\Request
-     * @throws ClientException\Server
+     * @throws ClientException\RequestException
+     * @throws ClientException\ServerException
      * @throws ClientExceptionInterface
      */
     public function makeRequest(string $path, $number, array $additionalParams = []): array
     {
-        $api = $this->getApiResource();
+        $api = clone $this->api;
         $api->setBaseUri($path);
         $collectionPrototype = new IterableAPICollection();
         $collectionPrototype->setHasPagination(false);
@@ -157,7 +165,7 @@ class Client implements APIClient
      * This API returns a 200 on an error, so does not get caught by the normal
      * error checking. We check for a status and message manually.
      */
-    protected function getNIException(array $body): ClientException\Request
+    protected function getNIException(array $body): ClientException\RequestException
     {
         $status = $body['status'];
         $message = "Error: ";
@@ -172,6 +180,6 @@ class Client implements APIClient
             $message .= $body['error_text'];
         }
 
-        return new ClientException\Request($message, $status);
+        return new ClientException\RequestException($message, $status);
     }
 }

@@ -4,8 +4,11 @@ declare(strict_types=1);
 
 namespace Sentry;
 
+use Sentry\ClientReport\DiscardedEvent;
 use Sentry\Context\OsContext;
 use Sentry\Context\RuntimeContext;
+use Sentry\Logs\Log;
+use Sentry\Metrics\Types\Metric;
 use Sentry\Profiling\Profile;
 use Sentry\Tracing\Span;
 
@@ -18,6 +21,10 @@ use Sentry\Tracing\Span;
  *     sum: int|float,
  *     count: int,
  *     tags: array<string>,
+ * }
+ * @phpstan-type SdkPackageEntry array{
+ *     name: string,
+ *     version: string,
  * }
  */
 final class Event
@@ -60,6 +67,16 @@ final class Event
      * @var CheckIn|null The check in data
      */
     private $checkIn;
+
+    /**
+     * @var Log[]
+     */
+    private $logs = [];
+
+    /**
+     * @var Metric[]
+     */
+    private $metrics = [];
 
     /**
      * @var string|null The name of the server (e.g. the host name)
@@ -175,6 +192,16 @@ final class Event
     private $sdkVersion = Client::SDK_VERSION;
 
     /**
+     * @var SdkPackageEntry[] The Sentry SDK packages
+     */
+    private $sdkPackages = [
+        [
+            'name' => 'composer:sentry/sentry',
+            'version' => Client::SDK_VERSION,
+        ],
+    ];
+
+    /**
      * @var EventType The type of the Event
      */
     private $type;
@@ -183,6 +210,11 @@ final class Event
      * @var Profile|null The profile data
      */
     private $profile;
+
+    /**
+     * @var DiscardedEvent[]
+     */
+    private $clientReports = [];
 
     private function __construct(?EventId $eventId, EventType $eventType)
     {
@@ -216,12 +248,19 @@ final class Event
         return new self($eventId, EventType::checkIn());
     }
 
-    /**
-     * @deprecated Metrics are no longer supported. Metrics API is a no-op and will be removed in 5.x.
-     */
+    public static function createLogs(?EventId $eventId = null): self
+    {
+        return new self($eventId, EventType::logs());
+    }
+
     public static function createMetrics(?EventId $eventId = null): self
     {
         return new self($eventId, EventType::metrics());
+    }
+
+    public static function createClientReport(?EventId $eventId = null): self
+    {
+        return new self($eventId, EventType::clientReport());
     }
 
     /**
@@ -274,6 +313,40 @@ final class Event
         $this->sdkVersion = $sdkVersion;
 
         return $this;
+    }
+
+    /**
+     * Append a package to the list of SDK packages.
+     *
+     * @param SdkPackageEntry $package The package to append
+     *
+     * @return $this
+     *
+     * @internal
+     */
+    public function appendSdkPackage(array $package): self
+    {
+        $this->sdkPackages[] = $package;
+
+        return $this;
+    }
+
+    /**
+     * Gets the SDK playload that will be sent to Sentry.
+     *
+     * @see https://develop.sentry.dev/sdk/data-model/event-payloads/sdk/
+     *
+     * @return array{name: string, version: string, packages: SdkPackageEntry[]}
+     *
+     * @internal
+     */
+    public function getSdkPayload(): array
+    {
+        return [
+            'name' => $this->sdkIdentifier,
+            'version' => $this->sdkVersion,
+            'packages' => $this->sdkPackages,
+        ];
     }
 
     /**
@@ -369,18 +442,38 @@ final class Event
     }
 
     /**
-     * @deprecated Metrics are no longer supported. Metrics API is a no-op and will be removed in 5.x.
+     * @return Log[]
      */
-    public function getMetrics(): array
+    public function getLogs(): array
     {
-        return [];
+        return $this->logs;
     }
 
     /**
-     * @deprecated Metrics are no longer supported. Metrics API is a no-op and will be removed in 5.x.
+     * @param Log[] $logs
+     */
+    public function setLogs(array $logs): self
+    {
+        $this->logs = $logs;
+
+        return $this;
+    }
+
+    /**
+     * @return Metric[]
+     */
+    public function getMetrics(): array
+    {
+        return $this->metrics;
+    }
+
+    /**
+     * @param Metric[] $metrics
      */
     public function setMetrics(array $metrics): self
     {
+        $this->metrics = $metrics;
+
         return $this;
     }
 
@@ -815,13 +908,13 @@ final class Event
     /**
      * Gets the SDK metadata.
      *
+     * @phpstan-template T of string|null
+     *
+     * @phpstan-param T $name
+     *
      * @return mixed
      *
-     * @psalm-template T of string|null
-     *
-     * @psalm-param T $name
-     *
-     * @psalm-return (T is string ? mixed : array<string, mixed>|null)
+     * @phpstan-return (T is string ? mixed : array<string, mixed>|null)
      */
     public function getSdkMetadata(?string $name = null)
     {
@@ -895,5 +988,23 @@ final class Event
         }
 
         return null;
+    }
+
+    /**
+     * @param DiscardedEvent[] $clientReports
+     */
+    public function setClientReports(array $clientReports): self
+    {
+        $this->clientReports = $clientReports;
+
+        return $this;
+    }
+
+    /**
+     * @return DiscardedEvent[]
+     */
+    public function getClientReports(): array
+    {
+        return $this->clientReports;
     }
 }

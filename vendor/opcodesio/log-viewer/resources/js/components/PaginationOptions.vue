@@ -13,12 +13,7 @@ const logViewerStore = useLogViewerStore();
   </select>
   <label for="items-per-page" class="sr-only">Items per page</label>
   <select id="items-per-page" v-model="logViewerStore.resultsPerPage" class="select">
-    <option value="10">10 items per page</option>
-    <option value="25">25 items per page</option>
-    <option value="50">50 items per page</option>
-    <option value="100">100 items per page</option>
-    <option value="250">250 items per page</option>
-    <option value="500">500 items per page</option>
+    <option v-for="option in logViewerStore.perPageOptions" :key="option" :value="option">{{ option }} items per page</option>
   </select>
 </div>
 </template>

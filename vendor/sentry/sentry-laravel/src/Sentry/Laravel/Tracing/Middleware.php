@@ -73,7 +73,7 @@ class Middleware
     public function handle(Request $request, Closure $next)
     {
         if (app()->bound(HubInterface::class)) {
-            $this->startTransaction($request, app(HubInterface::class));
+            $this->startTransaction($request);
         }
 
         return $next($request);
@@ -89,12 +89,14 @@ class Middleware
      */
     public function terminate(Request $request, $response): void
     {
-        // If there is no transaction or the HubInterface is not bound in the container there is nothing for us to do
-        if ($this->transaction === null || !app()->bound(HubInterface::class)) {
+        // If there is no transaction there is nothing for us to do
+        if ($this->transaction === null) {
             return;
         }
 
         if ($this->shouldRouteBeIgnored($request)) {
+            $this->discardTransaction();
+
             return;
         }
 
@@ -132,10 +134,13 @@ class Middleware
         $this->bootedTimestamp = $timestamp ?? microtime(true);
     }
 
-    private function startTransaction(Request $request, HubInterface $sentry): void
+    private function startTransaction(Request $request): void
     {
+        $hub = SentrySdk::getCurrentHub();
+        $client = $hub->getClient();
+
         // Prevent starting a new transaction if we are already in a transaction
-        if ($sentry->getTransaction() !== null) {
+        if ($hub->getTransaction() !== null) {
             return;
         }
 
@@ -151,9 +156,16 @@ class Middleware
         );
 
         $context = continueTrace(
-            $request->header('sentry-trace') ?? $request->header('traceparent', ''),
+            $request->header('sentry-trace', ''),
             $request->header('baggage', '')
         );
+
+        // OTLP external propagation relies on the scope not already carrying a Sentry span,
+        // but continueTrace() still needs to run so incoming distributed trace headers can
+        // populate the scope propagation context while tracing is disabled.
+        if ($client === null || !$client->getOptions()->isTracingEnabled()) {
+            return;
+        }
 
         $requestPath = '/' . ltrim($request->path(), '/');
 
@@ -168,9 +180,9 @@ class Middleware
             'http.request.method' => strtoupper($request->method()),
         ]);
 
-        $transaction = $sentry->startTransaction($context);
+        $transaction = $hub->startTransaction($context);
 
-        SentrySdk::getCurrentHub()->setSpan($transaction);
+        $hub->setSpan($transaction);
 
         // If this transaction is not sampled, we can stop here to prevent doing work for nothing
         if (!$transaction->getSampled()) {
@@ -188,7 +200,17 @@ class Middleware
                 ->setStartTimestamp($bootstrapSpan ? $bootstrapSpan->getEndTimestamp() : microtime(true))
         );
 
-        SentrySdk::getCurrentHub()->setSpan($this->appSpan);
+        $hub->setSpan($this->appSpan);
+    }
+
+    private function discardTransaction(): void
+    {
+        $this->appSpan = null;
+        $this->transaction = null;
+        $this->didRouteMatch = false;
+        $this->bootedTimestamp = null;
+
+        SentrySdk::getCurrentHub()->setSpan(null);
     }
 
     private function addAppBootstrapSpan(): ?Span
@@ -234,6 +256,9 @@ class Middleware
     private function hydrateResponseData(SymfonyResponse $response): void
     {
         $this->transaction->setHttpStatus($response->getStatusCode());
+        $this->transaction->setData([
+            'http.response.status_code' => $response->getStatusCode(),
+        ]);
     }
 
     public function finishTransaction(): void

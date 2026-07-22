@@ -29,7 +29,13 @@ class LogFile
     {
         $this->path = $path;
         $this->name = basename($path);
-        $this->identifier = Utils::shortMd5(Utils::getLocalIP().':'.$path).'-'.$this->name;
+
+        if (config('log-viewer.exclude_ip_from_identifiers', false)) {
+            $this->identifier = Utils::shortMd5($path).'-'.$this->name;
+        } else {
+            $this->identifier = Utils::shortMd5(Utils::getLocalIP().':'.$path).'-'.$this->name;
+        }
+
         $this->type = $type;
         $this->displayPath = empty($pathAlias)
             ? $path
@@ -69,11 +75,13 @@ class LogFile
 
     public function index(?string $query = null): LogIndex
     {
-        if (! isset($this->_logIndexCache[$query])) {
-            $this->_logIndexCache[$query] = new LogIndex($this, $query);
+        $cacheKey = $query ?? '';
+
+        if (! isset($this->_logIndexCache[$cacheKey])) {
+            $this->_logIndexCache[$cacheKey] = new LogIndex($this, $cacheKey);
         }
 
-        return $this->_logIndexCache[$query];
+        return $this->_logIndexCache[$cacheKey];
     }
 
     public function logs(): LogReaderInterface
@@ -102,7 +110,11 @@ class LogFile
 
     public function subFolderIdentifier(): string
     {
-        return Utils::shortMd5(Utils::getLocalIP().':'.$this->subFolder);
+        if (config('log-viewer.exclude_ip_from_identifiers', false)) {
+            return Utils::shortMd5($this->subFolder);
+        } else {
+            return Utils::shortMd5(Utils::getLocalIP().':'.$this->subFolder);
+        }
     }
 
     public function downloadUrl(): string

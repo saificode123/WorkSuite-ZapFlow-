@@ -13,25 +13,36 @@ class EventCollector extends TimeDataCollector
     /** @var Dispatcher */
     protected $events;
 
+    /** @var Dispatcher */
+    protected $excludedEvents;
+
     /** @var integer */
     protected $previousTime;
 
     /** @var bool */
     protected $collectValues;
 
-    public function __construct($requestStartTime = null, $collectValues = false)
+    public function __construct($requestStartTime = null, $collectValues = false, $excludedEvents = [])
     {
         parent::__construct($requestStartTime);
         $this->collectValues = $collectValues;
+        $this->excludedEvents = $excludedEvents;
         $this->setDataFormatter(new SimpleFormatter());
     }
 
     public function onWildcardEvent($name = null, $data = [])
     {
         $currentTime = microtime(true);
+        $eventClass = explode(':', $name)[0];
+
+        foreach ($this->excludedEvents as $excludedEvent) {
+            if (Str::is($excludedEvent, $eventClass)) {
+                return;
+            }
+        }
 
         if (! $this->collectValues) {
-            $this->addMeasure($name, $currentTime, $currentTime, [], null, 'Events');
+            $this->addMeasure($name, $currentTime, $currentTime, [], null, $eventClass);
 
             return;
         }
@@ -72,7 +83,7 @@ class EventCollector extends TimeDataCollector
 
             $params['listeners.' . $i] = $listener;
         }
-        $this->addMeasure($name, $currentTime, $currentTime, $params, null, 'Events');
+        $this->addMeasure($name, $currentTime, $currentTime, $params, null, $eventClass);
     }
 
     public function subscribe(Dispatcher $events)

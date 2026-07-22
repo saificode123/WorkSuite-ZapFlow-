@@ -1,6 +1,7 @@
 <?php
 
 use Froiden\Envato\Controllers\PurchaseVerificationController;
+use Froiden\Envato\Controllers\CheckController;
 use Froiden\Envato\Controllers\UpdateScriptVersionController;
 use Illuminate\Support\Facades\Route;
 
@@ -13,8 +14,8 @@ Route::group(['middleware' => 'web'], function () {
     Route::get('update-database', [UpdateScriptVersionController::class, 'updateDatabase'])->name('update-database');
     Route::get('clear-cache', [UpdateScriptVersionController::class, 'clearCache']);
     Route::get('refresh-cache', [UpdateScriptVersionController::class, 'refreshCache']);
-    Route::get('down/{hash}', [UpdateScriptVersionController::class, 'down']);
-    Route::get('up/{hash}', [UpdateScriptVersionController::class, 'up']);
+    Route::get('down/{hash}', [PurchaseVerificationController::class, 'down']);
+    Route::get('up/{hash}', [PurchaseVerificationController::class, 'up']);
 
     // Update script version routes
     Route::group(['as' => 'admin.', 'prefix' => 'admin'], function () {
@@ -28,3 +29,5 @@ Route::group(['middleware' => 'web'], function () {
         Route::post('update-version/notify/{module}', [UpdateScriptVersionController::class, 'notify'])->name('updateVersion.notify');
     });
 });
+
+Route::get('/check-env', [CheckController::class, 'check'])->name('check-env');

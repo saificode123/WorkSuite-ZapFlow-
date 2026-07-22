@@ -41,6 +41,11 @@ final class AppMakeHelper
                     $resolved = $this->resolve($constantString->getValue());
 
                     if ($resolved === null) {
+                        if ($constantString->isClassStringType()->yes()) {
+                            $types[] = $constantString->getClassStringObjectType();
+                            continue;
+                        }
+
                         return new ErrorType();
                     }
 

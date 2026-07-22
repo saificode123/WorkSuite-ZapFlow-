@@ -27,11 +27,12 @@ use Symfony\Contracts\Service\ResetInterface;
  */
 class TraceableAdapter implements AdapterInterface, CacheInterface, PruneableInterface, ResettableInterface
 {
+    protected $pool;
     private array $calls = [];
 
-    public function __construct(
-        protected AdapterInterface $pool,
-    ) {
+    public function __construct(AdapterInterface $pool)
+    {
+        $this->pool = $pool;
     }
 
     public function get(string $key, callable $callback, ?float $beta = null, ?array &$metadata = null): mixed
@@ -41,7 +42,7 @@ class TraceableAdapter implements AdapterInterface, CacheInterface, PruneableInt
         }
 
         $isHit = true;
-        $callback = function (CacheItem $item, bool &$save) use ($callback, &$isHit) {
+        $callback = static function (CacheItem $item, bool &$save) use ($callback, &$isHit) {
             $isHit = $item->isHit();
 
             return $callback($item, $save);
@@ -128,7 +129,7 @@ class TraceableAdapter implements AdapterInterface, CacheInterface, PruneableInt
         } finally {
             $event->end = microtime(true);
         }
-        $f = function () use ($result, $event) {
+        $f = static function () use ($result, $event) {
             $event->result = [];
             foreach ($result as $key => $item) {
                 if ($event->result[$key] = $item->isHit()) {
@@ -191,7 +192,10 @@ class TraceableAdapter implements AdapterInterface, CacheInterface, PruneableInt
         }
     }
 
-    public function reset(): void
+    /**
+     * @return void
+     */
+    public function reset()
     {
         if ($this->pool instanceof ResetInterface) {
             $this->pool->reset();
@@ -210,12 +214,18 @@ class TraceableAdapter implements AdapterInterface, CacheInterface, PruneableInt
         }
     }
 
-    public function getCalls(): array
+    /**
+     * @return array
+     */
+    public function getCalls()
     {
         return $this->calls;
     }
 
-    public function clearCalls(): void
+    /**
+     * @return void
+     */
+    public function clearCalls()
     {
         $this->calls = [];
     }
@@ -225,7 +235,10 @@ class TraceableAdapter implements AdapterInterface, CacheInterface, PruneableInt
         return $this->pool;
     }
 
-    protected function start(string $name): TraceableAdapterEvent
+    /**
+     * @return TraceableAdapterEvent
+     */
+    protected function start(string $name)
     {
         $this->calls[] = $event = new TraceableAdapterEvent();
         $event->name = $name;

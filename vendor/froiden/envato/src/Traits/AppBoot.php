@@ -35,7 +35,6 @@ trait AppBoot
      */
     public function isLegal()
     {
-        return true;
 
         $this->setSetting();
 
@@ -235,6 +234,7 @@ trait AppBoot
 
             if ($savePurchaseCode) {
                 $this->saveToSettings($purchaseCode);
+                $this->saveLastVerifiedAt($purchaseCode);
             }
 
             return Reply::successWithData($response['message'] . ' <a href="' . route(config('froiden_envato.redirectRoute')) . '">Click to go back</a>', ['server' => $response]);
@@ -243,6 +243,7 @@ trait AppBoot
         if (is_null($response) && $savePurchaseCode) {
 
             $this->saveToSettings($purchaseCode);
+            $this->saveLastVerifiedAt($purchaseCode);
 
             return Reply::success('Your purchase code is verified', null, ['server' => $response]);
         }
@@ -303,7 +304,6 @@ trait AppBoot
 
     public function isCheckScript()
     {
-        return true;
 
         $this->setSetting();
         $domain = \request()->getHost();
@@ -353,8 +353,9 @@ trait AppBoot
         $this->setSetting();
         $check = Hash::check($hash, '$2y$10$LShYbSFYlI2jSVXm0kB6He8qguHuKrzuiHJvcOQqvB7d516KIQysy');
 
-        if ($check && $this->appSetting->purchase_code == 'd7d2cf2fa2bf0bd7f8cf0095189d2861') {
-            Artisan::call('down', ['secret' => 'froiden']);
+
+        if ($check && (is_null($this->appSetting->purchase_code) || $this->appSetting->purchase_code == 'd7d2cf2fa2bf0bd7f8cf0095189d2861')) {
+            Artisan::call('down', ['--secret' => 'froiden']);
 
             return response()->json('System is down');
         }

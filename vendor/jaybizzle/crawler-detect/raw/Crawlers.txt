@@ -2,22 +2,25 @@
 ^Aether
 ^Amazon Simple Notification Service Agent$
 ^Amazon-Route53-Health-Check-Service
-^Amazon CloudFront
 ^b0t$
 ^bluefish 
 ^Calypso v\/
 ^COMODO DCV
 ^Corax
 ^DangDang
+^Dart\/[0-9]
 ^DavClnt
 ^DHSH
 ^docker\/[0-9]
 ^Expanse
+^ExposureScanner
 ^FDM 
 ^git\/
 ^Goose\/
+^Goosee-Audit
 ^Grabber
 ^Gradle\/
+^Hello from Palo Alto Networks
 ^HTTPClient\/
 ^HTTPing
 ^Java\/
@@ -43,11 +46,13 @@
 ^TLS tester 
 ^twine\/
 ^ureq
+^visionheight\.com\/scan
 ^VSE\/[0-9]
 ^WordPress\.com
 ^XRL\/[0-9]
 ^ZmEu
 008\/
+1Pilot
 13TABS
 192\.comAgent
 2GDPR\/
@@ -62,6 +67,7 @@ Aboundex
 aboutthedomain
 Accoona-AI-Agent
 acebookexternalhit\/
+acme\.sectigo\.com
 acoon
 acrylicapps\.com\/pulp
 Acunetix
@@ -81,6 +87,7 @@ AffiliateLabz\/
 affilimate-puppeteer
 agentslug
 AHC
+Ahrefs
 aihit
 aiohttp\/
 Airmail
@@ -94,6 +101,7 @@ allloadin
 AllSubmitter
 alyze\.info
 amagit
+amphp\/http-client
 Anarchie
 AndroidDownloadManager
 Anemone
@@ -220,6 +228,7 @@ cg-eye
 changedetection
 ChangesMeter
 Charlotte
+ChatGPT-User
 chatterino-api-cache
 CheckHost
 checkprivacy
@@ -235,11 +244,14 @@ CISPA Web Analyser
 Citoid
 CJNetworkQuality
 Clarsentia
+Claude-User
+claude-web
 clips\.ua\.ac\.be
 Cloud mapping
 CloudEndure
 CloudFlare-AlwaysOnline
 Cloudflare-Healthchecks
+Cloudflare-SSLDetector
 Cloudinary
 cmcm\.com
 coccoc
@@ -260,6 +272,8 @@ Copyscape
 cortex\/
 Cosmos4j\.feedback
 Covario-IDS
+Cpanel-HTTP-Client
+cpp-httplib
 Craw\/
 Crescent
 Criteo
@@ -285,6 +299,7 @@ DataXu
 Daum(oa)?[ \/][0-9]
 dBpoweramp
 ddline
+DebugBear$
 deeris
 delve\.ai
 Demon
@@ -369,6 +384,7 @@ Favicon downloader
 faviconarchive
 faviconkit
 FavOrg
+FediAct Service
 Feed Wrangler
 Feedable\/
 Feedbin
@@ -398,11 +414,11 @@ FlashGet
 FlipboardBrowserProxy
 FlipboardProxy
 FlipboardRSS
-Flock\/
 Florienzh\/
 fluffy
 Flunky
 flynxapp
+foda-scanner\/[0-9]
 forensiq
 ForusP
 FoundSeoTool
@@ -418,6 +434,7 @@ g00g1e\.net
 ganarvisitas
 gdnplus\.com
 GeedoProductSearch
+GeedoShopProductFinder
 geek-tools
 Genieo
 GentleSource
@@ -433,6 +450,7 @@ Geziyor
 Ghost Inspector
 GigablastOpenSource
 GIS-LABS
+GitLab\/
 github-camo
 GitHub-Hookshot
 github\.com
@@ -461,8 +479,10 @@ Google Search Console
 Google Web Preview
 Google-Ads
 Google-Adwords
+Google-AMPHTML
 Google-Apps-Script
 Google-Calendar-Importer
+Google-Firebase
 Google-HotelAdsVerifier
 Google-HTTP-Java-Client
 Google-InspectionTool
@@ -477,8 +497,10 @@ Google-Structured-Data-Testing-Tool
 Google-Transparency-Report
 google-xrawler
 Google-Youtube-Links
+GoogleAssociationService
 GoogleDocs
 GoogleHC\/
+GoogleMessages
 GoogleOther
 GoogleProber
 GoogleProducer
@@ -511,6 +533,7 @@ Hadi Agent
 HappyApps-WebCheck
 Hardenize
 Hatena
+HaveInListEnricher
 Havij
 HaxerMen
 HEADMasterSEO
@@ -518,6 +541,7 @@ HeartRails_Capture
 help@dataminr\.com
 heritrix
 Hexometer
+HF-Research\/
 historious
 hkedcity
 hledejLevne\.cz
@@ -561,6 +585,7 @@ HubSpot
 HubSpot-Link-Resolver
 Humanlinks
 i2kconnect\/
+IAB-Tech-Lab
 Iblog
 ichiro
 Id-search
@@ -577,6 +602,7 @@ ImageEngine\/
 ImageVisu\/
 Imagga
 imagineeasy
+imgproxy\/[0-9]
 imgsizer
 InAGist
 inbound\.li parser
@@ -587,6 +613,7 @@ infegy
 infohelfer
 InfoTekies
 InfoWizards Reciprocal Link
+Infrawatch\/[0-9]
 inpwrd\.com
 instabid
 Instapaper
@@ -595,6 +622,7 @@ integromedb
 Intelliseek
 InterGET
 Internet Ninja
+InternetMeasurement
 InternetSeer
 internetVista monitor
 internetwache
@@ -652,10 +680,12 @@ knows\.is
 KOCMOHABT
 kouio
 krawler\.dk
+krynos
 kube-probe
 kubectl
 kulturarw3
 KumKie
+l9tcpid\/
 Larbin
 Lavf\/
 leakix\.net
@@ -680,6 +710,7 @@ link-check
 linkCheck
 linkdex
 LinkExaminer
+Linkfeed\.ru
 linkfluence
 linkpeek
 LinkPreview
@@ -716,6 +747,7 @@ MagpieRSS
 Mail::STS
 MailChimp
 Mail\.Ru
+Mailpit\/
 Majestic12
 makecontact\/
 Mandrill
@@ -758,6 +790,7 @@ mixdata dot com
 mixed-content-scan
 mixnode
 Mnogosearch
+ModatScanner\/[0-9]
 mogimogi
 Mojeek
 Mojolicious \(Perl\)
@@ -785,6 +818,7 @@ MxToolbox\/
 myseosnapshot
 nagios
 Najdi\.si
+holubem\.eu
 Name Intelligence
 NameFo\.com
 Nameprotect
@@ -808,6 +842,7 @@ NetSystemsResearch
 nettle
 NetTrack
 Netvibes
+NetworkingExtension
 NetZIP
 Neustar WPM
 NeutrinoAPI
@@ -817,6 +852,7 @@ NewsGator
 newsme
 newspaper\/
 Nexgate Ruby Client
+Next\.js Middleware
 NG-Search
 nghttp2
 Nibbler
@@ -851,6 +887,7 @@ Octopus
 oegp
 Offline Explorer
 Offline Navigator
+odin\.com
 OgScrper
 okhttp
 omgili
@@ -888,6 +925,7 @@ Panopta
 panscient
 Papa Foto
 parsijoo
+pathscan\/[0-9]
 Pavuk
 PayPal IPN
 pcBrowser
@@ -919,6 +957,7 @@ pinterest\.com
 Pixray
 Pizilla
 Plagger\/
+PlayStore-Google
 Pleroma 
 Ploetz \+ Zeller
 Plukkie
@@ -963,6 +1002,7 @@ Python-httplib2
 python-httpx
 python-requests
 Python-urllib
+Python-xmlrpc
 Qirina Hurdler
 QQDownload
 QrafterPro
@@ -1052,7 +1092,9 @@ Seobility
 SEOCentro
 SeoCheck
 seocompany
+SEOGets
 SEOkicks
+SeoLik\.ru
 SEOlizer
 Seomoz
 SEOprofiler
@@ -1154,6 +1196,7 @@ SuperHTTP
 Surphace Scout
 Suzuran
 swcd 
+Swisscows Favicons
 Symfony BrowserKit
 Symfony2 BrowserKit
 Synapse\/
@@ -1223,6 +1266,7 @@ uclassify
 UdmSearch
 ultimate_sitemap_parser
 unchaos
+undici
 unirest-java
 UniversalFeedParser
 unshortenit
@@ -1277,6 +1321,7 @@ WbSrch\/
 WDT\.io
 Web Auto
 Web Collage
+Web Downloader\/[0-9]
 Web Enhancer
 Web Fetch
 Web Fuck
