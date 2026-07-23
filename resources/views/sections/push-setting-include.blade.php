@@ -143,13 +143,14 @@
     <script src="https://js.pusher.com/7.0/pusher.min.js"></script>
 
     <script>
-        // Enable pusher logging - don't include this in production
-        // Pusher.logToConsole = true;
-
-        const pusher = new Pusher('{{ $pusherSettings->pusher_app_key }}', {
-            cluster: '{{ $pusherSettings->pusher_cluster }}',
-            forceTLS: '{{ $pusherSettings->force_tls }}'
-        });
+        @if ($pusherSettings->pusher_app_key)
+            const pusher = new Pusher('{{ $pusherSettings->pusher_app_key }}', {
+                cluster: '{{ $pusherSettings->pusher_cluster }}',
+                forceTLS: '{{ $pusherSettings->force_tls }}'
+            });
+        @else
+            console.warn('Realtime disabled: no Pusher key configured');
+        @endif
 
     </script>
 @endif

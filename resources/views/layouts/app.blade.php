@@ -293,8 +293,7 @@
 
 <script>
     $(window).on('load', function () {
-        // Animate loader off screen
-        init();
+        try { init(); } catch (e) { console.error('init failed', e); }
         $(".preloader-container").fadeOut("slow", function () {
             $(this).removeClass("d-flex");
         });

@@ -1,4 +1,4 @@
-const init = function (parent = "") {
+window.init = function (parent = "") {
     if (parent != "") {
         parent = parent + " ";
     }
