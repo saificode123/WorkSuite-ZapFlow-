@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "zapflow-local",
+      "runtimeExecutable": "scripts\\dev_serve_local_env.bat",
+      "runtimeArgs": [],
+      "port": 8091
+    }
+  ]
+}

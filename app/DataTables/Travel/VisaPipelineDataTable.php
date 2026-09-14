@@ -14,7 +14,7 @@ class VisaPipelineDataTable extends BaseDataTable
             ->eloquent($query)
             ->addColumn('check', fn($row) => $this->checkBox($row))
             ->addColumn('passenger_name', fn($row) => e($row->first_name . ' ' . $row->family_name))
-            ->addColumn('passport_no', fn($row) => e($row->passport_no))
+            ->addColumn('passport_no', fn($row) => e($row->masked_passport_no))
             ->addColumn('booking_group', fn($row) => $row->bookingGroup
                 ? e($row->bookingGroup->group_no)
                 : '—')

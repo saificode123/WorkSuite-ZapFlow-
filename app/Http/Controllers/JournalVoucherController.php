@@ -161,6 +161,20 @@ class JournalVoucherController extends AccountBaseController
     {
         abort_403(!in_array(user()->permission('delete_journal_voucher'), ['all', 'added']));
         $voucher = JournalVoucher::findOrFail($id);
+
+        if ($voucher->financialYear && $voucher->financialYear->is_closed) {
+            return Reply::error(__('messages.financialYearClosed'));
+        }
+
+        \App\Models\AuditLog::create([
+            'company_id'  => company()->id,
+            'user_id'     => user()->id,
+            'action'      => 'delete_journal_voucher',
+            'entity_type' => 'journal_voucher',
+            'entity_id'   => $voucher->id,
+            'ip_address'  => request()->ip(),
+        ]);
+
         $voucher->lines()->delete();
         $voucher->delete();
         return Reply::success(__('messages.deleteSuccess'));

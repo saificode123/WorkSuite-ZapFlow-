@@ -30,7 +30,7 @@ class CreateRequest extends FormRequest
     {
         return [
             'name'  => 'required',
-            'file'  => 'required',
+            'file'  => 'required|file|mimes:pdf,doc,docx,jpg,jpeg,png,webp,xls,xlsx|max:10240',
         ];
 
     }

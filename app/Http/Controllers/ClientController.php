@@ -149,6 +149,7 @@ class ClientController extends AccountBaseController
      */
     public function store(StoreClientRequest $request)
     {
+        abort_403(!in_array(user()->permission('add_clients'), User::ALL_ADDED_BOTH));
 
         DB::beginTransaction();
 
@@ -174,7 +175,12 @@ class ClientController extends AccountBaseController
             $data['company_logo'] = Files::uploadLocalOrS3($request->company_logo, 'client-logo', 300);
         }
 
-        $user = User::create($data);
+        // `users` uses $guarded = ['id'], so only pass a known-safe column
+        // whitelist here — never the raw request-derived $data array — to
+        // stop a caller from mass-assigning columns like status/login/
+        // admin_approval/permission_sync/two_factor_* via extra POST fields.
+        $userFillable = ['name', 'email', 'password', 'image', 'mobile', 'gender', 'salutation', 'locale', 'email_notifications', 'country_id'];
+        $user = User::create(collect($data)->only($userFillable)->toArray());
         $user->clientDetails()->create($data);
         $client_id = $user->id;
 
@@ -338,6 +344,10 @@ class ClientController extends AccountBaseController
     public function update(UpdateClientRequest $request, $id)
     {
         $user = User::withoutGlobalScope(ActiveScope::class)->findOrFail($id);
+
+        $editPermission = user()->permission('edit_clients');
+        abort_403(!($editPermission == 'all' || (in_array($editPermission, ['added', 'both']) && $user->clientDetails && $user->clientDetails->added_by == user()->id)));
+
         $data = $request->all();
 
         unset($data['password']);
@@ -386,7 +396,10 @@ class ClientController extends AccountBaseController
             $clientContact->save();
         }
 
-        $user->update($data);
+        // Same mass-assignment concern as store(): `users` is fully
+        // unguarded, so only known-safe columns may flow from request data.
+        $userFillable = ['name', 'email', 'password', 'image', 'mobile', 'gender', 'salutation', 'locale', 'email_notifications', 'country_id', 'status'];
+        $user->update(collect($data)->only($userFillable)->toArray());
 
         if ($user->clientDetails) {
             $data['category_id'] = $request->category_id;

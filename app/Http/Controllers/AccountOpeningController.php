@@ -38,6 +38,8 @@ class AccountOpeningController extends AccountBaseController
 
     public function store(Request $request)
     {
+        abort_403(!in_array(user()->permission('add_account_opening'), ['all', 'added']));
+
         $request->validate([
             'account_id' => 'required|exists:chart_of_accounts,id',
             'financial_year_id' => 'required|exists:financial_years,id',
@@ -74,6 +76,8 @@ class AccountOpeningController extends AccountBaseController
 
     public function update(Request $request, $id)
     {
+        abort_403(!in_array(user()->permission('edit_account_opening'), ['all', 'added']));
+
         $request->validate([
             'account_id' => 'required|exists:chart_of_accounts,id',
             'financial_year_id' => 'required|exists:financial_years,id',
@@ -89,6 +93,8 @@ class AccountOpeningController extends AccountBaseController
 
     public function destroy($id)
     {
+        abort_403(!in_array(user()->permission('delete_account_opening'), ['all', 'added']));
+
         AccountOpening::findOrFail($id)->delete();
         return Reply::success(__('messages.deleteSuccess'));
     }

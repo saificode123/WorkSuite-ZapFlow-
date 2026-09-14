@@ -1,9 +1,11 @@
 # ZapFlow Travel - SYSTEM_STATE.md
 
-> **Living reference** — Updated: 2026-08-27
+> **Living reference** — Updated: 2026-09-14 (re-verified live this session; supersedes the 2026-08-27/08-31 content below where it conflicts)
 > **Purpose:** Accurate snapshot for planning what is missing and how to build it.
 > **Evidence standard:** Every claim has a real file path or real command output.
 > Anything not checked is marked **UNVERIFIED**.
+>
+> **IMPORTANT — read this before trusting anything below dated 2026-08-27/08-31:** at the start of the 2026-09-14 session, the `zapflow_travel` database referenced throughout this document was found completely empty (0 tables) — MySQL wasn't even running. Every row count and "Implemented & Verified" claim below that predates 2026-09-14 was re-derived from a document (`docs/FINAL_PROJECT_REPORT.md` v2) whose own live-database evidence could not be reproduced in this environment. Section L has been replaced with the real, re-verified state. See `docs/FINAL_PROJECT_REPORT.md` (v3) for the full evidence trail, real bugs found and fixed, and the security audit. Do not re-trust Section L's old content if you see it cached anywhere — it has been overwritten below.
 
 ---
 
@@ -59,7 +61,11 @@ MAIL_MAILER=log
 APP_URL=http://localhost
 ```
 
-**Database engine confirmed:** MySQL via XAMPP (host 127.0.0.1, port 3306, root user).
+**Database engine confirmed (2026-09-14 — corrected):** MySQL, served on this machine from `C:\ForXampp\mysql\bin\mysqld.exe` (host 127.0.0.1, port 3306, root user, no password). **There is no `C:\xampp` on this machine** — the earlier "via XAMPP" claim was never re-checked against the actual filesystem. MySQL was **not running** at the start of the 2026-09-14 session and had to be started manually; do the same (`mysqld.exe --defaults-file=...\my.ini --standalone`, backgrounded) before running migrations, seeders, or tests.
+
+**Critical operational fact, confirmed 2026-09-14, not previously documented:** the committed `.env` has `APP_ENV=codecanyon`. `database/seeders/DatabaseSeeder.php` gates `UsersTableSeeder`, `RoleSeeder`, and `DemoDataSeeder` behind `!App::environment('codecanyon', 'production')`. **Under the shipped `.env`, `php artisan db:seed` creates 1 company row and nothing else** — no users, no travel data, none of the `docs/TEST_ACCOUNTS.md` logins. The shortcut previously documented in `TEST_ACCOUNTS.md` (`php artisan db:seed --class=Database\Seeders\DemoDataSeeder` run alone) is **broken on a fresh database** — verified live this session to leave the login page throwing a real 500 (missing org-settings row), and even when it doesn't 500, it leaves every seeded user with an empty `modules` array, so every travel/accounts controller 403s for everyone including Super Admin (`abort_403` is a plain helper, not a Gate check — `Gate::before`'s admin bypass does not apply). **The only procedure confirmed to work end-to-end:** `php artisan migrate:fresh` then override the environment at the process level (do not edit `.env`) — `export APP_ENV=local && php artisan db:seed` (bash) / `$env:APP_ENV="local"; php artisan db:seed` (PowerShell). `docs/TEST_ACCOUNTS.md` has been corrected accordingly. See `docs/FINAL_PROJECT_REPORT.md` Section 0 for full detail.
+
+**Also confirmed 2026-09-14:** PHPUnit's `RefreshDatabase`/schema-dump machinery shells out to a `mysql` binary. If it isn't on `PATH` (it wasn't, by default, on this machine), 19 of 25 tests error with `'mysql' is not recognized...` rather than a clean pass — add `C:\ForXampp\mysql\bin` (or wherever the `mysql` client lives) to `PATH` before running the suite.
 
 ---
 
@@ -635,36 +641,33 @@ Risk: Silent bypass failure if role name changes or seeding skipped.
 
 ---
 
-## Section L — Module Status Table (Final Acceptance Audit: 2026-08-31)
+## Section L — Module Status Table (Re-Verified Live: 2026-09-14 — supersedes the 2026-08-31 table)
+
+**Evidence standard applied here:** "Live-verified" = a real HTTP request was made against the running app this session and the real response is quoted in `docs/FINAL_PROJECT_REPORT.md` v3. "Code-verified" = the actual controller/service method body was read this session and the real logic quoted, but no live request was made. Neither of these is "trust the previous report" — every row below was independently re-derived on 2026-09-14.
 
 | Module | Status | Evidence | Known Gaps / Notes |
 |---|---|---|---|
-| Employees / HR | Implemented & Verified | EmployeeController, routes confirmed, 11 users in DB | Core CRM module integrated |
-| Customers (Customer Types + dual sub-ledgers) | Implemented & Verified | customer_types (3 rows), client_details with umrah_account_id & ticket_account_id | Verified: dual sub-ledgers linked to COA |
-| Service Providers | Implemented & Verified | service_providers, ServiceProviderController, DataTable, route service-providers.index | Fully functional |
-| IATA | Implemented & Verified | iata_records, IataController, DataTable, route iata.index, status column verified | Fully functional |
-| Accounts - Chart of Accounts | Implemented & Verified | chart_of_accounts (13 rows), ChartOfAccountController, DataTable, tree view route | Fully functional tree structure |
-| Accounts - Financial Years | Implemented & Verified | financial_years, FinancialYearController, DataTable, financial-years.index | Fully functional |
-| Accounts - Journal Vouchers | Implemented & Verified | journal_vouchers (3 rows), JournalVoucherController, DataTable, print route, Dr=Cr balance validation verified | Fully functional |
-| Accounts - Account Openings | Implemented & Verified | account_openings, AccountOpeningController, DataTable, account-openings.index | Fully functional |
-| Accounts - Exchange Rates | Implemented & Verified | exchange_rates, ExchangeRateController, DataTable, exchange-rates.index | Fully functional |
-| Accounts - Payments (Travel & Cash Receipts) | Implemented & Verified | travel_payments (4 rows), cash_receipts, TravelPaymentController, CashReceiptController, routes verified | Dual receive/make direction working |
-| Visa Companies | Implemented & Verified | visa_companies, VisaCompanyController, DataTable, visa-companies.index | Fully functional |
-| Transporters | Implemented & Verified | transporters + rates + routes + types, TransporterController, DataTable | Includes Ziarat rates & vehicle types |
-| Umrah Setup - Hotels | Implemented & Verified | hotels (3 rows), hotel_rates, HotelController, DataTable, hotels.index | Fully functional |
-| Umrah Setup - Packages | Implemented & Verified | packages (2 rows), package_hotels, PackageController, DataTable, packages.index | Auto-calculated duration & pricing |
-| Umrah Setup - Discounts | Implemented & Verified | discounts, DiscountController, DataTable, discounts.index | Fully functional |
-| Umrah Setup - Lookup Tables | Implemented & Verified | airlines, flights, sectors, relations, transport_types/routes, all controllers + DataTables | Fully functional |
-| Umrah Setup - Hotel Rooms | Implemented & Verified | hotel_rooms (5 rows), HotelRoomController, hotel-rooms.index | Capacity & gender restriction verified |
-| Ticketing | Implemented & Verified | ticket_invoices, ticket_refunds, TicketInvoiceController, TicketInvoiceDataTable, ticketing.index | Fully functional |
-| Insurance | Implemented & Verified | insurance_policies (2 rows), insurance_sales (1 row), InsurancePolicyController, InsuranceSaleController | Fully functional |
-| Booking (+ Import + Mutamer Transfers + Passport Delivery) | Implemented & Verified | booking_groups (3 rows), passengers (8 rows), BookingController, BookingDataTable, CSV import service verified | Import preview+commit tested |
-| Vouchers | Implemented & Verified | vouchers (2 rows), VoucherController, VoucherDataTable, HMAC-SHA256 QR code, 403 lock guard verified | Lock & QR verified |
-| Reports (Umrah P&L + Financials) | Implemented & Verified | TravelReportController, UmrahPlCalculator, 8 report routes, 100% exact match on hand calculation | Tested & verified |
-| Room Allocation | Implemented & Verified | room_allocations (3 rows), RoomAllocationController, server-side capacity & gender restriction verified | Fully functional |
-| Visa Pipeline | Implemented & Verified | visa_logs (22 rows), VisaPipelineController, move & mofa-ref endpoints, audit trail verified | 5-stage pipeline verified |
+| Employees / HR | Code-verified | EmployeeController, routes confirmed | Base-product `UsersTableSeeder.php` has the same blank-dashboard bug as the fixed DemoDataSeeder one (see below) — not fixed, out of travel-module scope |
+| Login / Dashboard (Super Admin, Admin) | **Was broken — fixed and live-verified** | `DashboardController::index()` returned an empty 200 for any non-employee, non-client role. Demo seeder didn't grant Super Admin/Admin the employee role needed to render anything. Fixed in `DemoDataSeeder.php`; live-verified via real login + screenshot | This was the actual entry point to the whole system and was silently broken before this session |
+| Customers (Customer Types + dual sub-ledgers) | Code-verified | customer_types (3 rows, freshly seeded), client_details with umrah_account_id & ticket_account_id | — |
+| Service Providers / IATA / Visa Companies / Transporters / Airlines | Code-verified | Controllers + DataTables confirmed present and wired | Not live-clicked this session |
+| Accounts - Chart of Accounts | Code-verified | 13 rows after this session's fix (added a `retained_earnings` equity account — see Financial Years row) | — |
+| Accounts - Financial Years (close, roll-forward, idempotency) | **Was fatally broken — fixed and live-verified** | `close()` called `DB::` without importing the facade — a guaranteed 500 on every call. Fixed; live-verified end-to-end: real P&L computed (280,000 income − 80,000 expense = 200,000), rolled forward into the next year's Retained Earnings opening balance, double-close blocked, new JV blocked from posting into the closed year | The demo chart of accounts had **no equity account at all** before this session, so even after the code fix, the roll-forward step had nowhere to post to — added one |
+| Accounts - Journal Vouchers | **Partially fixed, live-verified** | `store()`/`update()` balance + closed-year checks confirmed real; `destroy()` was missing the closed-year guard and audit logging other JV writes have — added both. Live-verified: JV correctly blocked from a closed year, correctly accepted into an open one | — |
+| Accounts - Account Openings / Exchange Rates | **Was vulnerable — fixed** | `store()`/`destroy()` (Account Openings) and `store()`/`destroy()` (Exchange Rates) had **no permission check at all** | Fixed with `abort_403` matching the existing pattern on their own `edit()`/`update()` methods |
+| Accounts - Payments (Travel & Cash Receipts) | **Partially fixed** | `CashReceiptController::store()`/`destroy()` had no audit logging — added it | `destroy()` still doesn't reverse/delete the linked journal voucher (pre-existing, not fixed) |
+| Umrah Setup - Packages (auto-calculated pricing) | **Was gameable — fixed** | Calculation engine itself confirmed real (pulls actual hotel/transporter/visa data); but a manual price could silently coexist with linked components whenever the `auto_calculate` checkbox was left unchecked | Fixed: price is now always server-recalculated once any pricing component is linked |
+| Umrah Setup - Hotels / Discounts / lookup tables | Code-verified | Controllers + DataTables confirmed present | Not live-clicked this session |
+| Umrah Setup - Hotel Rooms / Room Allocation | **Live-verified** | Gender restriction and capacity enforcement both confirmed server-side via real requests: female→male-only room rejected, valid same-gender assignment accepted, third passenger into a full 2-capacity room rejected | Genuinely server-enforced, not just UI |
+| Ticketing (`sale_type`) | Code-verified | `bsp`/`xo`/`direct` validated, persisted, and filterable in the DataTable — confirmed by reading the actual controller/DataTable code | Not live-clicked this session |
+| Insurance | Code-verified | Controllers confirmed present with `abort_403` guards | Not live-clicked this session |
+| Booking (CSV import, Mutamer Transfers, Passport Delivery) | Code-verified | Genuine two-step preview/commit confirmed by reading `BookingImportService` — nothing is written to the DB until the explicit commit step | Not live-clicked this session |
+| Vouchers (lock, HMAC QR) | **Was racy — fixed, live-verified** | `lock()`/`issue()` fetched the voucher without `lockForUpdate()` — a real TOCTOU race. Fixed. Live-verified: lock succeeds once, a subsequent edit is rejected (403), a subsequent re-lock is rejected (403) | HMAC-SHA256 QR signing confirmed real (uses `APP_KEY`) |
+| Reports (Umrah P&L + Financials) | Code-verified | `UmrahPlCalculator` confirmed pure-SQL aggregation, correctly excludes non-`posted` payments from cost | Not live-pulled as an authenticated user this session |
+| Visa Pipeline | Code-verified | Every transition writes `visa_logs` + fires a genuine `ShouldBroadcastNow` event; a non-drag dropdown fallback exists in the Blade view | Not live-clicked this session |
+| Security hardening (8 named risk areas) | **6 real vulnerabilities found and fixed this session** | See `docs/FINAL_PROJECT_REPORT.md` Section 4 for the full audit: mass assignment (User/ClientController), missing authorization (AccountOpening/ExchangeRate destroy), voucher lock race condition, file upload validation (ClientDocs/EmployeeDocs), an unmasked dead-code passport column, and incomplete audit-log coverage | Audit log coverage remains partially incomplete — see Section 7 of the final report |
 
 ---
 
-*Final Verification Completed: 2026-08-31. Acceptance Status: READY.*
+*Live re-verification completed: 2026-09-14. Full evidence trail, exact commands, and exact HTTP responses: `docs/FINAL_PROJECT_REPORT.md` (v3). Honest final verdict there, not repeated here as a bare "READY" — several genuinely critical bugs were found and fixed this session that the 2026-08-31 "READY" verdict above did not catch.*
 

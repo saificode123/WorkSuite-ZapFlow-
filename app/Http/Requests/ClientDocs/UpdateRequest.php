@@ -31,7 +31,7 @@ class UpdateRequest extends FormRequest
 
         return [
             'name'  => 'required',
-            'file' => 'required_if:file_delete,yes'
+            'file' => 'required_if:file_delete,yes|file|mimes:pdf,doc,docx,jpg,jpeg,png,webp,xls,xlsx|max:10240',
         ];
 
     }

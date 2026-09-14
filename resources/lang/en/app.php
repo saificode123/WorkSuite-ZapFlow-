@@ -143,6 +143,7 @@ return array(
     ),
     'menu' => array(
         'units' => 'Units',
+        'integrationSettings' => 'Integration Settings',
         'prefixSettings' => 'Prefix Settings',
         'parent_id' => 'Parent',
         'child_id' => 'Child',

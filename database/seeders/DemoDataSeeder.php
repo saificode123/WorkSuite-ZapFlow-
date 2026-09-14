@@ -275,6 +275,11 @@ class DemoDataSeeder extends Seeder
             ['key' => 'ar',     'code' => '1100', 'name' => 'Accounts Receivable',  'type' => 'asset',     'is_bank' => false, 'parent' => null],
             // ── Liabilities ──
             ['key' => 'ap',     'code' => '2100', 'name' => 'Accounts Payable',     'type' => 'liability', 'is_bank' => false, 'parent' => null],
+            // ── Equity ──
+            // Without an 'equity' account, FinancialYearController::close() has
+            // nowhere to roll the computed net P&L forward into — its roll-forward
+            // step silently no-ops (guarded by `if ($retainedEarningsAccount)`).
+            ['key' => 'retained_earnings', 'code' => '3001', 'name' => 'Retained Earnings', 'type' => 'equity', 'is_bank' => false, 'parent' => null],
             // ── Income ──
             ['key' => 'umrah_rev',  'code' => '4001', 'name' => 'Umrah Revenue',    'type' => 'income',    'is_bank' => false, 'parent' => null],
             ['key' => 'ticket_rev', 'code' => '4002', 'name' => 'Ticket Revenue',   'type' => 'income',    'is_bank' => false, 'parent' => null],
@@ -781,7 +786,10 @@ class DemoDataSeeder extends Seeder
             email:       'superadmin@zapflow.test',
             name:        'Zafar Khan (Super Admin)',
             gender:      'male',
-            roles:       [$superAdminRole, $adminRole],
+            // Must include $employeeRole: DashboardController::index() only renders
+            // a dashboard when 'employee' is in the user's roles (see user_roles());
+            // without it, admin/super-admin accounts land on a blank page after login.
+            roles:       [$superAdminRole, $adminRole, $employeeRole],
             companyId:   $companyId,
             employeeRole: $employeeRole
         );
@@ -792,7 +800,7 @@ class DemoDataSeeder extends Seeder
             email:       'admin@zapflow.test',
             name:        'Fatima Malik (Admin)',
             gender:      'female',
-            roles:       [$adminRole],
+            roles:       [$adminRole, $employeeRole],
             companyId:   $companyId,
             employeeRole: $employeeRole
         );

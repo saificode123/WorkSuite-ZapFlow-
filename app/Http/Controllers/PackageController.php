@@ -72,7 +72,12 @@ class PackageController extends AccountBaseController
             $package->hotels()->sync($request->hotel_ids);
         }
 
-        if ($request->boolean('auto_calculate')) {
+        // Once real pricing components (hotel/transporter/visa company) are
+        // linked, the price must always be server-computed from them — a
+        // submitted manual price is never allowed to silently coexist with
+        // linked components, auto_calculate checkbox notwithstanding.
+        $hasPricingComponents = $package->transporter_id || $package->visa_company_id || $package->hotels()->exists();
+        if ($hasPricingComponents || $request->boolean('auto_calculate')) {
             app(PackageCalculationService::class)->recalculateAndSave($package);
         }
 
@@ -127,7 +132,10 @@ class PackageController extends AccountBaseController
             $package->hotels()->sync($request->hotel_ids);
         }
 
-        if ($request->boolean('auto_calculate')) {
+        // See identical comment in store() — never let a manual price
+        // silently coexist with linked pricing components.
+        $hasPricingComponents = $package->transporter_id || $package->visa_company_id || $package->hotels()->exists();
+        if ($hasPricingComponents || $request->boolean('auto_calculate')) {
             app(PackageCalculationService::class)->recalculateAndSave($package);
         }
 

@@ -6,6 +6,7 @@ use App\Helper\Reply;
 use App\Models\FinancialYear;
 use Illuminate\Http\Request;
 use App\DataTables\Accounts\FinancialYearDataTable;
+use Illuminate\Support\Facades\DB;
 
 class FinancialYearController extends AccountBaseController
 {
@@ -79,6 +80,18 @@ class FinancialYearController extends AccountBaseController
         if ($year->journalVouchers()->count() > 0) {
             return Reply::error(__('messages.financialYearHasVouchers'));
         }
+
+        \App\Models\AuditLog::create([
+            'company_id'  => company()->id,
+            'user_id'     => user()->id,
+            'module'      => 'accounts',
+            'action'      => 'delete_financial_year',
+            'entity_type' => 'financial_year',
+            'entity_id'   => $year->id,
+            'ip_address'  => request()->ip(),
+            'user_agent'  => substr((string) request()->userAgent(), 0, 255),
+        ]);
+
         $year->delete();
         return Reply::success(__('messages.deleteSuccess'));
     }

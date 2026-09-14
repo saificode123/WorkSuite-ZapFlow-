@@ -146,7 +146,7 @@ class VoucherController extends AccountBaseController
         abort_403(!in_array(user()->permission('edit_voucher'), ['all', 'added']));
 
         return DB::transaction(function () use ($request, $id) {
-            $voucher = Voucher::findOrFail($id);
+            $voucher = Voucher::where('id', $id)->lockForUpdate()->firstOrFail();
             abort_if($voucher->isLocked(), 403, __('messages.voucherLocked'));
 
             $voucher->update([
@@ -169,7 +169,7 @@ class VoucherController extends AccountBaseController
         abort_403(!in_array(user()->permission('edit_voucher'), ['all', 'added']));
 
         return DB::transaction(function () use ($request, $id) {
-            $voucher = Voucher::findOrFail($id);
+            $voucher = Voucher::where('id', $id)->lockForUpdate()->firstOrFail();
             abort_if($voucher->isLocked(), 403, __('messages.voucherLocked'));
 
             $voucher->update([

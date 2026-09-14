@@ -77,12 +77,21 @@ class CashReceiptController extends AccountBaseController
                 ],
             ], user()->id);
 
-            CashReceipt::create(array_merge($validated, [
+            $receipt = CashReceipt::create(array_merge($validated, [
                 'company_id'        => company_id(),
                 'currency_code'     => 'PKR',
                 'journal_voucher_id' => $jv->id,
                 'added_by'          => user()->id,
             ]));
+
+            \App\Models\AuditLog::create([
+                'company_id'  => company()->id,
+                'user_id'     => user()->id,
+                'action'      => 'create_cash_receipt',
+                'entity_type' => 'cash_receipt',
+                'entity_id'   => $receipt->id,
+                'ip_address'  => request()->ip(),
+            ]);
 
             return Reply::successWithData(
                 __('messages.recordSaved'),
@@ -95,7 +104,18 @@ class CashReceiptController extends AccountBaseController
     {
         abort_403(!in_array(user()->permission('delete_cash_receipt'), ['all', 'added']));
 
-        CashReceipt::findOrFail($id)->delete();
+        $receipt = CashReceipt::findOrFail($id);
+
+        \App\Models\AuditLog::create([
+            'company_id'  => company()->id,
+            'user_id'     => user()->id,
+            'action'      => 'delete_cash_receipt',
+            'entity_type' => 'cash_receipt',
+            'entity_id'   => $receipt->id,
+            'ip_address'  => request()->ip(),
+        ]);
+
+        $receipt->delete();
         return Reply::successWithData(__('messages.deleteSuccess'), ['redirectUrl' => route('cash-receipts.index')]);
     }
 
