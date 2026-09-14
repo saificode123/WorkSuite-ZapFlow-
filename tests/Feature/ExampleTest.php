@@ -2,14 +2,13 @@
 
 namespace Tests\Feature;
 
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
 class ExampleTest extends TestCase
 {
-
     /**
-     * A basic test example.
+     * The root URL redirects unauthenticated users (internal CRM with no public homepage).
+     * The correct assertion is assertRedirect(), not assertStatus(200).
      *
      * @return void
      */
@@ -17,7 +16,8 @@ class ExampleTest extends TestCase
     {
         $response = $this->get('/');
 
-        $response->assertStatus(200);
+        // '/' redirects unauthenticated users to login — that is correct CRM behavior.
+        $response->assertRedirect();
     }
 
 }

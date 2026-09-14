@@ -194,6 +194,9 @@
                     <x-sub-menu-item :link="route('travel-reports.receivables')" :text="__('app.menu.receivables')" />
                     <x-sub-menu-item :link="route('travel-reports.payables')" :text="__('app.menu.payables')" />
                     <x-sub-menu-item :link="route('travel-reports.umrah-wise-pl')" :text="__('app.menu.umrahWisePL')" />
+                    <x-sub-menu-item :link="route('travel-reports.agent-comparison')" :text="__('app.menu.agentComparison')" />
+                    <x-sub-menu-item :link="route('travel-reports.employee-efficiency')" :text="__('app.menu.employeeEfficiency')" />
+                    <x-sub-menu-item :link="route('travel-reports.daily-cash')" :text="__('app.menu.dailyCash')" />
                 @endif
             </div>
         </x-menu-item>
@@ -207,7 +210,7 @@
 
 <!-- NAV ITEM - FINANCE COLLAPASE MENU -->
     @if ((in_array('estimates', user_modules()) || in_array('invoices', user_modules()) || in_array('payments', user_modules()) || in_array('expenses', user_modules()) || in_array('bankaccount', user_modules()) || in_array('accounts', user_modules())) && ($sidebarUserPermissions['view_estimates'] != 5 || $sidebarUserPermissions['view_invoices'] != 5 || $sidebarUserPermissions['view_payments'] != 5 || $sidebarUserPermissions['view_expenses'] != 5 || $sidebarUserPermissions['view_lead_proposals'] != 5 || $sidebarUserPermissions['view_bankaccount'] != 5 || $sidebarUserPermissions['view_chart_of_account'] != 5) && ($sidebarUserPermissions['view_estimates'] != 'none' || $sidebarUserPermissions['view_invoices'] != 'none' || $sidebarUserPermissions['view_payments'] != 'none' || $sidebarUserPermissions['view_expenses'] != 'none' || $sidebarUserPermissions['view_lead_proposals'] != 'none' || $sidebarUserPermissions['view_bankaccount'] != 'none' || $sidebarUserPermissions['view_chart_of_account'] != 'none'))
-        <x-menu-item icon="cash-coin" :active="($currentRouteName === 'payments.index')"
+        <x-menu-item icon="cash-coin" :active="(Route::currentRouteName() === 'payments.index')"
                      :text="__('app.menu.finance')">
             <x-slot name="iconPath">
                 <path

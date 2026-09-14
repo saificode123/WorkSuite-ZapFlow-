@@ -10,10 +10,9 @@ class VisaCompany extends BaseModel
     use HasCompany;
 
     protected $table = 'visa_companies';
-
-    protected $guarded = ['id'];
-
+ 
     protected $fillable = [
+        'company_id',
         'name',
         'logo_path',
         'voucher_footer_text',

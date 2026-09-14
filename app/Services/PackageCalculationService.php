@@ -49,7 +49,35 @@ class PackageCalculationService
             $totalCost += $totalHotelCost;
         }
 
-        $sellPriceBeforeMarkup = $hotelCost;
+        // Transport cost calculation via transporter FK
+        $transportCost = 0;
+        $transportSell = 0;
+        if ($package->transporter_id) {
+            $tRate = TransportRate::where('transporter_id', $package->transporter_id)
+                ->orderByDesc('id')
+                ->first();
+            if ($tRate) {
+                $transportCost = (float) $tRate->rate;
+                $transportSell = (float) $tRate->rate;
+            }
+        }
+        $costBreakdown['transport'] = $transportCost;
+        $totalCost += $transportCost;
+
+        // Visa cost calculation via visa_company FK
+        $visaCost = 0;
+        $visaSell = 0;
+        if ($package->visa_company_id) {
+            $vComp = VisaCompany::find($package->visa_company_id);
+            if ($vComp) {
+                $visaCost = (float) $vComp->approval_cost_rate;
+                $visaSell = (float) ($vComp->approval_sale_rate > 0 ? $vComp->approval_sale_rate : $vComp->approval_cost_rate);
+            }
+        }
+        $costBreakdown['visa'] = $visaCost;
+        $totalCost += $visaCost;
+
+        $sellPriceBeforeMarkup = $hotelCost + $transportSell + $visaSell;
         $markupPercent = (float) ($package->markup_percentage ?? 0);
         $markupAmount = $sellPriceBeforeMarkup * ($markupPercent / 100);
         $sellPrice = $sellPriceBeforeMarkup + $markupAmount;

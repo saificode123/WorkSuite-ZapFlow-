@@ -6,6 +6,7 @@ use App\Helper\Reply;
 use App\Models\CashReceipt;
 use App\Models\ChartOfAccount;
 use App\Services\DoubleEntryService;
+use App\DataTables\Travel\CashReceiptDataTable;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -17,20 +18,16 @@ class CashReceiptController extends AccountBaseController
         $this->pageTitle = 'app.menu.cashReceipts';
 
         $this->middleware(function ($request, $next) {
-            abort_403(!in_array('accounting', $this->user->modules));
+            abort_403(!in_array('accounts', $this->user->modules));
             return $next($request);
         });
     }
 
-    public function index()
+    public function index(CashReceiptDataTable $dataTable)
     {
-        abort_403(user()->permission('view_cash_receipt') === 'none');
-
-        $this->receipts = CashReceipt::with(['account', 'addedBy', 'journalVoucher'])
-            ->latest('date')
-            ->paginate(25);
-
-        return view('travel.cash-receipts.index', $this->data);
+        $viewPermission = user()->permission('view_cash_receipt');
+        abort_403(!in_array($viewPermission, ['all', 'added', 'owned', 'both']));
+        return $dataTable->render('travel.cash-receipts.index', $this->data);
     }
 
     public function create()

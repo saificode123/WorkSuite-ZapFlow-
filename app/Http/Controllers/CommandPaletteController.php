@@ -7,6 +7,8 @@ use App\Models\Passenger;
 use App\Models\Voucher;
 use App\Models\User;
 use App\Models\ClientDetails;
+use App\Models\Hotel;
+use App\Models\Package;
 use App\Helper\Reply;
 use Illuminate\Http\Request;
 
@@ -83,11 +85,46 @@ class CommandPaletteController extends AccountBaseController
                 'icon' => 'fa-briefcase',
             ]);
 
+        $hotels = collect();
+        if (\Schema::hasTable('hotels')) {
+            $hotels = Hotel::where('company_id', company_id())
+                ->where(function ($query) use ($q) {
+                    $query->where('name', 'like', "%{$q}%")
+                        ->orWhere('city', 'like', "%{$q}%");
+                })
+                ->limit($limit)
+                ->get()
+                ->map(fn($h) => [
+                    'type' => 'hotel',
+                    'label' => $h->name,
+                    'sub' => $h->city,
+                    'url' => route('hotels.index'),
+                    'icon' => 'fa-hotel',
+                ]);
+        }
+
+        $packages = collect();
+        if (\Schema::hasTable('packages')) {
+            $packages = Package::where('company_id', company_id())
+                ->where('name', 'like', "%{$q}%")
+                ->limit($limit)
+                ->get()
+                ->map(fn($p) => [
+                    'type' => 'package',
+                    'label' => $p->name,
+                    'sub' => ($p->duration_days ?? '') . ' days',
+                    'url' => route('packages.index'),
+                    'icon' => 'fa-box',
+                ]);
+        }
+
         $results = array_merge(
             $bookings->toArray(),
             $passengers->toArray(),
             $vouchers->toArray(),
-            $customers->toArray()
+            $customers->toArray(),
+            $hotels->toArray(),
+            $packages->toArray(),
         );
 
         usort($results, fn($a, $b) => strcasecmp($a['label'], $b['label']));

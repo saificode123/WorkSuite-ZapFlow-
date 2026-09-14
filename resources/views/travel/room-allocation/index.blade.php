@@ -2,160 +2,342 @@
 
 @push('css')
 <style>
+/* ── Design tokens ──────────────────────────────────────────────────────────── */
+.content-wrapper {
+    --ra-bg:        #f6f7fb;
+    --ra-surface:   #ffffff;
+    --ra-border:    #e7e9f2;
+    --ra-text:      #1f2430;
+    --ra-muted:     #7a8194;
+    --ra-primary:   #4f6ef7;
+    --ra-primary-soft: #eef1ff;
+    --ra-success:   #17a673;
+    --ra-success-soft: #e7f8f1;
+    --ra-warning:   #e8960c;
+    --ra-warning-soft: #fef4e2;
+    --ra-danger:    #e2493d;
+    --ra-danger-soft: #fdece9;
+    --ra-radius:    12px;
+    --ra-shadow:    0 1px 2px rgba(20,24,40,.04), 0 6px 16px -8px rgba(20,24,40,.10);
+}
+
+/* ── Page header ────────────────────────────────────────────────────────────── */
+.ra-page-title {
+    font-weight: 700;
+    letter-spacing: -.01em;
+    color: var(--ra-text);
+}
+
+.ra-page-subtitle {
+    color: var(--ra-muted);
+    font-size: 13px;
+}
+
+.ra-progress-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: var(--ra-primary-soft);
+    color: var(--ra-primary);
+    border-radius: 20px;
+    padding: 2px 10px 2px 8px;
+    font-weight: 600;
+    font-size: 12px;
+    margin-left: 8px;
+}
+
+.ra-progress-pill .dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--ra-primary);
+    display: inline-block;
+}
+
+#filterBooking.select-picker {
+    border-radius: 8px;
+    border-color: var(--ra-border);
+    box-shadow: none;
+}
+
+#btn-save-all {
+    border-radius: 8px;
+    font-weight: 600;
+    box-shadow: var(--ra-shadow);
+}
+
+/* ── Section labels ─────────────────────────────────────────────────────────── */
+.ra-section-label {
+    font-weight: 700;
+    font-size: 11px;
+    letter-spacing: .06em;
+    text-transform: uppercase;
+    color: var(--ra-muted);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 10px;
+}
+
+.ra-section-label .count-badge {
+    background: var(--ra-border);
+    color: var(--ra-text);
+    border-radius: 20px;
+    padding: 1px 8px;
+    font-size: 10px;
+    letter-spacing: 0;
+}
+
 /* ── Room Allocation Grid ───────────────────────────────────────────────────── */
 .room-grid-wrapper {
     overflow-x: auto;
-    padding-bottom: 1rem;
+    padding-bottom: 4px;
 }
 
 .room-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-    gap: 14px;
+    grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+    gap: 16px;
     min-width: 600px;
 }
 
 .room-card {
-    background: #fff;
-    border: 2px solid #e5e7ef;
-    border-radius: 10px;
+    background: var(--ra-surface);
+    border: 1px solid var(--ra-border);
+    border-radius: var(--ra-radius);
     overflow: hidden;
-    transition: border-color .2s, box-shadow .2s;
-    min-height: 160px;
+    box-shadow: var(--ra-shadow);
+    transition: border-color .18s ease, box-shadow .18s ease, transform .18s ease;
+    min-height: 168px;
     display: flex;
     flex-direction: column;
+    position: relative;
 }
+
+.room-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    background: var(--ra-border);
+}
+
+.room-card.available::before { background: var(--ra-success); }
+.room-card.partial::before   { background: var(--ra-warning); }
+.room-card.full::before      { background: var(--ra-danger); }
 
 .room-card.drag-over {
-    border-color: #0d6efd;
-    box-shadow: 0 0 0 3px rgba(13,110,253,.15);
+    border-color: var(--ra-primary);
+    box-shadow: 0 0 0 3px var(--ra-primary-soft), var(--ra-shadow);
+    transform: translateY(-1px);
 }
 
-.room-card.full { border-color: #dc3545; opacity: .85; }
-.room-card.available { border-color: #198754; }
-.room-card.partial { border-color: #ffc107; }
+.room-card.full { opacity: .92; }
 
 .room-card-header {
-    background: #f4f6fb;
-    padding: 8px 12px;
+    background: transparent;
+    padding: 12px 12px 8px;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    border-bottom: 1px solid #eee;
+    border-bottom: 1px solid var(--ra-border);
 }
 
 .room-card-header .room-no {
     font-weight: 700;
     font-size: 14px;
-    color: #333;
+    color: var(--ra-text);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.room-card-header .room-no i {
+    color: var(--ra-muted);
+    font-size: 12px;
 }
 
 .room-card-header .room-type-badge {
     font-size: 10px;
-    background: #e9ecef;
+    font-weight: 600;
+    letter-spacing: .03em;
+    text-transform: uppercase;
+    background: var(--ra-primary-soft);
     border-radius: 20px;
-    padding: 2px 8px;
-    color: #555;
+    padding: 3px 9px;
+    color: var(--ra-primary);
 }
 
 .room-card-body {
-    padding: 8px;
+    padding: 10px;
     flex: 1;
     min-height: 80px;
+    display: flex;
+    flex-direction: column;
 }
 
 .occupant-chip {
     display: flex;
     align-items: center;
-    gap: 6px;
-    background: #f0f4ff;
-    border-radius: 6px;
-    padding: 4px 8px;
-    margin-bottom: 4px;
-    font-size: 12px;
+    gap: 7px;
+    background: var(--ra-primary-soft);
+    border-radius: 7px;
+    padding: 6px 8px;
+    margin-bottom: 5px;
+    font-size: 12.5px;
     cursor: grab;
     border: 1px solid transparent;
-    transition: background .15s;
+    transition: background .15s ease, border-color .15s ease, transform .1s ease;
 }
 
-.occupant-chip:hover { background: #dce8ff; border-color: #0d6efd; }
+.occupant-chip:hover { background: #e2e8ff; border-color: var(--ra-primary); transform: translateX(1px); }
+.occupant-chip:active { cursor: grabbing; }
 .occupant-chip.dragging { opacity: .4; }
 
-.occupant-chip .gender-icon { font-size: 11px; }
-.occupant-chip .pax-name { flex: 1; font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.occupant-chip .remove-btn {
-    background: none; border: none; color: #dc3545; font-size: 13px; padding: 0;
-    cursor: pointer; line-height: 1;
+.occupant-chip .gender-icon {
+    font-size: 11px;
+    width: 16px;
+    height: 16px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    flex-shrink: 0;
 }
+.occupant-chip .gender-icon.male   { background: #dbe7ff; color: #3462d1; }
+.occupant-chip .gender-icon.female { background: #ffe0ec; color: #d13478; }
+
+.occupant-chip .pax-name { flex: 1; font-weight: 500; color: var(--ra-text); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.occupant-chip .remove-btn {
+    background: none; border: none; color: var(--ra-danger); font-size: 15px; padding: 0 2px;
+    cursor: pointer; line-height: 1; border-radius: 4px; opacity: .55;
+    transition: opacity .15s ease, background .15s ease;
+}
+.occupant-chip .remove-btn:hover { opacity: 1; background: var(--ra-danger-soft); }
 
 .room-drop-target {
-    border: 2px dashed #ccc;
-    border-radius: 6px;
-    padding: 6px;
+    border: 1.5px dashed var(--ra-border);
+    border-radius: 8px;
+    padding: 8px;
     text-align: center;
-    color: #aaa;
+    color: #aeb4c4;
     font-size: 11px;
-    min-height: 36px;
+    font-weight: 500;
+    min-height: 38px;
     display: flex;
     align-items: center;
     justify-content: center;
-    margin-top: 4px;
+    margin-top: auto;
+    transition: border-color .15s ease, color .15s ease, background .15s ease;
 }
 
-.room-drop-target.drag-over { border-color: #0d6efd; color: #0d6efd; background: #eef2ff; }
+.room-drop-target.drag-over { border-color: var(--ra-primary); color: var(--ra-primary); background: var(--ra-primary-soft); }
 
 .room-card-footer {
-    padding: 4px 10px 8px;
+    padding: 6px 12px 12px;
     display: flex;
     align-items: center;
     justify-content: space-between;
 }
 
 .capacity-bar {
-    height: 4px;
-    background: #e9ecef;
+    height: 5px;
+    background: var(--ra-border);
     border-radius: 4px;
     flex: 1;
-    margin-right: 8px;
+    margin-right: 10px;
     overflow: hidden;
 }
 
 .capacity-bar-fill {
     height: 100%;
     border-radius: 4px;
-    background: #198754;
-    transition: width .3s;
+    background: var(--ra-success);
+    transition: width .3s ease;
 }
 
-.capacity-bar-fill.warn { background: #ffc107; }
-.capacity-bar-fill.full { background: #dc3545; }
+.capacity-bar-fill.warn { background: var(--ra-warning); }
+.capacity-bar-fill.full { background: var(--ra-danger); }
+
+.room-card-footer small {
+    font-weight: 600;
+    color: var(--ra-muted);
+    font-size: 11px;
+    white-space: nowrap;
+}
 
 /* Unassigned pool */
 .unassigned-pool {
-    background: #f8f9fd;
-    border: 1px solid #e5e7ef;
-    border-radius: 10px;
+    background: var(--ra-surface);
+    border: 1px solid var(--ra-border);
+    border-radius: var(--ra-radius);
     padding: 12px;
-    max-height: 320px;
+    max-height: 340px;
     overflow-y: auto;
+    box-shadow: var(--ra-shadow);
 }
+
+.unassigned-pool::-webkit-scrollbar,
+.room-grid-wrapper::-webkit-scrollbar { height: 8px; width: 8px; }
+.unassigned-pool::-webkit-scrollbar-thumb,
+.room-grid-wrapper::-webkit-scrollbar-thumb { background: var(--ra-border); border-radius: 8px; }
 
 .unassigned-chip {
     display: flex;
     align-items: center;
-    gap: 6px;
-    background: #fff;
-    border: 1px dashed #bbb;
-    border-radius: 6px;
-    padding: 6px 10px;
-    margin-bottom: 6px;
-    font-size: 12px;
+    gap: 7px;
+    background: var(--ra-surface);
+    border: 1px solid var(--ra-border);
+    border-radius: 8px;
+    padding: 7px 10px;
+    margin-bottom: 7px;
+    font-size: 12.5px;
     cursor: grab;
-    transition: border-color .15s, box-shadow .15s;
+    transition: border-color .15s ease, box-shadow .15s ease, transform .1s ease;
 }
 
-.unassigned-chip:hover { border-color: #0d6efd; box-shadow: 0 1px 6px rgba(13,110,253,.15); }
+.unassigned-chip .gender-icon {
+    font-size: 11px;
+    width: 16px;
+    height: 16px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+.unassigned-chip .gender-icon.male   { background: #dbe7ff; color: #3462d1; }
+.unassigned-chip .gender-icon.female { background: #ffe0ec; color: #d13478; }
+.unassigned-chip .pax-name { font-weight: 500; color: var(--ra-text); }
+
+.unassigned-chip:hover { border-color: var(--ra-primary); box-shadow: 0 2px 8px rgba(79,110,247,.15); transform: translateX(1px); }
+.unassigned-chip:active { cursor: grabbing; }
 .unassigned-chip.dragging { opacity: .4; }
+
+/* Empty states */
+.ra-empty-state {
+    text-align: center;
+    color: var(--ra-muted);
+    padding: 34px 12px;
+}
+.ra-empty-state i { display: block; margin-bottom: 10px; }
+.ra-empty-state.success i { color: var(--ra-success); }
+
+.ra-empty-page {
+    text-align: center;
+    padding: 72px 12px;
+    color: var(--ra-muted);
+    background: var(--ra-surface);
+    border: 1px dashed var(--ra-border);
+    border-radius: var(--ra-radius);
+}
+.ra-empty-page i { color: #c6cbdb; margin-bottom: 14px; display: block; }
+.ra-empty-page h5 { color: var(--ra-text); font-weight: 700; }
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+    .room-card, .occupant-chip, .unassigned-chip, .capacity-bar-fill, .room-drop-target { transition: none; }
+}
 </style>
 @endpush
 
@@ -163,13 +345,12 @@
 <div class="content-wrapper">
 
     {{-- Header --}}
-    <div class="d-flex justify-content-between align-items-center mb-3">
+    <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
         <div>
-            <h4 class="mb-0">@lang('app.roomAllocation')</h4>
+            <h4 class="mb-0 ra-page-title">@lang('app.roomAllocation')</h4>
             @if($bookingGroup)
-                <small class="text-muted">{{ $bookingGroup->group_name }}
-                    &mdash; {{ $assignedCount }}/{{ $totalPassengers }} @lang('modules.room.assigned')
-                </small>
+                <span class="ra-page-subtitle">{{ $bookingGroup->group_name }}</span>
+                <span class="ra-progress-pill"><span class="dot"></span>{{ $assignedCount }}/{{ $totalPassengers }} @lang('modules.room.assigned')</span>
             @endif
         </div>
         <div class="d-flex align-items-center gap-2">
@@ -192,8 +373,9 @@
 
         {{-- Left: Unassigned Pool --}}
         <div class="col-lg-3 col-md-4 mb-3">
-            <div class="font-weight-bold mb-2 small text-uppercase text-muted">
-                @lang('modules.room.unassignedPassengers') ({{ $unassignedPassengers->count() }})
+            <div class="ra-section-label">
+                <span>@lang('modules.room.unassignedPassengers')</span>
+                <span class="count-badge">{{ $unassignedPassengers->count() }}</span>
             </div>
             <div class="unassigned-pool" id="unassigned-pool">
                 @foreach($unassignedPassengers as $pax)
@@ -201,13 +383,15 @@
                      draggable="true"
                      data-passenger-id="{{ $pax->id }}"
                      data-gender="{{ $pax->gender }}">
-                    <span class="gender-icon">{{ $pax->gender === 'Male' ? '♂' : '♀' }}</span>
+                    <span class="gender-icon {{ $pax->gender === 'Male' ? 'male' : 'female' }}">
+                        <i class="fa {{ $pax->gender === 'Male' ? 'fa-mars' : 'fa-venus' }}"></i>
+                    </span>
                     <span class="pax-name">{{ $pax->full_name }}</span>
                 </div>
                 @endforeach
                 @if($unassignedPassengers->isEmpty())
-                    <div class="text-center text-muted py-3 small">
-                        <i class="fa fa-check-circle text-success fa-2x mb-2 d-block"></i>
+                    <div class="ra-empty-state success">
+                        <i class="fa fa-check-circle fa-2x"></i>
                         @lang('modules.room.allAssigned')
                     </div>
                 @endif
@@ -216,8 +400,8 @@
 
         {{-- Right: Room Grid --}}
         <div class="col-lg-9 col-md-8">
-            <div class="font-weight-bold mb-2 small text-uppercase text-muted">
-                @lang('modules.room.hotelRooms') ({{ $hotel->name ?? '' }})
+            <div class="ra-section-label">
+                <span>@lang('modules.room.hotelRooms') &mdash; {{ $hotel->name ?? '' }}</span>
             </div>
             <div class="room-grid-wrapper">
                 <div class="room-grid" id="room-grid">
@@ -235,7 +419,7 @@
                          data-occupied="{{ $occupied }}">
 
                         <div class="room-card-header">
-                            <span class="room-no">{{ $room->room_number ?: 'Room '.$room->id }}</span>
+                            <span class="room-no"><i class="fa fa-door-closed"></i>{{ $room->room_number ?: 'Room '.$room->id }}</span>
                             <span class="room-type-badge">{{ ucfirst($room->room_type) }}</span>
                         </div>
 
@@ -247,7 +431,9 @@
                                  data-allocation-id="{{ $alloc->id }}"
                                  data-from-room="{{ $room->id }}"
                                  data-gender="{{ $alloc->passenger?->gender }}">
-                                <span class="gender-icon">{{ $alloc->passenger?->gender === 'Male' ? '♂' : '♀' }}</span>
+                                <span class="gender-icon {{ $alloc->passenger?->gender === 'Male' ? 'male' : 'female' }}">
+                                    <i class="fa {{ $alloc->passenger?->gender === 'Male' ? 'fa-mars' : 'fa-venus' }}"></i>
+                                </span>
                                 <span class="pax-name">{{ $alloc->passenger?->full_name }}</span>
                                 <button class="remove-btn remove-occupant"
                                         data-allocation-id="{{ $alloc->id }}"
@@ -270,14 +456,14 @@
                             <div class="capacity-bar">
                                 <div class="capacity-bar-fill {{ $barCls }}" style="width:{{ $fillPct }}%"></div>
                             </div>
-                            <small class="text-muted">{{ $occupied }}/{{ $room->capacity }}</small>
+                            <small>{{ $occupied }}/{{ $room->capacity }}</small>
                         </div>
                     </div>
                     @endforeach
 
                     @if($rooms->isEmpty())
-                    <div class="col-12 text-center text-muted py-5">
-                        <i class="fa fa-bed fa-3x mb-3 d-block"></i>
+                    <div class="col-12 ra-empty-state">
+                        <i class="fa fa-bed fa-3x"></i>
                         @lang('modules.room.noRoomsForHotel')
                     </div>
                     @endif
@@ -286,8 +472,8 @@
         </div>
     </div>
     @else
-    <div class="text-center py-5 text-muted">
-        <i class="fa fa-hotel fa-3x mb-3 d-block"></i>
+    <div class="ra-empty-page">
+        <i class="fa fa-hotel fa-3x"></i>
         <h5>@lang('modules.room.selectBookingToStart')</h5>
     </div>
     @endif

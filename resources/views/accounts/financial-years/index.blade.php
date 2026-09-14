@@ -52,5 +52,35 @@
                 }
             });
         });
+
+        $('#financial-years-table').on('click', '.close-financial-year', function() {
+            var id = $(this).data('row-id');
+            Swal.fire({
+                title: "Close Financial Year?",
+                text: "Closing this financial year will calculate net P&L and roll balances into next year. Once closed, no new journal vouchers or modifications can be posted in this period.",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: "Yes, Close Year!"
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    var url = "{{ route('financial-years.close', ':id') }}";
+                    url = url.replace(':id', id);
+                    var token = "{{ csrf_token() }}";
+                    $.easyAjax({
+                        type: 'POST',
+                        url: url,
+                        data: { '_token': token },
+                        success: function(response) {
+                            if (response.status == 'success') {
+                                window.LaravelDataTables['financial-years-table'].draw(false);
+                            }
+                        }
+                    });
+                }
+            });
+        });
     </script>
 @endpush
+

@@ -16,7 +16,7 @@ class AirlineController extends AccountBaseController
         $this->pageTitle = 'app.menu.airlines';
 
         $this->middleware(function ($request, $next) {
-            abort_403(!in_array('airline', $this->user->modules));
+            abort_403(!in_array('umrah_setup', $this->user->modules));
             return $next($request);
         });
     }
@@ -50,17 +50,17 @@ class AirlineController extends AccountBaseController
 
         $request->validate([
             'name' => 'required|max:255',
-            'iata_code' => 'nullable|max:10',
-            'contact_email' => 'nullable|email|max:255',
+            'code' => 'nullable|max:10',
+            'email' => 'nullable|email|max:255',
             'website' => 'nullable|url|max:255',
         ]);
 
         $airline = new Airline();
         $airline->name = $request->name;
-        $airline->iata_code = $request->iata_code;
+        $airline->code = $request->code;
         $airline->logo = $request->logo;
-        $airline->contact_phone = $request->contact_phone;
-        $airline->contact_email = $request->contact_email;
+        $airline->phone = $request->phone;
+        $airline->email = $request->email;
         $airline->website = $request->website;
         $airline->save();
 
@@ -95,17 +95,17 @@ class AirlineController extends AccountBaseController
 
         $request->validate([
             'name' => 'required|max:255',
-            'iata_code' => 'nullable|max:10',
-            'contact_email' => 'nullable|email|max:255',
+            'code' => 'nullable|max:10',
+            'email' => 'nullable|email|max:255',
             'website' => 'nullable|url|max:255',
         ]);
 
         $airline = Airline::findOrFail($id);
         $airline->name = $request->name;
-        $airline->iata_code = $request->iata_code;
+        $airline->code = $request->code;
         $airline->logo = $request->logo;
-        $airline->contact_phone = $request->contact_phone;
-        $airline->contact_email = $request->contact_email;
+        $airline->phone = $request->phone;
+        $airline->email = $request->email;
         $airline->website = $request->website;
         $airline->save();
 

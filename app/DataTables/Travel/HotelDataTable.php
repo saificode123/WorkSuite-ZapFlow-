@@ -55,15 +55,15 @@ class HotelDataTable extends BaseDataTable
 
                 return $action;
             })
-            ->editColumn('star_rating', function ($row) {
-                if ($row->star_rating) {
-                    return str_repeat('&#9733;', $row->star_rating);
+            ->editColumn('stars', function ($row) {
+                if ($row->stars) {
+                    return str_repeat('&#9733;', $row->stars);
                 }
                 return '--';
             })
             ->addIndexColumn()
             ->setRowId(fn($row) => 'row-' . $row->id)
-            ->rawColumns(['action', 'check', 'star_rating']);
+            ->rawColumns(['action', 'check', 'stars']);
     }
 
     public function query(Hotel $model)
@@ -104,10 +104,10 @@ class HotelDataTable extends BaseDataTable
             ],
             '#' => ['data' => 'DT_RowIndex', 'orderable' => false, 'searchable' => false, 'visible' => false, 'title' => '#'],
             __('app.name') => ['data' => 'name', 'name' => 'name', 'title' => __('app.name')],
-            __('modules.hotel.starRating') => ['data' => 'star_rating', 'name' => 'star_rating', 'title' => __('modules.hotel.starRating')],
+            __('modules.hotel.starRating') => ['data' => 'stars', 'name' => 'stars', 'title' => __('modules.hotel.starRating')],
             __('app.city') => ['data' => 'city', 'name' => 'city', 'title' => __('app.city')],
             __('app.country') => ['data' => 'country', 'name' => 'country', 'title' => __('app.country')],
-            __('app.email') => ['data' => 'contact_email', 'name' => 'contact_email', 'title' => __('app.email')],
+            __('app.email') => ['data' => 'email', 'name' => 'email', 'title' => __('app.email')],
             Column::computed('action', __('app.action'))
                 ->exportable(false)
                 ->printable(false)

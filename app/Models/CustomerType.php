@@ -8,7 +8,12 @@ class CustomerType extends BaseModel
 {
     use HasCompany;
 
-    protected $guarded = ['id'];
+    protected $fillable = [
+        'company_id',
+        'name',
+        'description',
+        'config_json',
+    ];
 
     protected $casts = [
         'config_json' => 'array',

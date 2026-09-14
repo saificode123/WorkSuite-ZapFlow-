@@ -2400,5 +2400,280 @@ return array(
         'sendEstimateRequest' => 'Send Estimate Request',
         'description' => 'Details of requirement',
         'prefix' => 'ESTRQ',
-    )
+    ),
+    'hotel' => array(
+        'starRating' => 'Star Rating',
+    ),
+    'airline' => array(
+        'logo' => 'Logo',
+        'website' => 'Website',
+    ),
+    'transporter' => array(
+        'vehicleTypes' => 'Vehicle Types',
+    ),
+    'discount' => array(
+        'type' => 'Type',
+    ),
+    'iata' => array(
+        'code'   => 'IATA Code',
+        'status' => 'Status',
+    ),
+
+    // ── Booking ───────────────────────────────────────────────────────────────
+    'booking' => array(
+        'addPassenger'          => 'Add Passenger',
+        'confirm'               => 'Confirm Booking',
+        'confirmRemovePassenger'=> 'Are you sure you want to remove this passenger?',
+        'dob'                   => 'Date of Birth',
+        'dragDropOrClick'       => 'Drag & drop or click to upload',
+        'expectedFormat'        => 'Expected Format',
+        'groupLeader'           => 'Group Leader',
+        'groupName'             => 'Group Name',
+        'importPassengers'      => 'Import Passengers',
+        'importPassengersHint'  => 'Upload a CSV/Excel file with columns: passport_no, first_name, family_name, dob, gender',
+        'importSelected'        => 'Import Selected',
+        'maxSize'               => 'Max file size: 5MB',
+        'mofa'                  => 'MOFA Status',
+        'netBalance'            => 'Net Balance',
+        'noPassengersYet'       => 'No passengers added yet.',
+        'noPayments'            => 'No payments recorded.',
+        'noVouchers'            => 'No vouchers created.',
+        'parseAndPreview'       => 'Parse & Preview',
+        'passengerManifest'     => 'Passenger Manifest',
+        'passengers'            => 'Passengers',
+        'passportNo'            => 'Passport No.',
+        'paymentHistory'        => 'Payment History',
+        'paymentSummary'        => 'Payment Summary',
+        'previewAndValidate'    => 'Preview & Validate',
+        'previewPassengers'     => 'Preview Passengers',
+        'room'                  => 'Room',
+        'selectBookingGroup'    => 'Select Booking Group',
+        'totalPaid'             => 'Total Paid',
+        'totalPax'              => 'Total PAX',
+        'totalReceived'         => 'Total Received',
+        'uploadFile'            => 'Upload File',
+        'supportedFormats' => 'Supported Formats',
+    ),
+
+    // ── Flight ────────────────────────────────────────────────────────────────
+    'flight' => array(
+        'arrivalTime'   => 'Arrival Time',
+        'departureTime' => 'Departure Time',
+        'flightNumber'  => 'Flight Number',
+    ),
+
+    // ── Package ───────────────────────────────────────────────────────────────
+    'package' => array(
+        'durationDays' => 'Duration (Days)',
+        'durationDaysHelp' => 'Total trip duration in days, including travel days.',
+        'hotelsHelp' => 'Select the hotels that are part of this package.',
+        'listDescription' => 'Manage your Umrah packages below.',
+    ),
+
+    // ── Report ────────────────────────────────────────────────────────────────
+    'report' => array(
+        'balanced'          => 'Balanced',
+        'cogs'              => 'Cost of Goods Sold',
+        'expenses'          => 'Expenses',
+        'grossProfit'       => 'Gross Profit',
+        'netProfit'         => 'Net Profit',
+        'noData'            => 'No data available for the selected period.',
+        'noJournalPostings' => 'No journal postings found.',
+        'otherIncome'       => 'Other Income',
+        'revenue'           => 'Revenue',
+        'totalCogs'         => 'Total COGS',
+        'totalExpenses'     => 'Total Expenses',
+        'totalRevenue'      => 'Total Revenue',
+        'totals'            => 'Totals',
+        'trialBalance'      => 'Trial Balance',
+        'unbalanced'        => 'Unbalanced',
+    ),
+
+    // ── Room Allocation ───────────────────────────────────────────────────────
+    'room' => array(
+        'allAssigned'          => 'All passengers have been assigned to rooms.',
+        'assigned'             => 'Assigned',
+        'confirmRemove'        => 'Are you sure you want to remove this room assignment?',
+        'dropHere'             => 'Drop passenger here',
+        'hotelRooms'           => 'Hotel Rooms',
+        'noRoomsForHotel'      => 'No rooms available for this hotel.',
+        'openAllocationGrid'   => 'Open Allocation Grid',
+        'selectBookingToStart' => 'Select a booking to start room allocation.',
+        'unassignedPassengers' => 'Unassigned Passengers',
+    ),
+
+    // ── Ticketing ─────────────────────────────────────────────────────────────
+    'ticketing' => array(
+        'invoiceNumber' => 'Invoice Number',
+        'ticketCount'   => 'Ticket Count',
+        'totalAmount'   => 'Total Amount',
+    ),
+
+    // ── Transport ─────────────────────────────────────────────────────────────
+    'transportRoute' => array(
+        'distanceKm' => 'Distance (km)',
+    ),
+    'transportType' => array(
+        'capacity' => 'Capacity',
+    ),
+
+    // ── Travel Payments ───────────────────────────────────────────────────────
+    'travelPayments' => array(
+        'creditAccount'  => 'Credit Account',
+        'depositTo'      => 'Deposit To',
+        'makePayment'    => 'Make Payment',
+        'makePayments'   => 'Make Payments',
+        'payFrom'        => 'Pay From',
+        'payTo'          => 'Pay To',
+        'receivedFrom'   => 'Received From',
+        'receivePayment' => 'Receive Payment',
+        'receivePayments'=> 'Receive Payments',
+        'transferDetails'=> 'Transfer Details',
+    ),
+
+    // ── Visa ─────────────────────────────────────────────────────────────────
+    'visa' => array(
+        'bulkMove'           => 'Bulk Move',
+        'mofaReferenceNo'    => 'MOFA Reference No.',
+        'reason'             => 'Reason',
+        'reasonPlaceholder'  => 'Enter the reason for rejection...',
+        'rejectionReason'    => 'Rejection Reason',
+        'selectGroupToFilter'=> 'Select a group to filter',
+        'setMofaRef'         => 'Set MOFA Reference',
+    ),
+
+    // ── Visa Company ──────────────────────────────────────────────────────────
+    'visaCompany' => array(
+        'processingDays' => 'Processing Days',
+    ),
+
+    // ── Vouchers ──────────────────────────────────────────────────────────────
+    'voucher' => array(
+        'totalAmount'   => 'Total Amount',
+        'voucherNumber' => 'Voucher Number',
+    ),
+    'vouchers' => array(
+        'viewVoucher' => 'View Voucher',
+    ),
+
+    // ── Accounting ────────────────────────────────────────────────────────────
+    'accounting' => array(
+        'accountName' => 'Account Name',
+        'code' => 'Code',
+        'credit' => 'Credit',
+        'debit' => 'Debit',
+        'type' => 'Type',
+    ),
+
+    // ── Relations ─────────────────────────────────────────────────────────────
+    'relation' => array(
+        'listDescription' => 'Manage your business relations below.',
+        'nameHelp' => 'A friendly name for this contact.',
+    ),
+
+    // ── Booking ───────────────────────────────────────────────────────────────
+    'booking' => array(
+        'addPassenger'           => 'Add Passenger',
+        'confirm'                => 'Confirm',
+        'confirmRemovePassenger' => 'Are you sure you want to remove this passenger?',
+        'dob'                    => 'Date of Birth',
+        'dragDropOrClick'        => 'Drag & drop a file here, or click to select',
+        'expectedFormat'         => 'Expected Format',
+        'groupLeader'            => 'Group Leader',
+        'groupName'              => 'Group Name',
+        'importPassengers'       => 'Import Passengers',
+        'importPassengersHint'   => 'Upload a CSV or Excel file to add multiple passengers at once.',
+        'importSelected'         => 'Import Selected',
+        'maxSize'                => 'Max Size',
+        'mofa'                   => 'MOFA',
+        'netBalance'             => 'Net Balance',
+        'noPassengersYet'        => 'No passengers yet.',
+        'noPayments'             => 'No payments recorded.',
+        'noVouchers'             => 'No vouchers issued.',
+        'parseAndPreview'        => 'Parse & Preview',
+        'passengerManifest'      => 'Passenger Manifest',
+        'passengers'             => 'Passengers',
+        'passportNo'             => 'Passport No.',
+        'paymentHistory'         => 'Payment History',
+        'paymentSummary'         => 'Payment Summary',
+        'previewAndValidate'     => 'Preview & Validate',
+        'previewPassengers'      => 'Preview Passengers',
+        'room'                   => 'Room',
+        'selectBookingGroup'     => 'Select a booking group',
+        'supportedFormats'       => 'Supported Formats',
+        'totalPaid'              => 'Total Paid',
+        'totalPax'               => 'Total PAX',
+        'totalReceived'          => 'Total Received',
+        'uploadFile'             => 'Upload File',
+    ),
+
+    // ── Flight ────────────────────────────────────────────────────────────────
+    'flight' => array(
+        'arrivalTime'   => 'Arrival Time',
+        'departureTime' => 'Departure Time',
+        'flightNumber'  => 'Flight Number',
+    ),
+
+    // ── Hotel ─────────────────────────────────────────────────────────────────
+    'hotel' => array(
+        'starRating' => 'Star Rating',
+    ),
+
+    // ── Package ───────────────────────────────────────────────────────────────
+    'package' => array(
+        'durationDays'     => 'Duration (days)',
+        'durationDaysHelp' => 'Total trip duration in days, including travel days.',
+        'hotelsHelp'       => 'Select the hotels that are part of this package.',
+        'listDescription'  => 'Manage your Umrah packages below.',
+    ),
+
+    // ── Report ────────────────────────────────────────────────────────────────
+    'report' => array(
+        'balanced'          => 'Balanced',
+        'cogs'              => 'Cost of Goods Sold',
+        'expenses'          => 'Expenses',
+        'grossProfit'       => 'Gross Profit',
+        'netProfit'         => 'Net Profit',
+        'noData'            => 'No data for selected period.',
+        'noJournalPostings' => 'No journal postings found.',
+        'otherIncome'       => 'Other Income',
+        'revenue'           => 'Revenue',
+        'totalCogs'         => 'Total COGS',
+        'totalExpenses'     => 'Total Expenses',
+        'totalRevenue'      => 'Total Revenue',
+        'totals'            => 'Totals',
+        'trialBalance'      => 'Trial Balance',
+        'unbalanced'        => 'Unbalanced',
+    ),
+
+    // ── Room Allocation ───────────────────────────────────────────────────────
+    'room' => array(
+        'allAssigned'           => 'All passengers assigned',
+        'assigned'              => 'Assigned',
+        'confirmRemove'         => 'Remove this assignment?',
+        'dropHere'              => 'Drop here',
+        'hotelRooms'            => 'Hotel Rooms',
+        'noRoomsForHotel'       => 'No rooms configured for this hotel yet.',
+        'openAllocationGrid'    => 'Open Allocation Grid',
+        'selectBookingToStart'  => 'Select a booking group to start allocating rooms.',
+        'unassignedPassengers'  => 'Unassigned Passengers',
+    ),
+
+    // ── Ticketing ─────────────────────────────────────────────────────────────
+    'ticketing' => array(
+        'invoiceNumber' => 'Invoice Number',
+        'ticketCount'   => 'Ticket Count',
+        'totalAmount'   => 'Total Amount',
+    ),
+
+    // ── Transport ─────────────────────────────────────────────────────────────
+    'transportRoute' => array(
+        'distanceKm' => 'Distance (km)',
+    ),
+    'transportType' => array(
+        'capacity' => 'Capacity',
+    ),
+    'transporter' => array(
+        'vehicleTypes' => 'Vehicle Types',
+    ),
 );

@@ -8,7 +8,16 @@ class Discount extends BaseModel
 {
     use HasCompany;
 
-    protected $guarded = ['id'];
+    protected $fillable = [
+        'company_id',
+        'code',
+        'name',
+        'type',
+        'value',
+        'valid_from',
+        'valid_to',
+        'is_active',
+    ];
 
     protected $dates = ['valid_from', 'valid_to'];
 }

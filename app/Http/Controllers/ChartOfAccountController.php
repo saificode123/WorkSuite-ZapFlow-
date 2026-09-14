@@ -40,6 +40,7 @@ class ChartOfAccountController extends AccountBaseController
 
     public function store(StoreRequest $request)
     {
+        abort_403(!in_array(user()->permission('add_chart_of_account'), ['all', 'added']));
         $account = new ChartOfAccount();
         $account->company_id = company()->id;
         $account->name = $request->name;
@@ -65,6 +66,7 @@ class ChartOfAccountController extends AccountBaseController
 
     public function update(UpdateRequest $request, $id)
     {
+        abort_403(!in_array(user()->permission('edit_chart_of_account'), ['all', 'added']));
         $account = ChartOfAccount::findOrFail($id);
         $account->name = $request->name;
         $account->code = $request->code;
@@ -82,6 +84,7 @@ class ChartOfAccountController extends AccountBaseController
 
     public function destroy($id)
     {
+        abort_403(!in_array(user()->permission('delete_chart_of_account'), ['all', 'added']));
         $account = ChartOfAccount::findOrFail($id);
         if ($account->children()->count() > 0) {
             return Reply::error(__('messages.accountHasChildren'));
@@ -95,6 +98,7 @@ class ChartOfAccountController extends AccountBaseController
 
     public function tree()
     {
+        abort_403(!in_array(user()->permission('view_chart_of_account'), ['all', 'added', 'owned', 'both']));
         $accounts = ChartOfAccount::where('company_id', company()->id)
             ->with('children')
             ->whereNull('parent_id')

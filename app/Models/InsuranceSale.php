@@ -10,8 +10,7 @@ class InsuranceSale extends BaseModel
     use HasCompany;
 
     protected $table = 'insurance_sales';
-    protected $guarded = ['id'];
-
+ 
     protected $fillable = [
         'company_id',
         'passenger_id',

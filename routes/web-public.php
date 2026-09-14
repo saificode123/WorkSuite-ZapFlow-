@@ -78,9 +78,9 @@ Route::post('/consent/l/update/{lead}', [PublicLeadGdprController::class, 'updat
 // Socialite routes
 Route::get('/redirect/{provider}', [LoginController::class, 'redirect'])->name('social_login');
 Route::get('/callback/{provider}', [LoginController::class, 'callback'])->name('social_login_callback');
-Route::post('check-email', [LoginController::class, 'checkEmail'])->name('check_email');
-Route::post('check-code', [LoginController::class, 'checkCode'])->name('check_code');
-Route::get('resend-code', [LoginController::class, 'resendCode'])->name('resend_code');
+Route::post('check-email', [LoginController::class, 'checkEmail'])->middleware('throttle:10,1')->name('check_email');
+Route::post('check-code', [LoginController::class, 'checkCode'])->middleware('throttle:10,1')->name('check_code');
+Route::get('resend-code', [LoginController::class, 'resendCode'])->middleware('throttle:5,1')->name('resend_code');
 
 // Payment routes
 Route::post('stripe/{invoiceId}', [StripeController::class, 'paymentWithStripe'])->name('stripe');

@@ -10,7 +10,27 @@ class TicketInvoice extends BaseModel
 {
     use HasCompany;
 
-    protected $guarded = ['id'];
+    protected $fillable = [
+        'company_id',
+        'invoice_number',
+        'date',
+        'booking_group_id',
+        'customer_id',
+        'airline_id',
+        'passenger_id',
+        'sector_id',
+        'total_amount',
+        'status',
+        'ticket_count',
+        'sale_type',
+        'pnr',
+        'refund_amount',
+        'refund_reason',
+        'refunded_at',
+        'refunded_by',
+        'added_by',
+        'last_updated_by',
+    ];
 
     public function bookingGroup(): BelongsTo
     {

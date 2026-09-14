@@ -16,7 +16,7 @@ class DiscountController extends AccountBaseController
         $this->pageTitle = 'app.menu.discounts';
 
         $this->middleware(function ($request, $next) {
-            abort_403(!in_array('discount', $this->user->modules));
+            abort_403(!in_array('umrah_setup', $this->user->modules));
             return $next($request);
         });
     }
@@ -50,13 +50,13 @@ class DiscountController extends AccountBaseController
 
         $request->validate([
             'name' => 'required|max:255',
-            'type' => 'required|in:percentage,fixed',
+            'discount_type' => 'required|in:percentage,fixed',
             'value' => 'required|numeric|min:0',
         ]);
 
         $discount = new Discount();
         $discount->name = $request->name;
-        $discount->type = $request->type;
+        $discount->discount_type = $request->discount_type;
         $discount->value = $request->value;
         $discount->is_active = $request->is_active ?? true;
         $discount->save();
@@ -92,13 +92,13 @@ class DiscountController extends AccountBaseController
 
         $request->validate([
             'name' => 'required|max:255',
-            'type' => 'required|in:percentage,fixed',
+            'discount_type' => 'required|in:percentage,fixed',
             'value' => 'required|numeric|min:0',
         ]);
 
         $discount = Discount::findOrFail($id);
         $discount->name = $request->name;
-        $discount->type = $request->type;
+        $discount->discount_type = $request->discount_type;
         $discount->value = $request->value;
         $discount->is_active = $request->is_active ?? true;
         $discount->save();

@@ -1,17 +1,22 @@
 ﻿<div class="row">
     <div class="col-sm-12">
         <x-form id="save-data-form">
-            <div class="add-client bg-white rounded">
-                <h4 class="mb-0 p-20 f-21 font-weight-normal border-bottom-grey">@lang('app.transportRoute')</h4>
-                <div class="row p-20">
-                    <div class="col-md-6">
-                        <x-forms.text fieldId="from_city" :fieldLabel="__('app.fromCity')" fieldName="from_city" fieldRequired="true"></x-forms.text>
-                    </div>
-                    <div class="col-md-6">
-                        <x-forms.text fieldId="to_city" :fieldLabel="__('app.toCity')" fieldName="to_city" fieldRequired="true"></x-forms.text>
-                    </div>
-                    <div class="col-md-6">
-                        <x-forms.number fieldId="distance_km" :fieldLabel="__('modules.transportRoute.distanceKm')" fieldName="distance_km"></x-forms.number>
+            <div class="add-client bg-white rounded shadow-sm">
+                <h4 class="mb-0 p-20 f-21 font-weight-normal border-bottom-grey">
+                    <i class="fa fa-route mr-2 text-primary"></i>@lang('app.transportRoute')
+                </h4>
+                <div class="p-20">
+                    <p class="text-muted f-13 mb-4">Fields marked with an asterisk (*) are required.</p>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <x-forms.text fieldId="from_city" :fieldLabel="__('app.fromCity')" fieldName="from_city" fieldRequired="true"></x-forms.text>
+                        </div>
+                        <div class="col-md-6">
+                            <x-forms.text fieldId="to_city" :fieldLabel="__('app.toCity')" fieldName="to_city" fieldRequired="true"></x-forms.text>
+                        </div>
+                        <div class="col-md-6">
+                            <x-forms.number fieldId="distance_km" :fieldLabel="__('modules.transportRoute.distanceKm')" fieldName="distance_km"></x-forms.number>
+                        </div>
                     </div>
                 </div>
                 <x-form-actions>
@@ -22,6 +27,7 @@
         </x-form>
     </div>
 </div>
+
 <script>
     $('#save-form').click(function() {
         $.easyAjax({

@@ -33,7 +33,9 @@ class StoreClientRequest extends CoreRequest
             'slack_username' => 'nullable',
             'website' => 'nullable|url',
             'country' => 'required_with:mobile',
-            'mobile' => 'nullable|numeric'
+            'mobile' => 'nullable|numeric',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            'company_logo' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
         ];
 
         $rules = $this->customFieldRules($rules);

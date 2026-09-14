@@ -70,6 +70,12 @@ class DatabaseSeeder extends Seeder
         config(['app.seeding' => false]);
 
         cache()->flush();
+
+        // Seed demo accounts and golden-path data for manual testing.
+        // Only runs outside production / codecanyon environments.
+        if (!App::environment('codecanyon', 'production')) {
+            $this->call(DemoDataSeeder::class);
+        }
     }
 
 }

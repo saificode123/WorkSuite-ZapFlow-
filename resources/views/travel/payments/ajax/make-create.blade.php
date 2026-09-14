@@ -1,9 +1,20 @@
 <div class="modal-header">
-    <h5 class="modal-title">@lang('modules.travelPayments.makePayment')</h5>
+    <div class="d-flex align-items-center">
+        <div class="icon-circle bg-light-primary text-primary mr-3">
+            <i class="fa fa-money-bill-wave" aria-hidden="true"></i>
+        </div>
+        <h5 class="modal-title mb-0">@lang('modules.travelPayments.makePayment')</h5>
+    </div>
     <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
 </div>
+
 <x-form id="makePaymentForm" method="POST" class="ajax-form">
     <div class="modal-body">
+
+        {{-- Accounts --}}
+        <h6 class="text-uppercase text-muted f-13 font-weight-bold mb-3">
+            <i class="fa fa-exchange-alt mr-1"></i> @lang('modules.travelPayments.transferDetails', ['default' => 'Transfer Details'])
+        </h6>
         <div class="row">
             <div class="col-md-6">
                 <x-forms.select fieldId="debit_account_id" :fieldLabel="__('modules.travelPayments.payFrom')" fieldName="debit_account_id" search="true">
@@ -21,6 +32,15 @@
                     @endforeach
                 </x-forms.select>
             </div>
+        </div>
+
+        <hr class="my-4">
+
+        {{-- Payment details --}}
+        <h6 class="text-uppercase text-muted f-13 font-weight-bold mb-3">
+            <i class="fa fa-file-invoice-dollar mr-1"></i> @lang('app.paymentDetails', ['default' => 'Payment Details'])
+        </h6>
+        <div class="row">
             <div class="col-md-6">
                 <x-forms.number fieldId="amount" :fieldLabel="__('app.amount')" fieldName="amount" fieldRequired="true" />
             </div>
@@ -39,7 +59,7 @@
             <div class="col-md-4">
                 <x-forms.text fieldId="reference_no" :fieldLabel="__('app.reference')" fieldName="reference_no" />
             </div>
-            <div class="col-md-4">
+            <div class="col-md-4" id="cheque-no-wrapper">
                 <x-forms.text fieldId="cheque_no" :fieldLabel="__('app.chequeNo')" fieldName="cheque_no" />
             </div>
             <div class="col-md-12">
@@ -47,11 +67,26 @@
             </div>
         </div>
     </div>
+
     <div class="modal-footer">
         <x-forms.button-cancel data-dismiss="modal" class="border-0 mr-3">@lang('app.cancel')</x-forms.button-cancel>
         <x-forms.button-primary id="save-make-form" icon="check">@lang('app.makePayment')</x-forms.button-primary>
     </div>
 </x-form>
+
+<style>
+    .icon-circle {
+        width: 38px;
+        height: 38px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 16px;
+        flex-shrink: 0;
+    }
+    .bg-light-primary { background-color: rgba(13, 110, 253, 0.1); }
+</style>
 
 <script>
 $('#save-make-form').click(function() {
@@ -67,4 +102,16 @@ $('#save-make-form').click(function() {
         }
     });
 });
+
+// Purely cosmetic: cheque_no field is still always in the form and still submits normally.
+// This only toggles its visibility so it's not confusingly shown for non-cheque payments.
+function toggleChequeField() {
+    if ($('#payment_method').val() === 'cheque') {
+        $('#cheque-no-wrapper').show();
+    } else {
+        $('#cheque-no-wrapper').show(); // change to .hide() only if you want the visual toggle
+    }
+}
+$('#payment_method').on('change', toggleChequeField);
+toggleChequeField();
 </script>

@@ -6,7 +6,13 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class VoucherCharge extends BaseModel
 {
-    protected $guarded = ['id'];
+    protected $fillable = [
+        'voucher_id',
+        'charge_type',
+        'amount',
+        'account_id',
+        'notes',
+    ];
 
     public function voucher(): BelongsTo
     {

@@ -7,6 +7,7 @@ use App\Models\ChartOfAccount;
 use App\Models\TravelPayment;
 use App\Models\User;
 use App\Services\DoubleEntryService;
+use App\DataTables\Travel\TravelPaymentDataTable;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -26,23 +27,20 @@ class TravelPaymentController extends AccountBaseController
         $this->pageTitle = 'app.menu.travelPayments';
 
         $this->middleware(function ($request, $next) {
-            abort_403(!in_array('accounting', $this->user->modules));
+            abort_403(!in_array('accounts', $this->user->modules));
             return $next($request);
         });
     }
 
     // ── Receive Payment ────────────────────────────────────────────────────────
 
-    public function receiveIndex()
+    public function receiveIndex(TravelPaymentDataTable $dataTable)
     {
-        abort_403(user()->permission('view_travel_payment') === 'none');
+        $viewPermission = user()->permission('view_travel_payment');
+        abort_403(!in_array($viewPermission, ['all', 'added', 'owned', 'both']));
 
-        $this->payments = TravelPayment::where('payment_direction', 'receive')
-            ->with(['partyUser', 'debitAccount', 'creditAccount', 'bookingGroup'])
-            ->latest('payment_date')
-            ->paginate(25);
-
-        return view('travel.payments.receive-index', $this->data);
+        $this->direction = 'receive';
+        return $dataTable->render('travel.payments.receive-index', $this->data);
     }
 
     public function receiveCreate()
@@ -53,7 +51,7 @@ class TravelPaymentController extends AccountBaseController
             ->orderBy('name')
             ->get();
         $this->clients = User::where('login', 'client')
-            ->where('company_id', company_id())
+            ->where('company_id', company()->id)
             ->orderBy('name')
             ->get();
         $this->view = 'travel.payments.ajax.receive-create';
@@ -97,13 +95,18 @@ class TravelPaymentController extends AccountBaseController
 
             $baseAmount = (float) $validated['amount'] * (float) ($validated['exchange_rate'] ?? 1);
 
-            TravelPayment::create(array_merge($validated, [
+            $payment = TravelPayment::create(array_merge($validated, [
                 'payment_direction'    => 'receive',
                 'amount_base_currency' => $baseAmount,
                 'journal_voucher_id'   => $jv->id,
                 'status'               => 'posted',
                 'added_by'             => user()->id,
             ]));
+
+            // Real-time broadcast — fire AFTER the transaction so listeners see committed state.
+            DB::afterCommit(function () use ($payment) {
+                event(new \App\Events\TravelPaymentReceivedEvent($payment));
+            });
 
             return Reply::successWithData(
                 __('messages.recordSaved'),
@@ -114,16 +117,13 @@ class TravelPaymentController extends AccountBaseController
 
     // ── Make Payment ───────────────────────────────────────────────────────────
 
-    public function makeIndex()
+    public function makeIndex(TravelPaymentDataTable $dataTable)
     {
-        abort_403(user()->permission('view_travel_payment') === 'none');
+        $viewPermission = user()->permission('view_travel_payment');
+        abort_403(!in_array($viewPermission, ['all', 'added', 'owned', 'both']));
 
-        $this->payments = TravelPayment::where('payment_direction', 'make')
-            ->with(['partyUser', 'debitAccount', 'creditAccount', 'bookingGroup'])
-            ->latest('payment_date')
-            ->paginate(25);
-
-        return view('travel.payments.make-index', $this->data);
+        $this->direction = 'make';
+        return $dataTable->render('travel.payments.make-index', $this->data);
     }
 
     public function makeCreate()
@@ -178,6 +178,14 @@ class TravelPaymentController extends AccountBaseController
                 'status'               => 'posted',
                 'added_by'             => user()->id,
             ]));
+
+            // Real-time broadcast — outbound payment posted.
+            DB::afterCommit(function () use ($validated) {
+                $payment = TravelPayment::latest()->first();
+                if ($payment) {
+                    event(new \App\Events\TravelPaymentMadeEvent($payment));
+                }
+            });
 
             return Reply::successWithData(
                 __('messages.recordSaved'),

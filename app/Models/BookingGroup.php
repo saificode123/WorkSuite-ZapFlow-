@@ -3,14 +3,32 @@
 namespace App\Models;
 
 use App\Traits\HasCompany;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class BookingGroup extends BaseModel
 {
     use HasCompany;
+    use HasFactory;
 
-    protected $guarded = ['id'];
+    protected $fillable = [
+        'company_id',
+        'group_no',
+        'group_name',
+        'group_leader',
+        'customer_id',
+        'package_id',
+        'iata_id',
+        'visa_company_id',
+        'departure_date',
+        'return_date',
+        'notes',
+        'status',
+        'total_pax',
+        'added_by',
+        'last_updated_by',
+    ];
 
     protected $dates = ['departure_date', 'return_date'];
 
@@ -37,5 +55,15 @@ class BookingGroup extends BaseModel
     public function iata(): BelongsTo
     {
         return $this->belongsTo(IataRecord::class, 'iata_id');
+    }
+
+    public function travelPayments(): HasMany
+    {
+        return $this->hasMany(TravelPayment::class, 'booking_group_id');
+    }
+
+    public function vouchers(): HasMany
+    {
+        return $this->hasMany(Voucher::class, 'booking_group_id');
     }
 }

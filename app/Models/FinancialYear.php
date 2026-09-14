@@ -9,7 +9,13 @@ class FinancialYear extends BaseModel
 {
     use HasCompany;
 
-    protected $guarded = ['id'];
+    protected $fillable = [
+        'company_id',
+        'name',
+        'start_date',
+        'end_date',
+        'is_closed',
+    ];
 
     protected $dates = ['start_date', 'end_date'];
 

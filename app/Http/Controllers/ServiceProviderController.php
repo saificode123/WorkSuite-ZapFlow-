@@ -16,7 +16,7 @@ class ServiceProviderController extends AccountBaseController
         $this->pageTitle = 'app.menu.serviceProviders';
 
         $this->middleware(function ($request, $next) {
-            abort_403(!in_array('service_provider', $this->user->modules));
+            abort_403(!in_array('service_providers', $this->user->modules));
             return $next($request);
         });
     }

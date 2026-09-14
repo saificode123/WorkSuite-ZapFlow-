@@ -22,7 +22,23 @@ class Voucher extends BaseModel
         'issued'  => 'Issued',
     ];
 
-    protected $guarded = ['id'];
+    protected $fillable = [
+        'company_id',
+        'booking_group_id',
+        'voucher_number',
+        'type',
+        'date',
+        'status',
+        'charges_total',
+        'pdf_path',
+        'qr_code',
+        'qr_payload',
+        'version',
+        'locked_at',
+        'locked_by',
+        'added_by',
+        'last_updated_by',
+    ];
 
     protected $casts = [
         'locked_at' => 'datetime',

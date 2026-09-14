@@ -11,6 +11,11 @@
     margin-bottom: 24px;
     position: relative;
     overflow: hidden;
+    animation: fadeInUp .35s ease;
+}
+@keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(10px); }
+    to   { opacity: 1; transform: translateY(0); }
 }
 .booking-hero::before {
     content: '';
@@ -20,38 +25,79 @@
     background: rgba(255,255,255,.04);
     border-radius: 50%;
 }
+.booking-hero::after {
+    content: '';
+    position: absolute;
+    right: 70px; bottom: -70px;
+    width: 150px; height: 150px;
+    background: rgba(255,255,255,.03);
+    border-radius: 50%;
+}
 .booking-hero .group-code {
     font-size: 12px; opacity: .65; letter-spacing: 1px; text-transform: uppercase;
 }
 .booking-hero h3 { font-size: 22px; font-weight: 700; margin: 4px 0 12px; }
-.hero-stat { display: inline-block; margin-right: 32px; }
-.hero-stat .value { font-size: 24px; font-weight: 700; }
+.hero-stat { display: inline-flex; align-items: center; gap: 10px; margin-right: 32px; margin-bottom: 8px; }
+.hero-stat .stat-icon {
+    width: 34px; height: 34px; flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    background: rgba(255,255,255,.08);
+    border-radius: 8px; font-size: 14px;
+}
+.hero-stat .value { font-size: 22px; font-weight: 700; line-height: 1.15; }
 .hero-stat .label { font-size: 11px; opacity: .7; }
 .status-pill {
     display: inline-block;
-    padding: 3px 14px; border-radius: 20px;
-    font-size: 11px; font-weight: 600; letter-spacing: .4px;
+    padding: 4px 16px; border-radius: 20px;
+    font-size: 11px; font-weight: 700; letter-spacing: .4px;
 }
 .status-confirmed { background: #d1fae5; color: #065f46; }
 .status-pending   { background: #fef3c7; color: #92400e; }
 .status-cancelled { background: #fee2e2; color: #991b1b; }
 .status-completed { background: #dbeafe; color: #1d4ed8; }
 
+/* Action bar */
+.action-bar {
+    background: #fff;
+    border-radius: 10px;
+    padding: 12px 14px;
+    box-shadow: 0 1px 6px rgba(0,0,0,.05);
+}
+.action-bar .btn i { margin-right: 5px; }
+
+/* Tabs */
+.tab-pills {
+    background: #fff;
+    border-radius: 10px;
+    padding: 6px;
+    box-shadow: 0 1px 6px rgba(0,0,0,.05);
+    display: inline-flex;
+    flex-wrap: wrap;
+}
+.tab-pills .nav-link { border-radius: 8px; padding: 8px 18px; font-size: 13px; color: #555; transition: background .15s, color .15s; }
+.tab-pills .nav-link.active { background: #1a1f3c; color: #fff; }
+.tab-pills .nav-link:hover:not(.active) { background: #f0f2f8; }
+
 /* Passengers table */
 .pax-table { width: 100%; }
-.pax-table th { font-size: 11px; text-transform: uppercase; color: #888; padding: 8px 12px; background: #f8f9fd; }
-.pax-table td { padding: 9px 12px; font-size: 13px; border-bottom: 1px solid #f3f4f8; vertical-align: middle; }
-.pax-table tr:hover { background: #fafbff; }
-.passport-mono { font-family: 'Courier New', monospace; font-size: 12px; color: #555; }
-.visa-chip { display: inline-block; padding: 2px 10px; border-radius: 20px; font-size: 10px; font-weight: 600; }
+.pax-table th { font-size: 11px; text-transform: uppercase; letter-spacing: .03em; color: #888; padding: 10px 12px; background: #f8f9fd; }
+.pax-table td { padding: 10px 12px; font-size: 13px; border-bottom: 1px solid #f3f4f8; vertical-align: middle; }
+.pax-table tbody tr:hover { background: #fafbff; }
+.passport-mono { font-family: 'Courier New', monospace; font-size: 12px; color: #555; background: #f3f4f8; padding: 2px 6px; border-radius: 4px; }
+.gender-badge { font-size: 12px; font-weight: 600; }
+.visa-chip { display: inline-block; padding: 3px 12px; border-radius: 20px; font-size: 10px; font-weight: 700; letter-spacing: .2px; }
 .visa-draft           { background: #e5e7eb; color: #6b7280; }
 .visa-sent_to_embassy { background: #dbeafe; color: #1d4ed8; }
 .visa-mofa_received   { background: #ede9fe; color: #5b21b6; }
 .visa-issued          { background: #d1fae5; color: #065f46; }
 .visa-rejected        { background: #fee2e2; color: #991b1b; }
 
-.tab-pills .nav-link { border-radius: 8px; padding: 8px 18px; font-size: 13px; color: #555; }
-.tab-pills .nav-link.active { background: #1a1f3c; color: #fff; }
+/* Financials */
+#tab-financials .badge { font-size: 11px; padding: 4px 10px; border-radius: 20px; }
+
+/* Vouchers */
+.voucher-row { transition: box-shadow .15s, border-color .15s; }
+.voucher-row:hover { box-shadow: 0 2px 10px rgba(0,0,0,.06); border-color: #dfe3f5 !important; }
 </style>
 @endpush
 
@@ -64,20 +110,32 @@
         <h3>{{ $booking->group_name }}</h3>
         <div class="d-flex align-items-center flex-wrap gap-4">
             <div class="hero-stat">
-                <div class="value">{{ $booking->passengers->count() }}</div>
-                <div class="label">@lang('modules.booking.passengers')</div>
+                <div class="stat-icon"><i class="fa fa-users"></i></div>
+                <div>
+                    <div class="value">{{ $booking->passengers->count() }}</div>
+                    <div class="label">@lang('modules.booking.passengers')</div>
+                </div>
             </div>
             <div class="hero-stat">
-                <div class="value">{{ $booking->departure_date ? \Carbon\Carbon::parse($booking->departure_date)->format('d M Y') : '—' }}</div>
-                <div class="label">@lang('app.departureDate')</div>
+                <div class="stat-icon"><i class="fa fa-plane-departure"></i></div>
+                <div>
+                    <div class="value">{{ $booking->departure_date ? \Carbon\Carbon::parse($booking->departure_date)->format('d M Y') : '—' }}</div>
+                    <div class="label">@lang('app.departureDate')</div>
+                </div>
             </div>
             <div class="hero-stat">
-                <div class="value">{{ $booking->return_date ? \Carbon\Carbon::parse($booking->return_date)->format('d M Y') : '—' }}</div>
-                <div class="label">@lang('app.returnDate')</div>
+                <div class="stat-icon"><i class="fa fa-plane-arrival"></i></div>
+                <div>
+                    <div class="value">{{ $booking->return_date ? \Carbon\Carbon::parse($booking->return_date)->format('d M Y') : '—' }}</div>
+                    <div class="label">@lang('app.returnDate')</div>
+                </div>
             </div>
             <div class="hero-stat">
-                <div class="value">{{ $booking->package?->name ?? '—' }}</div>
-                <div class="label">@lang('app.package')</div>
+                <div class="stat-icon"><i class="fa fa-box"></i></div>
+                <div>
+                    <div class="value">{{ $booking->package?->name ?? '—' }}</div>
+                    <div class="label">@lang('app.package')</div>
+                </div>
             </div>
             <div class="ml-auto">
                 <span class="status-pill status-{{ $booking->status }}">{{ ucfirst($booking->status) }}</span>
@@ -86,7 +144,7 @@
     </div>
 
     {{-- Action Bar --}}
-    <div class="d-flex align-items-center gap-2 mb-3">
+    <div class="action-bar d-flex align-items-center flex-wrap gap-2 mb-3">
         <a href="{{ route('bookings.import.page') }}?booking_group_id={{ $booking->id }}"
            class="btn btn-sm btn-primary">
             <i class="fa fa-upload"></i> @lang('modules.booking.importPassengers')
@@ -166,7 +224,13 @@
                             @forelse($booking->passengers as $i => $pax)
                             <tr data-name="{{ strtolower($pax->full_name) }}" data-passport="{{ strtolower($pax->passport_no) }}">
                                 <td class="text-muted">{{ $i + 1 }}</td>
-                                <td><span class="passport-mono">{{ $pax->passport_no }}</span></td>
+                                <td>
+                                    <x-sensitive-field
+                                        :passengerId="$pax->id"
+                                        field="passport_no"
+                                        :masked="$pax->masked_passport_no"
+                                    />
+                                </td>
                                 <td>
                                     <div class="font-weight-600">{{ $pax->full_name }}</div>
                                     @if($pax->visa_mofa_ref)
@@ -174,7 +238,7 @@
                                     @endif
                                 </td>
                                 <td>
-                                    <span class="{{ $pax->gender === 'Male' ? 'text-primary' : 'text-danger' }}">
+                                    <span class="gender-badge {{ $pax->gender === 'Male' ? 'text-primary' : 'text-danger' }}">
                                         {{ $pax->gender === 'Male' ? '♂' : '♀' }} {{ $pax->gender }}
                                     </span>
                                 </td>
@@ -229,13 +293,13 @@
                     <div class="bg-white rounded shadow-sm p-4">
                         <h6 class="mb-3">@lang('modules.booking.paymentSummary')</h6>
                         <div class="d-flex justify-content-between py-2 border-bottom">
-                            <span class="text-muted">@lang('modules.booking.totalReceived')</span>
+                            <span class="text-muted"><i class="fa fa-arrow-down text-success mr-1"></i>@lang('modules.booking.totalReceived')</span>
                             <strong class="text-success">
                                 {{ number_format($booking->travelPayments->where('payment_direction','receive')->sum('amount'), 2) }}
                             </strong>
                         </div>
                         <div class="d-flex justify-content-between py-2 border-bottom">
-                            <span class="text-muted">@lang('modules.booking.totalPaid')</span>
+                            <span class="text-muted"><i class="fa fa-arrow-up text-danger mr-1"></i>@lang('modules.booking.totalPaid')</span>
                             <strong class="text-danger">
                                 {{ number_format($booking->travelPayments->where('payment_direction','make')->sum('amount'), 2) }}
                             </strong>
@@ -299,7 +363,7 @@
         <div class="tab-pane fade" id="tab-vouchers">
             <div class="bg-white rounded shadow-sm p-4">
                 @forelse($booking->vouchers ?? [] as $voucher)
-                <div class="d-flex align-items-center p-3 border rounded mb-2">
+                <div class="voucher-row d-flex align-items-center p-3 border rounded mb-2">
                     <div class="flex-grow-1">
                         <div class="font-weight-600">{{ $voucher->voucher_no }}</div>
                         <small class="text-muted">{{ $voucher->voucher_type }} — {{ ucfirst($voucher->status) }}</small>

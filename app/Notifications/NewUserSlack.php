@@ -36,7 +36,12 @@ class NewUserSlack extends BaseNotification
     {
         $via = ['database'];
 
-        if ($this->emailSetting->send_slack == 'yes' && $this->company->slackSetting->status == 'active') {
+        if ($this->emailSetting
+            && $this->emailSetting->send_slack == 'yes'
+            && $this->company
+            && $this->company->slackSetting
+            && $this->company->slackSetting->status == 'active'
+        ) {
             $this->slackUserNameCheck($notifiable) ? array_push($via, 'slack') : null;
         }
 

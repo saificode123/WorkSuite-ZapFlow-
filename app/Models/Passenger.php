@@ -11,7 +11,6 @@ class Passenger extends Model
 {
     protected $table = 'passengers';
 
-    protected $guarded = ['id'];
 
     protected $fillable = [
         'booking_group_id',
@@ -130,7 +129,13 @@ class Passenger extends Model
     /** Masked passport number for list views */
     public function getMaskedPassportNoAttribute(): string
     {
-        $no = $this->passport_no ?? '';
+        return self::maskPassport($this->passport_no);
+    }
+
+    /** Static helper to mask any passport number */
+    public static function maskPassport(?string $no): string
+    {
+        $no = (string) ($no ?? '');
         if (strlen($no) <= 4) {
             return str_repeat('*', strlen($no));
         }

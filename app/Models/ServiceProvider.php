@@ -10,7 +10,16 @@ class ServiceProvider extends BaseModel
 {
     use HasCompany;
 
-    protected $guarded = ['id'];
+    protected $fillable = [
+        'company_id',
+        'name',
+        'service_type',
+        'contact_person',
+        'phone',
+        'email',
+        'address',
+        'account_id',
+    ];
 
     public function accounts(): HasMany
     {

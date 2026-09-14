@@ -1,10 +1,15 @@
 <div class="modal-header">
-    <h5 class="modal-title">@lang('app.addCashReceipt')</h5>
+    <h5 class="modal-title"><i class="fa fa-receipt mr-2 text-primary"></i>@lang('app.addCashReceipt')</h5>
     <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
 </div>
 <x-form id="cashReceiptForm" method="POST" class="ajax-form">
     <div class="modal-body">
-        <div class="row">
+
+        {{-- Receipt Details --}}
+        <h6 class="text-muted text-uppercase f-13 font-weight-bold mb-3">
+            <i class="fa fa-info-circle mr-1"></i>Receipt Details
+        </h6>
+        <div class="row mb-2">
             <div class="col-md-6">
                 <x-forms.select fieldId="account_id" :fieldLabel="__('app.cashAccount')" fieldName="account_id" fieldRequired="true" search="true">
                     <option value="">--</option>
@@ -20,6 +25,15 @@
                 <x-forms.datepicker fieldId="date" :fieldLabel="__('app.date')" fieldName="date"
                     :fieldValue="\Carbon\Carbon::now()->format(company()->date_format)" fieldRequired="true" />
             </div>
+        </div>
+
+        <hr class="my-4">
+
+        {{-- Reference Details --}}
+        <h6 class="text-muted text-uppercase f-13 font-weight-bold mb-3">
+            <i class="fa fa-align-left mr-1"></i>Reference Details
+        </h6>
+        <div class="row">
             <div class="col-md-6">
                 <x-forms.text fieldId="received_from" :fieldLabel="__('app.receivedFrom')" fieldName="received_from" fieldRequired="true" />
             </div>

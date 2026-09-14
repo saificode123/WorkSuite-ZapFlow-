@@ -1,4 +1,4 @@
-@if ($pushSetting->status == 'active')
+@if ($pushSetting?->status == 'active')
     <link rel="manifest" href="{{ asset('manifest.json') }}"/>
     <script src="https://cdn.onesignal.com/sdks/OneSignalSDK.js" async=""></script>
     <script>
@@ -94,7 +94,7 @@
     </script>
 @endif
 
-@if ($pushSetting->beams_push_status == 'active')
+@if (($pushSetting?->beams_push_status ?? null) == 'active')
     <script src="https://js.pusher.com/beams/1.0/push-notifications-cdn.js" async></script>
 
     <script>
@@ -139,7 +139,7 @@
     </script>
 @endif
 
-@if ($pusherSettings->status)
+@if ($pusherSettings?->status)
     <script src="https://js.pusher.com/7.0/pusher.min.js"></script>
 
     <script>

@@ -266,7 +266,7 @@ return array(
         'employeeIdInfo' => 'Employee ID is the unique ID distributed to employees',
         'accountDetails' => 'Account Details',
         'inviteLink' => 'Invite by link',
-        'inviteEmail' => 'Invite by Email',
+        'inviteEmail' => 'Invite by email',
         'sendInvite' => 'Send Invite',
         'createLink' => 'Create Link',
         'createLinkLabel' => 'Create an invite link for members to join.',
@@ -444,7 +444,7 @@ return array(
         'sameAssignee' => 'Copy the same assignees',
         'profit' => 'Profit',
         'taskCount' => 'Task count',
-        'employeeWiseTaskReport' => 'Employee Wise Task Report'
+        'integrations' => 'Integrations'
     ),
     'tasks' => array(
         'noSubTaskFound' => 'No Sub Task Found',
@@ -509,7 +509,6 @@ return array(
         'defaultTaskStatus' => 'Default Task Status',
         'billable' => 'Billable',
         'billableInfo' => 'Invoice can be generated for this task\'s time log.',
-        'dependentTaskInfo' => 'This task is dependent on another task and cannot be marked as completed until the task it relies on is finished.',
         'assigned' => 'Assigned',
         'taskLabel' => 'Task Label',
         'assignMe' => 'Assign to me',
@@ -521,7 +520,6 @@ return array(
         'taskboardDefaultLength' => 'Taskboard Default Length',
         'timerStartedTask' => 'Started the timer for task ',
         'timerStartedBy' => 'Timer started',
-        'timerResumedBy' => 'Timer resumed',
         'timerStartedProject' => 'Started the timer for the project ',
         'timerStoppedBy' => 'Timer stopped',
         'copyTaskLink' => 'Copy Task Link',
@@ -536,22 +534,7 @@ return array(
         'leaveMessage' => 'One or more assignees are on leave on selected dates.',
         'leaveOn' => 'is on leave',
         'editSubTask' => 'Edit Sub Task',
-        'notFinishedProjects' => 'Showing only open projects whose status is not finished',
-        'task_missed_deadline_column' => 'Missed Deadline:- Task(s) which are completed but their deadline is missed.',
-        'taskWithoutEstimateTime' => 'Tasks without estimate time',
-        'taskWithoutStartDate' => 'Tasks without start date',
-
-        'completed_tasks_not_rated' => 'Task(s) are completed for this duration but not rated yet',
-        'employeeWiseTaskReport' => 'Employee Wise Task Report',
-        'totalTaskAssigned' => 'Total Task Assigned',
-        'totalTaskCompleted' => 'Total Task Completed',
-        'totalTaskPending' => 'Total Task Pending',
-        'missedDeadline' => 'Missed Deadline',
-        'consolidatedTaskReport' => 'Consolidated Task Report',
-        'estimateHours' => 'Estimate Hours',
-        'workedHours' => 'Worked Hours',
-        'totalHoursSpent' => 'Total Logged Hours',
-
+        'notFinishedProjects' => 'Showing only open projects whose status is not finished'
     ),
     'invoices' => array(
         'addInvoice' => 'Create Invoice',
@@ -694,13 +677,7 @@ return array(
         'breakDuration' => 'Break Duration',
         'date' => 'Date',
         'logged' => 'Logged',
-        'submitForApproval' => 'Submit for Approval',
-        'submitTimesheet' => 'Submit Timesheet',
-        'addWeeklyTimesheet' => 'Add Weekly Timesheet',
-        'pendingApproval' => 'Pending Approval',
-        'submittedBy' => 'Submitted By',
-        'approveTimesheet' => 'Approve Timesheets',
-        'editWeeklyTimesheet' => 'Edit Weekly Timesheet',
+
     ),
     'taskCalendar' => array(
         'note' => 'Calendar shows the due tasks on their due dates.',
@@ -1594,7 +1571,6 @@ return array(
         'addNewLead' => 'Add New Lead',
         'viewDetails' => 'View Details',
         'leadSource' => 'Lead Source',
-        'leadOwner' => 'Lead Owner',
         'leadStatus' => 'Lead Status',
         'leadFollowUp' => 'Follow Up Next',
         'remark' => 'Remark',
@@ -1808,9 +1784,6 @@ return array(
         'oneSignalAppId' => 'One Signal App ID',
         'oneSignalRestApiKey' => 'One Signal Rest API Key',
         'notificationTitle' => 'Push Notification Settings',
-        'activeNotificationInfo' => 'Only one push notification service can be active at a time.',
-        'pusherInstanceId' => 'Pusher Instance ID',
-        'beamsSecret' => 'Beams Secret',
     ),
     'timelogAlreadyExist' => 'Time-log already exist for this user.',
     'module' => array(
@@ -1860,9 +1833,14 @@ return array(
         'qrcode' => 'QR Code',
         'cybersecurity' => 'Cyber Security',
         'biolinks' => 'Biolinks',
-        'performance' => 'Performance',
         'Policy' => 'Policy Center',
-        'biometric' => 'Biometric',
+        'accounts' => 'Accounts',
+        'umrah_setup' => 'Umrah Setup',
+        'service_providers' => 'Service Providers',
+        'bookings' => 'Bookings',
+        'vouchers' => 'Vouchers',
+        'ticketing' => 'Ticketing',
+        'customer_types' => 'Customer Types'
     ),
     'projectSettings' => array(
         'sendNotificationsTo' => 'Send Reminder To',
@@ -1900,7 +1878,19 @@ return array(
         'agree' => 'I Agree',
         'disagree' => 'I Disagree',
     ),
-    'reports' => array(
+    
+    'travelPayments' => array(
+        'creditAccount' => 'Credit Account',
+        'depositTo' => 'Deposit To',
+        'makePayment' => 'Make Payment',
+        'makePayments' => 'Make Payments',
+        'payFrom' => 'Pay From',
+        'payTo' => 'Pay To',
+        'receivePayment' => 'Receive Payment',
+        'receivePayments' => 'Receive Payments',
+        'receivedFrom' => 'Received From',
+    ),
+'reports' => array(
         'totalExpense' => 'Total Expense',
         'totalCategories' => 'Total Categories',
     ),
@@ -2281,6 +2271,48 @@ return array(
         'convertedAmountHelp' => 'Converted amount in ',
         'payment-debited' => 'Payment Debited',
     ),
+    'accounts' => array(
+        'addAccount' => 'Add Account',
+        'editAccount' => 'Edit Account',
+        'type' => 'Type',
+        'parentAccount' => 'Parent Account',
+        'level' => 'Level',
+        'isBankAccount' => 'Is Bank Account',
+        'accountCode' => 'Code',
+        'accountName' => 'Account Name',
+        'addFinancialYear' => 'Add Financial Year',
+        'editFinancialYear' => 'Edit Financial Year',
+        'startDate' => 'Start Date',
+        'endDate' => 'End Date',
+        'addJournalVoucher' => 'Add Journal Voucher',
+        'editJournalVoucher' => 'Edit Journal Voucher',
+        'viewJournalVoucher' => 'View Journal Voucher',
+        'voucherNumber' => 'Voucher #',
+        'financialYear' => 'Financial Year',
+        'narration' => 'Narration',
+        'isBalanced' => 'Balanced',
+        'debit' => 'Debit',
+        'credit' => 'Credit',
+        'balance' => 'Balance',
+        'openingBalance' => 'Opening Balance',
+        'addExchangeRate' => 'Add Exchange Rate',
+        'editExchangeRate' => 'Edit Exchange Rate',
+        'currencyCode' => 'Currency Code',
+        'rateToBase' => 'Rate (to Base)',
+        'effectiveDate' => 'Effective Date',
+        'addAccountOpening' => 'Add Account Opening',
+        'editAccountOpening' => 'Edit Account Opening',
+        'account' => 'Account',
+        'trialBalance' => 'Trial Balance',
+        'ledger' => 'Ledger',
+        'journalVoucher' => 'Journal Voucher',
+        'chartOfAccounts' => 'Chart of Accounts',
+        'voucherNotBalanced' => 'Debit and Credit totals must be equal.',
+        'accountHasChildren' => 'This account has child accounts. Please remove them first.',
+        'accountHasTransactions' => 'This account has transactions. Cannot delete.',
+        'financialYearHasVouchers' => 'This financial year has vouchers. Cannot delete.',
+        'accountOpeningExists' => 'An opening balance already exists for this account and financial year.',
+    ),
     'unitType' => array(
         'UnitTypeName' => 'Unit Types',
         'unitType' => 'Unit Type'
@@ -2353,8 +2385,8 @@ return array(
         'roundrobinEx' => '<br>Example: Tickets go to Agent A, then B, then C, and repeat.
         <br><br>Example: In a customer support system, incoming tickets are assigned in a round-robin fashion. The first ticket goes to Agent A, the second to Agent B, the third to Agent C, and the fourth back to Agent A, continuing in this pattern.
         <br>Using the round-robin method ensures fair and efficient task distribution, promotes balanced workloads, and streamlines resource allocation.',
-        'roundrobinExLead' => '<br>Example: Deal go to Agent A, then B, then C, and repeat.
-        <br><br>Example: In a customer support system, incoming deals are assigned in a round-robin fashion. The first deal goes to Agent A, the second to Agent B, the third to Agent C, and the fourth back to Agent A, continuing in this pattern.
+        'roundrobinExLead' => '<br>Example: Lead go to Agent A, then B, then C, and repeat.
+        <br><br>Example: In a customer support system, incoming leads are assigned in a round-robin fashion. The first lead goes to Agent A, the second to Agent B, the third to Agent C, and the fourth back to Agent A, continuing in this pattern.
         <br>Using the round-robin method ensures fair and efficient task distribution, promotes balanced workloads, and streamlines resource allocation.',
         'profile' => 'Agent report',
         'dealsToBeClosed' => 'Deals To Be Closed',
@@ -2380,5 +2412,20 @@ return array(
         'sendEstimateRequest' => 'Send Estimate Request',
         'description' => 'Details of requirement',
         'prefix' => 'ESTRQ',
+    ),
+    'hotel' => array(
+        'starRating' => 'Star Rating',
+    ),
+    'airline' => array(
+        'logo' => 'Logo',
+        'website' => 'Website',
+    ),
+    'transporter' => array(
+        'vehicleTypes' => 'Vehicle Types',
+    ),
+    'discount' => array(
+        'type' => 'Type',
+    ),
+    'iata' => array(
     )
 );

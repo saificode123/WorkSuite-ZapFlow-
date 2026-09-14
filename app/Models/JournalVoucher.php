@@ -10,7 +10,17 @@ class JournalVoucher extends BaseModel
 {
     use HasCompany;
 
-    protected $guarded = ['id'];
+    protected $fillable = [
+        'company_id',
+        'financial_year_id',
+        'voucher_number',
+        'date',
+        'narration',
+        'total_debit',
+        'total_credit',
+        'is_balanced',
+        'created_by',
+    ];
 
     protected $dates = ['date'];
 

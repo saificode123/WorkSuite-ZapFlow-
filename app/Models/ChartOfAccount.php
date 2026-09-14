@@ -10,9 +10,19 @@ class ChartOfAccount extends BaseModel
 {
     use HasCompany;
 
-    protected $table = 'chart_of_accounts';
-
-    protected $guarded = ['id'];
+    protected $fillable = [
+        'company_id',
+        'parent_id',
+        'name',
+        'code',
+        'level',
+        'type',
+        'is_bank_account',
+        'currency_code',
+        'is_system_account',
+        'added_by',
+        'last_updated_by',
+    ];
 
     public function parent(): BelongsTo
     {

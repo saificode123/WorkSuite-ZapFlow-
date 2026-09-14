@@ -6,7 +6,13 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class BookingCharge extends BaseModel
 {
-    protected $guarded = ['id'];
+    protected $fillable = [
+        'booking_group_id',
+        'charge_type',
+        'amount',
+        'account_id',
+        'notes',
+    ];
 
     public function bookingGroup(): BelongsTo
     {

@@ -287,9 +287,14 @@
     'csrfToken' => csrf_token(),
     'user' => user(),
 ]) !!};
+    window.ZapFlowCompanyId = {{ company()?->id ?? 'null' }};
+    window.ZapFlowUserId    = {{ user()?->id ?? 'null' }};
 </script>
 
 @stack('scripts')
+
+{{-- Real-time notifications (Laravel Echo + Pusher) --}}
+<script src="{{ asset('js/notifications.js') }}"></script>
 
 <script>
     $(window).on('load', function () {

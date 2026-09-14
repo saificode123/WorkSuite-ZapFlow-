@@ -20,7 +20,7 @@ class BookingController extends AccountBaseController
         $this->pageTitle = 'app.menu.bookings';
 
         $this->middleware(function ($request, $next) {
-            abort_403(!in_array('booking', $this->user->modules));
+            abort_403(!in_array('bookings', $this->user->modules));
             return $next($request);
         });
     }
@@ -160,6 +160,11 @@ class BookingController extends AccountBaseController
             'travelPayments',
             'package',
         ])->findOrFail($id);
+
+        // Enforce 'owned' scope: user can only see bookings where they are the customer.
+        if ($viewPermission === 'owned' && $this->booking->customer_id !== user()->id) {
+            abort_403(true);
+        }
 
         return view('travel.bookings.show', $this->data);
     }

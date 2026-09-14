@@ -16,7 +16,7 @@ class TransporterController extends AccountBaseController
         $this->pageTitle = 'app.menu.transporters';
 
         $this->middleware(function ($request, $next) {
-            abort_403(!in_array('transporter', $this->user->modules));
+            abort_403(!in_array('umrah_setup', $this->user->modules));
             return $next($request);
         });
     }

@@ -16,7 +16,7 @@ class HotelController extends AccountBaseController
         $this->pageTitle = 'app.menu.hotels';
 
         $this->middleware(function ($request, $next) {
-            abort_403(!in_array('hotel', $this->user->modules));
+            abort_403(!in_array('umrah_setup', $this->user->modules));
             return $next($request);
         });
     }
@@ -50,17 +50,17 @@ class HotelController extends AccountBaseController
 
         $request->validate([
             'name' => 'required|max:255',
-            'star_rating' => 'nullable|integer|min:1|max:5',
-            'contact_email' => 'nullable|email|max:255',
+            'stars' => 'nullable|integer|min:1|max:5',
+            'email' => 'nullable|email|max:255',
         ]);
 
         $hotel = new Hotel();
         $hotel->name = $request->name;
-        $hotel->star_rating = $request->star_rating;
+        $hotel->stars = $request->stars;
         $hotel->city = $request->city;
         $hotel->country = $request->country;
-        $hotel->contact_email = $request->contact_email;
-        $hotel->contact_phone = $request->contact_phone;
+        $hotel->email = $request->email;
+        $hotel->phone = $request->phone;
         $hotel->save();
 
         $redirectUrl = urldecode($request->redirect_url);
@@ -94,17 +94,17 @@ class HotelController extends AccountBaseController
 
         $request->validate([
             'name' => 'required|max:255',
-            'star_rating' => 'nullable|integer|min:1|max:5',
-            'contact_email' => 'nullable|email|max:255',
+            'stars' => 'nullable|integer|min:1|max:5',
+            'email' => 'nullable|email|max:255',
         ]);
 
         $hotel = Hotel::findOrFail($id);
         $hotel->name = $request->name;
-        $hotel->star_rating = $request->star_rating;
+        $hotel->stars = $request->stars;
         $hotel->city = $request->city;
         $hotel->country = $request->country;
-        $hotel->contact_email = $request->contact_email;
-        $hotel->contact_phone = $request->contact_phone;
+        $hotel->email = $request->email;
+        $hotel->phone = $request->phone;
         $hotel->save();
 
         return Reply::successWithData(__('messages.updateSuccess'), ['redirectUrl' => route('hotels.index')]);

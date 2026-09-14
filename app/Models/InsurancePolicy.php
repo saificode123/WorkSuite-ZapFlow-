@@ -10,8 +10,7 @@ class InsurancePolicy extends BaseModel
     use HasCompany;
 
     protected $table = 'insurance_policies';
-    protected $guarded = ['id'];
-
+ 
     protected $fillable = [
         'company_id',
         'provider_name',

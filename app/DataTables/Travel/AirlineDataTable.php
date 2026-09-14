@@ -98,9 +98,9 @@ class AirlineDataTable extends BaseDataTable
             ],
             '#' => ['data' => 'DT_RowIndex', 'orderable' => false, 'searchable' => false, 'visible' => false, 'title' => '#'],
             __('app.name') => ['data' => 'name', 'name' => 'name', 'title' => __('app.name')],
-            __('app.iataCode') => ['data' => 'iata_code', 'name' => 'iata_code', 'title' => __('app.iataCode')],
-            __('app.email') => ['data' => 'contact_email', 'name' => 'contact_email', 'title' => __('app.email')],
-            __('app.phone') => ['data' => 'contact_phone', 'name' => 'contact_phone', 'title' => __('app.phone')],
+            __('app.iataCode') => ['data' => 'code', 'name' => 'code', 'title' => __('app.iataCode')],
+            __('app.email') => ['data' => 'email', 'name' => 'email', 'title' => __('app.email')],
+            __('app.phone') => ['data' => 'phone', 'name' => 'phone', 'title' => __('app.phone')],
             __('app.website') => ['data' => 'website', 'name' => 'website', 'title' => __('app.website')],
             Column::computed('action', __('app.action'))
                 ->exportable(false)

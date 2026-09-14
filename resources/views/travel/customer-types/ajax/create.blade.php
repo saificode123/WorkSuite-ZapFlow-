@@ -1,17 +1,23 @@
 ﻿<div class="row">
     <div class="col-sm-12">
         <x-form id="save-data-form">
-            <div class="add-client bg-white rounded">
-                <h4 class="mb-0 p-20 f-21 font-weight-normal border-bottom-grey">@lang('app.customerType')</h4>
-                <div class="row p-20">
-                    <div class="col-md-6">
-                        <x-forms.text fieldId="name" :fieldLabel="__('app.name')" fieldName="name" fieldRequired="true" :fieldPlaceholder="__('placeholders.name')"></x-forms.text>
-                    </div>
-                    <div class="col-md-6">
-                        <x-forms.text fieldId="description" :fieldLabel="__('app.description')" fieldName="description" :fieldPlaceholder="__('placeholders.description')"></x-forms.text>
-                    </div>
-                    <div class="col-md-12">
-                        <x-forms.textarea fieldId="config_json" :fieldLabel="__('app.configJson')" fieldName="config_json" :fieldPlaceholder="__('placeholders.configJson')"></x-forms.textarea>
+            <div class="add-client bg-white rounded shadow-sm">
+                <h4 class="mb-0 p-20 f-21 font-weight-normal border-bottom-grey">
+                    <i class="fa fa-tags mr-2 text-primary"></i>@lang('app.customerType')
+                </h4>
+                <div class="p-20">
+                    <p class="text-muted f-13 mb-4">Fields marked with an asterisk (*) are required.</p>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <x-forms.text fieldId="name" :fieldLabel="__('app.name')" fieldName="name" fieldRequired="true" :fieldPlaceholder="__('placeholders.name')"></x-forms.text>
+                        </div>
+                        <div class="col-md-6">
+                            <x-forms.text fieldId="description" :fieldLabel="__('app.description')" fieldName="description" :fieldPlaceholder="__('placeholders.description')"></x-forms.text>
+                        </div>
+                        <div class="col-md-12">
+                            <x-forms.textarea fieldId="config_json" :fieldLabel="__('app.configJson')" fieldName="config_json" :fieldPlaceholder="__('placeholders.configJson')"></x-forms.textarea>
+                            <small class="text-muted">Enter a valid JSON object.</small>
+                        </div>
                     </div>
                 </div>
                 <x-form-actions>
@@ -22,6 +28,7 @@
         </x-form>
     </div>
 </div>
+
 <script>
     $('#save-form').click(function() {
         $.easyAjax({

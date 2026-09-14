@@ -11,10 +11,9 @@ class Hotel extends BaseModel
     use HasCompany;
 
     protected $table = 'hotels';
-
-    protected $guarded = ['id'];
-
+ 
     protected $fillable = [
+        'company_id',
         'name',
         'city',
         'country',

@@ -3,8 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Helper\Reply;
+use App\Events\VisaStatusChangedEvent;
 use App\Models\BookingGroup;
 use App\Models\Passenger;
+use App\Models\VisaLog;
+use App\Notifications\VisaStatusChangedSms;
+use App\Services\TravelSmsService;
 use Illuminate\Http\Request;
 
 class VisaPipelineController extends AccountBaseController
@@ -15,7 +19,7 @@ class VisaPipelineController extends AccountBaseController
         $this->pageTitle = 'app.menu.visaPipeline';
 
         $this->middleware(function ($request, $next) {
-            abort_403(!in_array('booking', $this->user->modules));
+            abort_403(!in_array('bookings', $this->user->modules));
             return $next($request);
         });
     }
@@ -58,6 +62,7 @@ class VisaPipelineController extends AccountBaseController
         ]);
 
         $passenger = Passenger::findOrFail($request->passenger_id);
+        $fromStatus = $passenger->visa_pipeline_status;
 
         $passenger->visa_pipeline_status    = $request->new_status;
         $passenger->visa_status_updated_by  = user()->id;
@@ -72,6 +77,30 @@ class VisaPipelineController extends AccountBaseController
         }
 
         $passenger->save();
+
+        // Audit trail — every status change must be recorded.
+        VisaLog::create([
+            'company_id'   => $passenger->company_id,
+            'passenger_id' => $passenger->id,
+            'from_status'  => $fromStatus,
+            'to_status'    => $passenger->visa_pipeline_status,
+            'changed_by'   => user()->id,
+            'remarks'      => $request->rejection_reason
+                ?? ($request->mofa_ref ? "MoFA ref: {$request->mofa_ref}" : null),
+        ]);
+
+        // Real-time broadcast — visa kanban and ops dashboards update instantly.
+        event(new VisaStatusChangedEvent($passenger, $fromStatus));
+
+        // SMS notification — only if passenger has a phone number on file.
+        if (!empty($passenger->mobile_no)) {
+            try {
+                $sms = app(TravelSmsService::class);
+                $sms->notifyVisaStatusChanged($passenger, $passenger->visa_pipeline_status);
+            } catch (\Throwable $e) {
+                // SMS failure must never block the main flow.
+            }
+        }
 
         return Reply::successWithData(__('messages.updateSuccess'), [
             'passenger_id' => $passenger->id,
@@ -97,6 +126,16 @@ class VisaPipelineController extends AccountBaseController
         $passenger->visa_status_updated_by  = user()->id;
         $passenger->visa_status_updated_at  = now();
         $passenger->save();
+
+        // MoFA reference changes also get logged for the audit trail.
+        VisaLog::create([
+            'company_id'   => $passenger->company_id,
+            'passenger_id' => $passenger->id,
+            'from_status'  => $passenger->visa_pipeline_status,
+            'to_status'    => $passenger->visa_pipeline_status,
+            'changed_by'   => user()->id,
+            'remarks'      => "MoFA ref set: {$request->mofa_ref}",
+        ]);
 
         return Reply::success(__('messages.updateSuccess'));
     }

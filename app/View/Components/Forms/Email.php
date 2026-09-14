@@ -22,7 +22,7 @@ class Email extends Component
      *
      * @return void
      */
-    public function __construct($fieldLabel, $fieldPlaceholder, $fieldName, $fieldId, $fieldRequired = false, $fieldValue = null, $popover = null, $fieldHelp = null)
+    public function __construct($fieldLabel, $fieldPlaceholder = null, $fieldName = null, $fieldId = null, $fieldRequired = false, $fieldValue = null, $popover = null, $fieldHelp = null)
     {
         $this->fieldLabel = $fieldLabel;
         $this->fieldRequired = $fieldRequired;

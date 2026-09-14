@@ -9,7 +9,15 @@ class Transporter extends BaseModel
 {
     use HasCompany;
 
-    protected $guarded = ['id'];
+    protected $fillable = [
+        'company_id',
+        'name',
+        'phone',
+        'email',
+        'city',
+        'contact_person',
+        'notes',
+    ];
 
     public function accounts(): HasMany
     {

@@ -75,6 +75,7 @@ use App\Http\Controllers\RelationController;
 use App\Http\Controllers\BookingController;
 use App\Http\Controllers\VoucherController;
 use App\Http\Controllers\TicketInvoiceController;
+use App\Http\Controllers\OtherServiceInvoiceController;
 use App\Http\Controllers\CustomerTypeController;
 use App\Http\Controllers\UmrahSetupController;
 use App\Http\Controllers\TransportRateController;
@@ -424,6 +425,7 @@ Route::resource('customer-types', CustomerTypeController::class);
 
 // Accounts (Financial/Accounting Engine)
 Route::resource('accounts', AccountController::class);
+Route::post('financial-years/{id}/close', [FinancialYearController::class, 'close'])->name('financial-years.close');
 Route::resource('financial-years', FinancialYearController::class);
 Route::get('chart-of-accounts/tree', [ChartOfAccountController::class, 'tree'])->name('chart-of-accounts.tree');
 Route::resource('chart-of-accounts', ChartOfAccountController::class);
@@ -469,12 +471,12 @@ Route::resource('relations', RelationController::class);
 Route::get('umrah-setup', [UmrahSetupController::class, 'index'])->name('umrah-setup.index');
 
 // ── Bookings ─────────────────────────────────────────────────────────────────
-Route::resource('bookings', BookingController::class);
-Route::post('bookings/{id}/passengers', [BookingController::class, 'addPassenger'])->name('bookings.passengers.add');
-Route::delete('bookings/{booking}/passengers/{passenger}', [BookingController::class, 'removePassenger'])->name('bookings.passengers.remove');
 Route::get('bookings/import', [BookingController::class, 'importPage'])->name('bookings.import.page');
 Route::post('bookings/import/parse', [BookingController::class, 'importParse'])->name('bookings.import.parse');
 Route::post('bookings/import/commit', [BookingController::class, 'importCommit'])->name('bookings.import.commit');
+Route::resource('bookings', BookingController::class);
+Route::post('bookings/{id}/passengers', [BookingController::class, 'addPassenger'])->name('bookings.passengers.add');
+Route::delete('bookings/{booking}/passengers/{passenger}', [BookingController::class, 'removePassenger'])->name('bookings.passengers.remove');
 
 // ── Vouchers ──────────────────────────────────────────────────────────────────
 Route::resource('vouchers', VoucherController::class);
@@ -486,6 +488,9 @@ Route::get('vouchers/{id}/qr',           [VoucherController::class, 'qrCode'])->
 // ── Ticketing ─────────────────────────────────────────────────────────────────
 Route::resource('ticketing', TicketInvoiceController::class);
 Route::post('ticketing/{id}/refund',     [TicketInvoiceController::class, 'refund'])->name('ticketing.refund');
+
+// ── Other Service Invoices ───────────────────────────────────────────────────
+Route::resource('other-service-invoices', OtherServiceInvoiceController::class);
 
 // ── Visa Pipeline Kanban ──────────────────────────────────────────────────────
 Route::get('visa-pipeline',              [VisaPipelineController::class, 'index'])->name('visa-pipeline.index');
@@ -510,6 +515,11 @@ Route::prefix('travel-payments')->name('travel-payments.')->group(function () {
 
 // ── Command Palette ───────────────────────────────────────────────────────────
 Route::get('command-palette/search', [CommandPaletteController::class, 'search'])->name('command-palette.search');
+
+// ── Sensitive Field Reveal (audited & rate-limited) ──────────────────────────
+Route::get('sensitive-fields/reveal', [App\Http\Controllers\SensitiveFieldController::class, 'reveal'])
+    ->middleware('throttle:15,1')
+    ->name('sensitive-fields.reveal');
 
 // ── Integration Settings ──────────────────────────────────────────────────────
 Route::prefix('integration-settings')->name('integration-settings.')->group(function () {
@@ -537,8 +547,17 @@ Route::prefix('travel-reports')->name('travel-reports.')->group(function () {
     Route::get('receivables',     [TravelReportController::class, 'receivables'])->name('receivables');
     Route::get('payables',        [TravelReportController::class, 'payables'])->name('payables');
     Route::get('umrah-wise-pl',   [TravelReportController::class, 'umrahWisePl'])->name('umrah-wise-pl');
+    Route::get('arrival',         [TravelReportController::class, 'arrivalReport'])->name('arrival');
+    Route::get('departure',       [TravelReportController::class, 'departureReport'])->name('departure');
+    Route::get('ksa-intimation',  [TravelReportController::class, 'ksaIntimation'])->name('ksa-intimation');
+    Route::get('makkah-hotel',    [TravelReportController::class, 'makkahHotel'])->name('makkah-hotel');
+    Route::get('madina-hotel',    [TravelReportController::class, 'madinaHotel'])->name('madina-hotel');
+    Route::get('agent-comparison', [TravelReportController::class, 'agentComparison'])->name('agent-comparison');
+    Route::get('employee-efficiency', [TravelReportController::class, 'employeeEfficiency'])->name('employee-efficiency');
+    Route::get('daily-cash',      [TravelReportController::class, 'dailyCash'])->name('daily-cash');
     Route::get('export/{report}', [TravelReportController::class, 'export'])->name('export');
 });
+
 
     Route::post('appreciations/apply-quick-action', [AppreciationController::class, 'applyQuickAction'])->name('appreciations.apply_quick_action');
     Route::resource('appreciations', AppreciationController::class);

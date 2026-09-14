@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Helper\Reply;
 use App\Models\HotelRoom;
 use App\Models\Hotel;
+use App\DataTables\Travel\HotelRoomDataTable;
 use Illuminate\Http\Request;
 
 class HotelRoomController extends AccountBaseController
@@ -15,14 +16,12 @@ class HotelRoomController extends AccountBaseController
         $this->pageTitle = 'app.menu.hotelRooms';
     }
 
-    public function index(Request $request)
+    public function index(HotelRoomDataTable $dataTable, Request $request)
     {
+        $viewPermission = user()->permission('view_hotel');
+        abort_403(!in_array($viewPermission, ['all', 'added', 'owned', 'both']));
         $this->hotels = Hotel::orderBy('name')->get();
-        $this->rooms  = HotelRoom::with('hotel')
-            ->when($request->hotel_id, fn($q) => $q->where('hotel_id', $request->hotel_id))
-            ->orderBy('hotel_id')->orderBy('room_number')
-            ->paginate(30);
-        return view('travel.hotel-rooms.index', $this->data);
+        return $dataTable->render('travel.hotel-rooms.index', $this->data);
     }
 
     public function create()

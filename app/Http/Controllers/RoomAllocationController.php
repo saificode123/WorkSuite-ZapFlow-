@@ -17,7 +17,7 @@ class RoomAllocationController extends AccountBaseController
         $this->pageTitle = 'app.menu.roomAllocation';
 
         $this->middleware(function ($request, $next) {
-            abort_403(!in_array('booking', $this->user->modules));
+            abort_403(!in_array('bookings', $this->user->modules));
             return $next($request);
         });
     }
@@ -85,8 +85,24 @@ class RoomAllocationController extends AccountBaseController
         $occupied  = $room->activeAllocations()->count();
 
         if ($occupied >= $room->capacity) {
-            return Reply::error(__('modules.room.roomFull'));
+            return Reply::error(__('messages.roomFull'));
         }
+
+        // ── Gender restriction enforcement (server-side, not just UI) ──────────
+        // hotel_rooms.gender_restriction is one of: 'male', 'female', 'family', or NULL/other (any)
+        $restriction = strtolower($room->gender_restriction ?? '');
+        if (in_array($restriction, ['male', 'female'])) {
+            $passenger = Passenger::findOrFail($request->passenger_id);
+            $passengerGender = strtolower($passenger->gender ?? '');
+
+            if ($restriction === 'male' && $passengerGender !== 'male') {
+                return Reply::error(__('messages.genderRestrictionMale'));
+            }
+            if ($restriction === 'female' && $passengerGender !== 'female') {
+                return Reply::error(__('messages.genderRestrictionFemale'));
+            }
+        }
+        // ── End gender restriction ──────────────────────────────────────────────
 
         // Remove existing allocation for this passenger if moving between rooms
         if ($request->filled('old_allocation_id')) {

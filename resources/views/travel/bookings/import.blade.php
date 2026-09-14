@@ -7,6 +7,11 @@
     border-radius: 14px;
     box-shadow: 0 2px 16px rgba(0,0,0,.08);
     overflow: hidden;
+    animation: fadeInUp .35s ease;
+}
+@keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(10px); }
+    to   { opacity: 1; transform: translateY(0); }
 }
 .import-header {
     background: linear-gradient(135deg, #1a1f3c, #2d3561);
@@ -30,10 +35,84 @@
     background: #eef0ff;
 }
 .upload-zone .icon { font-size: 42px; color: #7b8ac8; margin-bottom: 12px; }
+.upload-zone .icon i { display: inline-block; transition: transform .2s ease; }
+.upload-zone:hover .icon i, .upload-zone.drag-over .icon i { transform: scale(1.08); }
 .upload-zone .hint { font-size: 12px; color: #999; margin-top: 8px; }
+
+/* Step indicator */
+.step-indicator {
+    display: flex; align-items: stretch; gap: 0;
+    margin-bottom: 24px;
+    border-radius: 8px;
+    overflow: hidden;
+}
+.step {
+    flex: 1;
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+    padding: 12px 10px;
+    background: #f0f2f8;
+    font-size: 12px; font-weight: 600; color: #888;
+    border-right: 2px solid #fff;
+}
+.step:last-child { border-right: none; }
+.step-badge {
+    display: inline-flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+    width: 20px; height: 20px;
+    border-radius: 50%;
+    background: #d7dcef; color: #666;
+    font-size: 11px;
+}
+.step-check { display: none; }
+.step.active { background: #1a1f3c; color: #fff; }
+.step.active .step-badge { background: #4f5ed4; color: #fff; }
+.step.done { background: #198754; color: #fff; }
+.step.done .step-badge { display: none; }
+.step.done .step-check { display: inline-flex; }
+@media (max-width: 576px) {
+    .step-indicator { flex-direction: column; }
+    .step { border-right: none; border-bottom: 2px solid #fff; justify-content: flex-start; padding: 10px 14px; }
+    .step:last-child { border-bottom: none; }
+}
+
+/* Format reference */
+.format-hint {
+    background: #f8f9fd;
+    border: 1px solid #e5e8f5;
+    border-radius: 8px;
+    padding: 14px 16px;
+}
+.format-hint-title { font-size: 12px; font-weight: 600; color: #555; margin-bottom: 8px; }
+.format-example {
+    background: #0f1225;
+    color: #c9d1ff;
+    border: none;
+    border-radius: 8px;
+    padding: 14px 16px;
+    font-family: 'SFMono-Regular', Consolas, monospace;
+    font-size: 11px;
+    line-height: 1.6;
+    overflow-x: auto;
+}
 
 /* Preview table */
 .preview-section { display: none; }
+.preview-table-wrap {
+    border: 1px solid #e5e8f5;
+    border-radius: 8px;
+    overflow: hidden;
+}
+#preview-table thead th {
+    background: #f8f9fd;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: .03em;
+    color: #666;
+    border-top: none;
+}
+#preview-table tbody tr:nth-child(even) { background: #fafbff; }
+#preview-table tbody tr:hover { background: #eef0ff; }
+#preview-table .badge { font-size: 11px; padding: 4px 10px; border-radius: 20px; font-weight: 600; }
 .preview-ok  td:first-child { border-left: 3px solid #198754; }
 .preview-err td:first-child { border-left: 3px solid #dc3545; }
 
@@ -43,18 +122,8 @@
     border-radius: 4px; padding: 2px 8px;
     font-size: 11px; margin: 1px;
 }
-.step-indicator { display: flex; align-items: center; gap: 0; margin-bottom: 24px; }
-.step {
-    flex: 1; text-align: center;
-    padding: 10px;
-    background: #f0f2f8;
-    font-size: 12px; font-weight: 600; color: #888;
-    border-right: 2px solid #fff;
-}
-.step:last-child { border-right: none; border-radius: 0 8px 8px 0; }
-.step:first-child { border-radius: 8px 0 0 8px; }
-.step.active { background: #1a1f3c; color: #fff; }
-.step.done   { background: #198754; color: #fff; }
+
+.btn:disabled { opacity: .6; cursor: not-allowed; }
 </style>
 @endpush
 
@@ -71,10 +140,22 @@
                 <div class="p-4">
 
                     {{-- Step indicator --}}
-                    <div class="step-indicator">
-                        <div class="step active" id="step-1">1. @lang('modules.booking.uploadFile')</div>
-                        <div class="step" id="step-2">2. @lang('modules.booking.previewAndValidate')</div>
-                        <div class="step" id="step-3">3. @lang('modules.booking.confirm')</div>
+                    <div class="step-indicator" role="group" aria-label="@lang('modules.booking.importPassengers')">
+                        <div class="step active" id="step-1">
+                            <span class="step-badge">1</span>
+                            <i class="fa fa-check step-check"></i>
+                            <span>@lang('modules.booking.uploadFile')</span>
+                        </div>
+                        <div class="step" id="step-2">
+                            <span class="step-badge">2</span>
+                            <i class="fa fa-check step-check"></i>
+                            <span>@lang('modules.booking.previewAndValidate')</span>
+                        </div>
+                        <div class="step" id="step-3">
+                            <span class="step-badge">3</span>
+                            <i class="fa fa-check step-check"></i>
+                            <span>@lang('modules.booking.confirm')</span>
+                        </div>
                     </div>
 
                     {{-- Step 1: Upload --}}
@@ -82,7 +163,7 @@
 
                         {{-- Booking selector --}}
                         <div class="form-group mb-4">
-                            <label class="font-weight-600">@lang('modules.booking.selectBookingGroup') <span class="text-danger">*</span></label>
+                            <label for="booking_group_id" class="font-weight-600">@lang('modules.booking.selectBookingGroup') <span class="text-danger">*</span></label>
                             <select id="booking_group_id" name="booking_group_id" class="form-control select-picker" required>
                                 <option value="">-- @lang('app.select') --</option>
                                 @foreach($bookingGroups as $bg)
@@ -102,9 +183,9 @@
                         </div>
 
                         {{-- Format reference --}}
-                        <div class="alert alert-light border mt-3" style="font-size:12px">
-                            <strong>@lang('modules.booking.expectedFormat'):</strong>
-                            <pre class="mb-0 mt-1" style="font-size:11px">Group Detail
+                        <div class="format-hint mt-3">
+                            <div class="format-hint-title"><i class="fa fa-info-circle mr-1"></i>@lang('modules.booking.expectedFormat'):</div>
+                            <pre class="format-example mb-0">Group Detail
 GroupNo, KH-EM2A1AN-0011
 GroupName, Umrah 2024 Group A
 PassportNo, First Name, Family Name, Birth Date, Gender, Mofa
@@ -132,8 +213,8 @@ BS8978321, AMEEN, FARIDA, 01/01/1962, Female, 0</pre>
                         {{-- Errors --}}
                         <div id="parse-errors" style="display:none" class="alert alert-danger"></div>
 
-                        <div class="table-responsive">
-                            <table class="table table-sm table-bordered" id="preview-table">
+                        <div class="table-responsive preview-table-wrap">
+                            <table class="table table-sm table-bordered mb-0" id="preview-table">
                                 <thead class="thead-light">
                                     <tr>
                                         <th><input type="checkbox" id="check-all"></th>

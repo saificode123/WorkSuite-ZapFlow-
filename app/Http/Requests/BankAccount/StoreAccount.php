@@ -36,6 +36,7 @@ class StoreAccount extends CoreRequest
         {
             $rules['bank_name'] = 'required';
             $rules['account_number'] = 'required';
+            $rules['bank_logo'] = 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048';
         }
 
         return $rules;

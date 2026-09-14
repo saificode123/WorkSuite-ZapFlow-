@@ -501,6 +501,25 @@ return array(
     'unassignedTask' => 'The project :has :unassigned unassigned :task. To show unassigned :task',
     'cannotDowngradeTaskStatus' => 'You cannot move the task backward to a previous status.',
     'selectProject' => 'Please select a project.',
-    'projectNotFound' => 'The selected project does not exist.',
+    'projectNotFound'  => 'The selected project does not exist.',
+
+    // ── Travel Module Messages ────────────────────────────────────────────────
+    'voucherNotBalanced'    => 'Journal voucher lines are not balanced. Total debits must equal total credits.',
+    'voucherIssued'         => 'Voucher issued successfully.',
+    'voucherLocked'         => 'This voucher is locked and cannot be modified.',
+    'confirmCancelPayment'  => 'Are you sure you want to cancel this payment? This action cannot be undone.',
+    'confirmIssueVoucher'   => 'Are you sure you want to issue this voucher? It will be sent to the group.',
+    'confirmLockVoucher'    => 'Are you sure you want to lock this voucher? It cannot be edited after locking.',
+    'accountHasChildren'    => 'This account has child accounts. Please remove them first.',
+    'accountHasTransactions'=> 'This account has transactions and cannot be deleted.',
+    'insuranceSaleRecorded' => 'Insurance sale recorded successfully.',
+    'passportDeliveryUpdated' => 'Passport delivery status updated.',
+    'mutamerTransferSaved'  => 'Mutamer transfer saved successfully.',
+    'roomFull'              => 'This room is at full capacity and cannot accept more passengers.',
+    'genderRestrictionMale' => 'This room is restricted to male passengers only.',
+    'genderRestrictionFemale' => 'This room is restricted to female passengers only.',
+    'financialYearClosed'   => 'The financial year has been closed. Transactions cannot be posted or modified in a closed year.',
+    'financialYearAlreadyClosed' => 'This financial year is already closed.',
+    'financialYearHasVouchers' => 'Cannot delete financial year because it contains journal vouchers.',
 
 );

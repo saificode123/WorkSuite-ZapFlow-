@@ -856,6 +856,13 @@ if (!function_exists('sidebar_user_perms')) {
                 $sidebarUserPermissions[$item->name] = 5;
             }
 
+            // Permissions not seeded in the DB (e.g. during tests) must still resolve to 'none'.
+            foreach ($sidebarPermissionsArray as $permName) {
+                if (! isset($sidebarUserPermissions[$permName])) {
+                    $sidebarUserPermissions[$permName] = 5;
+                }
+            }
+
             cache(['sidebar_user_perms_' . user()->id => $sidebarUserPermissions]);
         }
 

@@ -16,7 +16,7 @@ class VisaCompanyController extends AccountBaseController
         $this->pageTitle = 'app.menu.visaCompanies';
 
         $this->middleware(function ($request, $next) {
-            abort_403(!in_array('visa_company', $this->user->modules));
+            abort_403(!in_array('umrah_setup', $this->user->modules));
             return $next($request);
         });
     }

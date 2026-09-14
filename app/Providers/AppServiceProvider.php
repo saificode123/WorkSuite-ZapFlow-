@@ -3,12 +3,18 @@
 namespace App\Providers;
 
 use App\Models\Company;
+use App\Models\JournalVoucher;
 use App\Models\Passenger;
+use App\Models\TravelPayment;
 use App\Models\Voucher;
+use App\Observers\JournalVoucherObserver;
 use App\Observers\PassengerObserver;
+use App\Observers\TravelPaymentObserver;
 use App\Observers\VoucherObserver;
 use App\Services\BookingImportService;
 use App\Services\DoubleEntryService;
+use App\Services\GDS\GDSInterface;
+use App\Services\GDS\ManualGDSAdapter;
 use App\Services\PackageCalculationService;
 use Barryvdh\LaravelIdeHelper\IdeHelperServiceProvider;
 use Carbon\CarbonInterval;
@@ -38,6 +44,10 @@ class AppServiceProvider extends ServiceProvider
         $this->app->singleton(DoubleEntryService::class);
         $this->app->singleton(BookingImportService::class);
         $this->app->singleton(PackageCalculationService::class);
+
+        // GDS adapter — defaults to ManualGDSAdapter (no live API).
+        // To integrate a real GDS, swap ManualGDSAdapter here with your adapter class.
+        $this->app->singleton(GDSInterface::class, ManualGDSAdapter::class);
     }
 
     public function boot(): void
@@ -59,6 +69,8 @@ class AppServiceProvider extends ServiceProvider
         // ---------------------------------------------------------------
         Voucher::observe(VoucherObserver::class);
         Passenger::observe(PassengerObserver::class);
+        JournalVoucher::observe(JournalVoucherObserver::class);
+        TravelPayment::observe(TravelPaymentObserver::class);
 
         CarbonInterval::macro('formatHuman', function ($totalMinutes, $seconds = false): string {
 

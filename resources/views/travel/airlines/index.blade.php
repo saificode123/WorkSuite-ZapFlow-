@@ -10,17 +10,22 @@ $addPermission = user()->permission('add_airline');
 
 @section('content')
     <div class="content-wrapper">
-        <div class="d-block d-lg-flex d-md-flex justify-content-between">
-            <div id="table-actions" class="flex-grow-1 align-items-center mb-2 mb-lg-0 mb-md-0">
-                @if (in_array($addPermission, ['all', 'added']))
-                    <x-forms.link-primary :link="route('airlines.create')" class="mr-3 float-left openRightModal" icon="plus">
-                        @lang('app.add') @lang('app.airline')
-                    </x-forms.link-primary>
-                @endif
+        <div class="add-client bg-white rounded shadow-sm">
+            <div class="d-block d-lg-flex d-md-flex justify-content-between align-items-center border-bottom-grey p-20">
+                <h4 class="mb-0 f-21 font-weight-normal">
+                    <i class="fa fa-plane mr-2 text-primary"></i>Airlines
+                </h4>
+                <div id="table-actions" class="mt-2 mt-lg-0 mt-md-0">
+                    @if (in_array($addPermission, ['all', 'added']))
+                        <x-forms.link-primary :link="route('airlines.create')" class="mr-3 float-left openRightModal" icon="plus">
+                            @lang('app.add') @lang('app.airline')
+                        </x-forms.link-primary>
+                    @endif
+                </div>
             </div>
-        </div>
-        <div class="d-flex flex-column w-tables rounded mt-3 bg-white w-100 table-responsive">
-            {!! $dataTable->table(['class' => 'table table-hover border-0 w-100']) !!}
+            <div class="d-flex flex-column w-tables w-100 table-responsive p-20">
+                {!! $dataTable->table(['class' => 'table table-hover border-0 w-100']) !!}
+            </div>
         </div>
     </div>
 @endsection

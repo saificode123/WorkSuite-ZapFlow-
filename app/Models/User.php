@@ -932,6 +932,10 @@ class User extends BaseModel implements AuthenticatableContract, AuthorizableCon
      */
     public function permission($permission)
     {
+        if ($this->hasRole('admin')) {
+            return 'all';
+        }
+
         $cacheKey = 'permission-' . $permission . '-' . $this->id;
 
         cache()->forget($cacheKey); // Clear the cache

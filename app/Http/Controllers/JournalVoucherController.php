@@ -44,6 +44,14 @@ class JournalVoucherController extends AccountBaseController
 
     public function store(StoreRequest $request)
     {
+        abort_403(!in_array(user()->permission('add_journal_voucher'), ['all', 'added']));
+
+        // ── Closed-year guard ───────────────────────────────────────────────
+        $financialYear = FinancialYear::findOrFail($request->financial_year_id);
+        if ($financialYear->is_closed) {
+            return Reply::error(__('messages.financialYearClosed'));
+        }
+
         $totalDebit = 0;
         $totalCredit = 0;
         foreach ($request->lines as $line) {
@@ -84,6 +92,7 @@ class JournalVoucherController extends AccountBaseController
 
     public function show($id)
     {
+        abort_403(!in_array(user()->permission('view_journal_voucher'), ['all', 'added', 'owned', 'both']));
         $this->voucher = JournalVoucher::with('lines.account', 'financialYear', 'createdBy')->findOrFail($id);
         $this->pageTitle = __('modules.accounts.viewJournalVoucher');
         return view('accounts.journal-vouchers.show', $this->data);
@@ -101,9 +110,21 @@ class JournalVoucherController extends AccountBaseController
 
     public function update(UpdateRequest $request, $id)
     {
+        abort_403(!in_array(user()->permission('edit_journal_voucher'), ['all', 'added']));
         $voucher = JournalVoucher::findOrFail($id);
 
-        $totalDebit = 0;
+        // ── Closed-year guard ────────────────────────────────────────────────
+        // Block both: editing a voucher that lives in a closed year, and
+        // moving a voucher into a closed year.
+        $targetYearId = $request->financial_year_id ?? $voucher->financial_year_id;
+        $targetYear = FinancialYear::findOrFail($targetYearId);
+        if ($targetYear->is_closed) {
+            return Reply::error(__('messages.financialYearClosed'));
+        }
+        if ($voucher->financialYear && $voucher->financialYear->is_closed) {
+            return Reply::error(__('messages.financialYearClosed'));
+        }
+
         $totalCredit = 0;
         foreach ($request->lines as $line) {
             $totalDebit += $line['debit'] ?? 0;
@@ -138,6 +159,7 @@ class JournalVoucherController extends AccountBaseController
 
     public function destroy($id)
     {
+        abort_403(!in_array(user()->permission('delete_journal_voucher'), ['all', 'added']));
         $voucher = JournalVoucher::findOrFail($id);
         $voucher->lines()->delete();
         $voucher->delete();
@@ -146,6 +168,7 @@ class JournalVoucherController extends AccountBaseController
 
     public function print($id)
     {
+        abort_403(!in_array(user()->permission('view_journal_voucher'), ['all', 'added', 'owned', 'both']));
         $this->voucher = JournalVoucher::with('lines.account', 'financialYear', 'createdBy')->findOrFail($id);
         return view('accounts.journal-vouchers.print', $this->data);
     }

@@ -174,5 +174,10 @@ return array(
         'languageName' => 'e.g. English',
         'languageCode' => 'e.g. en',
     ),
-    'gst/vat' => 'e.g. GST/VAT',
+    'gst/vat'     => 'e.g. GST/VAT',
+
+    // ── Travel Module Placeholders ────────────────────────────────────────────
+    'configJson'  => '{"key":"value"}',
+    'iataCode'    => 'e.g. PIA, SV, EK',
+    'description' => 'Enter a description (optional)',
 );

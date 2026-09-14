@@ -7,7 +7,13 @@ use Illuminate\Database\Eloquent\Model;
 
 class JournalVoucherLine extends Model
 {
-    protected $guarded = ['id'];
+    protected $fillable = [
+        'journal_voucher_id',
+        'account_id',
+        'debit',
+        'credit',
+        'description',
+    ];
 
     public function journalVoucher(): BelongsTo
     {

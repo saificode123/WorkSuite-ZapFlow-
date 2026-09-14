@@ -35,13 +35,17 @@ class DoubleEntryService
         return DB::transaction(function () use ($voucherData, $createdBy) {
             $financialYear = $this->resolveFinancialYear($voucherData['date']);
 
+            $voucherNumber = $voucherData['voucher_number'] ?? ('JV-' . date('Ymd') . '-' . rand(1000, 9999));
             $voucher = JournalVoucher::create([
                 'financial_year_id' => $financialYear->id,
+                'voucher_number'    => $voucherNumber,
                 'date'              => $voucherData['date'],
                 'narration'         => $voucherData['narration'] ?? '',
                 'created_by'        => $createdBy,
-                'company_id'        => company_id(),
+                'company_id'        => company()?->id,
+                'is_balanced'       => true,
             ]);
+
 
             foreach ($voucherData['lines'] as $line) {
                 JournalVoucherLine::create([
@@ -152,11 +156,16 @@ class DoubleEntryService
      */
     private function resolveFinancialYear(string $date): FinancialYear
     {
-        $fy = FinancialYear::where('company_id', company_id())
-            ->where('start_date', '<=', $date)
+        $companyId = company()?->id;
+        $query = FinancialYear::where('start_date', '<=', $date)
             ->where('end_date', '>=', $date)
-            ->where('is_closed', false)
-            ->first();
+            ->where('is_closed', false);
+
+        if ($companyId) {
+            $query->where('company_id', $companyId);
+        }
+
+        $fy = $query->first();
 
         if (!$fy) {
             throw new RuntimeException(

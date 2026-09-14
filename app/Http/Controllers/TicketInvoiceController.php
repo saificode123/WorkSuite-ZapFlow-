@@ -6,17 +6,17 @@ use App\Helper\Reply;
 use Illuminate\Http\Request;
 use App\Models\TicketInvoice;
 use App\DataTables\Travel\TicketInvoiceDataTable;
+use App\Services\GDS\GDSInterface;
 
 class TicketInvoiceController extends AccountBaseController
 {
-
-    public function __construct()
+    public function __construct(private GDSInterface $gds)
     {
         parent::__construct();
         $this->pageTitle = 'app.menu.ticketing';
 
         $this->middleware(function ($request, $next) {
-            abort_403(!in_array('ticket_invoice', $this->user->modules));
+            abort_403(!in_array('ticketing', $this->user->modules));
             return $next($request);
         });
     }
@@ -53,6 +53,7 @@ class TicketInvoiceController extends AccountBaseController
             'date' => 'nullable|date',
             'total_amount' => 'nullable|numeric',
             'ticket_count' => 'nullable|integer|min:1',
+            'sale_type' => 'nullable|in:bsp,xo,direct',
         ]);
 
         $ticketInvoice = new TicketInvoice();
@@ -66,6 +67,7 @@ class TicketInvoiceController extends AccountBaseController
         $ticketInvoice->total_amount = $request->total_amount;
         $ticketInvoice->status = $request->status ?? 'pending';
         $ticketInvoice->ticket_count = $request->ticket_count ?? 1;
+        $ticketInvoice->sale_type = $request->sale_type ?? 'direct';
         $ticketInvoice->save();
 
         $redirectUrl = urldecode($request->redirect_url);
@@ -102,6 +104,7 @@ class TicketInvoiceController extends AccountBaseController
             'date' => 'nullable|date',
             'total_amount' => 'nullable|numeric',
             'ticket_count' => 'nullable|integer|min:1',
+            'sale_type' => 'nullable|in:bsp,xo,direct',
         ]);
 
         $ticketInvoice = TicketInvoice::findOrFail($id);
@@ -115,6 +118,7 @@ class TicketInvoiceController extends AccountBaseController
         $ticketInvoice->total_amount = $request->total_amount;
         $ticketInvoice->status = $request->status ?? 'pending';
         $ticketInvoice->ticket_count = $request->ticket_count ?? 1;
+        $ticketInvoice->sale_type = $request->sale_type ?? $ticketInvoice->sale_type ?? 'direct';
         $ticketInvoice->save();
 
         return Reply::successWithData(__('messages.updateSuccess'), ['redirectUrl' => route('ticketing.index')]);
@@ -128,6 +132,47 @@ class TicketInvoiceController extends AccountBaseController
         TicketInvoice::destroy($id);
 
         return Reply::successWithData(__('messages.deleteSuccess'), ['redirectUrl' => route('ticketing.index')]);
+    }
+
+    /**
+     * Refund / cancel a ticket invoice.
+     * Uses the bound GDSInterface adapter (ManualGDSAdapter by default).
+     */
+    public function refund(Request $request, $id)
+    {
+        $this->editPermission = user()->permission('edit_ticket_invoice');
+        abort_403(!in_array($this->editPermission, ['all', 'added']));
+
+        $request->validate([
+            'reason' => 'nullable|string|max:500',
+        ]);
+
+        $ticket = TicketInvoice::findOrFail($id);
+
+        abort_if(
+            in_array($ticket->status, ['refunded', 'cancelled']),
+            422,
+            __('messages.invalidRequest')
+        );
+
+        // Call GDS adapter (manual adapter records without hitting any API)
+        $gdsResult = $this->gds->refundTicket(
+            pnr:          $ticket->pnr ?? 'MAN-' . $ticket->invoice_number,
+            ticketNumber: null,
+            reason:       $request->input('reason', 'passenger_request')
+        );
+
+        $ticket->status           = 'refunded';
+        $ticket->refund_amount    = $gdsResult['refund_amount'] ?? 0;
+        $ticket->refund_reason    = $request->input('reason');
+        $ticket->refunded_at      = now();
+        $ticket->refunded_by      = user()->id;
+        $ticket->save();
+
+        return Reply::successWithData(__('messages.updateSuccess'), [
+            'redirectUrl' => route('ticketing.index'),
+            'gds_note'    => $gdsResult['note'] ?? null,
+        ]);
     }
 
 }

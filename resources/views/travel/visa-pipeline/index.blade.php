@@ -19,6 +19,11 @@
             border: 1px solid #e5e7ef;
             display: flex;
             flex-direction: column;
+            transition: box-shadow .15s ease;
+        }
+
+        .visa-column:hover {
+            box-shadow: 0 2px 10px rgba(0,0,0,.06);
         }
 
         .visa-column-header {
@@ -30,6 +35,9 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 2;
         }
 
         .visa-column-body {
@@ -47,16 +55,25 @@
             box-shadow: 0 1px 4px rgba(0,0,0,.08);
             cursor: grab;
             border-left: 3px solid transparent;
-            transition: box-shadow .2s, transform .15s;
+            transition: box-shadow .2s ease, transform .15s ease;
         }
 
         .visa-card:hover { box-shadow: 0 3px 10px rgba(0,0,0,.15); transform: translateY(-1px); }
+        .visa-card:active { cursor: grabbing; }
         .visa-card.dragging { opacity: .5; transform: rotate(2deg); }
         .visa-column-body.drag-over { background: #eef2ff; border-radius: 0 0 10px 10px; }
 
         .visa-card .passport-no  { font-size: 11px; color: #888; font-family: monospace; }
         .visa-card .pax-name     { font-weight: 600; font-size: 13px; color: #222; }
-        .visa-card .mofa-badge   { font-size: 10px; display: inline-block; padding: 1px 6px; border-radius: 20px; }
+        .visa-card .mofa-badge   { font-size: 10px; display: inline-block; padding: 2px 8px; border-radius: 20px; }
+
+        /* Empty-column placeholder — purely visual, see script note */
+        .visa-empty-state {
+            text-align: center;
+            color: #b3b6c2;
+            font-size: 12px;
+            padding: 24px 8px;
+        }
 
         /* Column colours */
         .col-draft           .visa-column-header { background: #6c757d; }
@@ -76,6 +93,19 @@
             border-radius: 20px;
             padding: 1px 8px;
             font-size: 11px;
+        }
+
+        .ct-header-icon {
+            width: 34px;
+            height: 34px;
+            border-radius: 8px;
+            background: rgba(0, 123, 255, .08);
+            color: #007bff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            flex-shrink: 0;
         }
     </style>
 @endpush
@@ -99,18 +129,23 @@
 
         {{-- Header --}}
         <div class="d-flex justify-content-between align-items-center mb-3">
-            <div>
-                <h4 class="mb-0">@lang('app.visaPipeline')</h4>
-                <small class="text-muted">
-                    @if($selectedBooking)
-                        {{ $selectedBooking->group_name }} &mdash; {{ $passengers->count() }} {{ __('app.passengers') }}
-                    @else
-                        @lang('modules.visa.selectGroupToFilter')
-                    @endif
-                </small>
+            <div class="d-flex align-items-center">
+                <div class="ct-header-icon mr-3">
+                    <i class="fa fa-passport"></i>
+                </div>
+                <div>
+                    <h4 class="mb-0 f-21 font-weight-normal">@lang('app.visaPipeline')</h4>
+                    <small class="text-muted">
+                        @if($selectedBooking)
+                            {{ $selectedBooking->group_name }} &mdash; {{ $passengers->count() }} {{ __('app.passengers') }}
+                        @else
+                            @lang('modules.visa.selectGroupToFilter')
+                        @endif
+                    </small>
+                </div>
             </div>
             <div class="d-flex gap-2">
-                <button class="btn btn-sm btn-outline-secondary" id="btn-expand-all">
+                <button class="btn btn-sm btn-outline-secondary" id="btn-expand-all" title="@lang('app.expandAll')">
                     <i class="fa fa-expand-alt"></i> @lang('app.expandAll')
                 </button>
                 <button class="btn btn-sm btn-success" id="btn-bulk-move" style="display:none">
@@ -145,7 +180,7 @@
                                 <span class="mofa-badge bg-light text-secondary">MoFA: {{ $passenger->visa_mofa_ref }}</span>
                             @endif
                             <div class="dropdown">
-                                <button class="btn btn-sm btn-light py-0 px-1" data-toggle="dropdown">
+                                <button class="btn btn-sm btn-light py-0 px-1" data-toggle="dropdown" aria-label="@lang('app.action')">
                                     <i class="fa fa-ellipsis-v"></i>
                                 </button>
                                 <div class="dropdown-menu dropdown-menu-right shadow-sm">
@@ -169,6 +204,9 @@
                         </div>
                     </div>
                     @endforeach
+                    @if($passengers->where('visa_pipeline_status', $statusKey)->count() === 0)
+                        <div class="visa-empty-state">@lang('messages.noRecordFound')</div>
+                    @endif
                 </div>
             </div>
             @endforeach
@@ -379,12 +417,55 @@ $('#filterBookingGroup').on('change', function() {
     window.location.href = '{{ route("visa-pipeline.index") }}' + (id ? '?booking_group_id=' + id : '');
 });
 
-// ── Count badges ──────────────────────────────────────────────────────────────
-function updateCounts() {
+// ── Real-time Echo: update kanban when another user moves a passenger ──────────
+(function () {
+    const companyId = window.ZapFlowCompanyId || null;
+    if (!companyId || !window.Echo) return;
+
+    window.Echo.private(`visa-pipeline.${companyId}`)
+        .listen('.visa.status-changed', function (e) {
+            const card = document.querySelector(`.visa-card[data-passenger-id="${e.passenger_id}"]`);
+            if (!card) return; // Not on this view
+            // Only move if this card is NOT the one that was just dragged (movePassenger handles that).
+            const wasJustMoved = card.dataset._justMoved;
+            if (wasJustMoved) {
+                delete card.dataset._justMoved;
+                return;
+            }
+            // An external update — move the card to the new column.
+            const oldCol = card.closest('.visa-column-body');
+            const newCol = document.getElementById(`col-${e.to_status}`);
+            if (newCol && oldCol && newCol !== oldCol) {
+                newCol.appendChild(card);
+                card.dataset.currentStatus = e.to_status;
+                updateCounts();
+            }
+        });
+
+    // Mark cards just moved locally so the Echo handler skips them.
+    document.querySelectorAll('.visa-column-body').forEach(col => {
+        col.addEventListener('dragend', function () {
+            if (draggedCard) draggedCard.dataset._justMoved = '1';
+        });
+    });
+})();
     document.querySelectorAll('.visa-column').forEach(col => {
         const status = col.dataset.status;
         const count  = col.querySelectorAll('.visa-card').length;
         col.querySelector('.count-badge').textContent = count;
+
+        // Cosmetic addition: toggle the empty-state placeholder to match.
+        // Purely visual — doesn't affect move logic or AJAX calls above.
+        const body = col.querySelector('.visa-column-body');
+        let empty  = body.querySelector('.visa-empty-state');
+        if (count === 0 && !empty) {
+            empty = document.createElement('div');
+            empty.className = 'visa-empty-state';
+            empty.textContent = '{{ __('messages.noRecordFound') }}';
+            body.appendChild(empty);
+        } else if (count > 0 && empty) {
+            empty.remove();
+        }
     });
 }
 </script>

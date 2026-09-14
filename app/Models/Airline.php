@@ -9,7 +9,15 @@ class Airline extends BaseModel
 {
     use HasCompany;
 
-    protected $guarded = ['id'];
+    protected $fillable = [
+        'company_id',
+        'name',
+        'code',
+        'logo',
+        'phone',
+        'email',
+        'website',
+    ];
 
     public function accounts(): HasMany
     {

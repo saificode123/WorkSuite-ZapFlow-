@@ -17,7 +17,7 @@ class FlightController extends AccountBaseController
         $this->pageTitle = 'app.menu.flights';
 
         $this->middleware(function ($request, $next) {
-            abort_403(!in_array('flight', $this->user->modules));
+            abort_403(!in_array('ticketing', $this->user->modules));
             return $next($request);
         });
     }

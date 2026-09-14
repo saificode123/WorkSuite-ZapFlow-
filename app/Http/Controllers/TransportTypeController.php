@@ -16,7 +16,7 @@ class TransportTypeController extends AccountBaseController
         $this->pageTitle = 'app.menu.transportTypes';
 
         $this->middleware(function ($request, $next) {
-            abort_403(!in_array('transport_type', $this->user->modules));
+            abort_403(!in_array('umrah_setup', $this->user->modules));
             return $next($request);
         });
     }

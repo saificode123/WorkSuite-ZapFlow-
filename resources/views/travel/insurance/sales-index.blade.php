@@ -6,78 +6,78 @@
 
 @section('content')
 <div class="content-wrapper">
-    <div class="d-flex justify-content-between align-items-center mb-3">
-        <h4 class="mb-0">@lang('app.menu.insuranceSales')</h4>
-        <button class="btn btn-primary openRightModal" data-href="{{ route('insurance-sales.create') }}">
-            <i class="fa fa-plus"></i> @lang('app.addSale')
-        </button>
+    <div class="d-block d-lg-flex d-md-flex justify-content-between align-items-center mb-3 ct-page-header">
+        <div class="d-flex align-items-center mb-2 mb-lg-0 mb-md-0">
+            <div class="ct-header-icon mr-3">
+                <i class="fa fa-file-invoice-dollar"></i>
+            </div>
+            <h4 class="mb-0 f-21 font-weight-normal">@lang('app.menu.insuranceSales')</h4>
+        </div>
+        <div class="d-flex align-items-center">
+            <div id="table-actions" class="d-flex"></div>
+            <button class="btn btn-primary ml-2 openRightModal" data-href="{{ route('insurance-sales.create') }}">
+                <i class="fa fa-plus"></i> @lang('app.addSale')
+            </button>
+        </div>
     </div>
-    <div class="d-flex flex-column w-tables rounded mt-3 bg-white w-100 table-responsive">
-        <table class="table table-hover border-0 w-100">
-            <thead>
-                <tr>
-                    <th>@lang('app.passenger')</th>
-                    <th>@lang('app.policy')</th>
-                    <th>@lang('app.bookingGroup')</th>
-                    <th class="text-right">@lang('app.amount')</th>
-                    <th>@lang('app.certificateNo')</th>
-                    <th>@lang('app.status')</th>
-                    <th>@lang('app.date')</th>
-                    <th>@lang('app.action')</th>
-                </tr>
-            </thead>
-            <tbody>
-                @forelse($sales as $sale)
-                <tr>
-                    <td>{{ $sale->passenger?->full_name ?? '—' }}</td>
-                    <td>{{ $sale->policy?->name ?? '—' }}</td>
-                    <td>{{ $sale->bookingGroup?->group_name ?? '—' }}</td>
-                    <td class="text-right">{{ number_format($sale->amount ?? 0, 2) }}</td>
-                    <td>{{ $sale->certificate_number ?? '—' }}</td>
-                    <td><span class="badge badge-{{ $sale->status === 'active' ? 'success' : 'secondary' }}">{{ ucfirst($sale->status) }}</span></td>
-                    <td>{{ $sale->created_at ? $sale->created_at->format('d M Y') : '—' }}</td>
-                    <td>
-                        <button class="btn btn-sm btn-outline-danger delete-sale" data-sale-id="{{ $sale->id }}">
-                            <i class="fa fa-trash"></i>
-                        </button>
-                    </td>
-                </tr>
-                @empty
-                <tr><td colspan="8" class="text-center py-4 text-muted">@lang('messages.noRecordFound')</td></tr>
-                @endforelse
-            </tbody>
-        </table>
-        {{ $sales->links() }}
+
+    <div class="d-flex flex-column w-tables rounded mt-3 bg-white w-100 table-responsive shadow-sm ct-table-card">
+        {!! $dataTable->table(['class' => 'table table-hover border-0 w-100']) !!}
     </div>
 </div>
+
+<style>
+    .ct-page-header { animation: ctFadeIn .2s ease-out; }
+    @keyframes ctFadeIn {
+        from { opacity: 0; transform: translateY(4px); }
+        to   { opacity: 1; transform: translateY(0); }
+    }
+    .ct-header-icon {
+        width: 34px;
+        height: 34px;
+        border-radius: 8px;
+        background: rgba(0, 123, 255, .08);
+        color: #007bff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 14px;
+        flex-shrink: 0;
+    }
+    .ct-table-card table.table-hover tbody tr:hover {
+        background-color: rgba(0, 123, 255, .03);
+    }
+</style>
 @endsection
 
 @push('scripts')
-<script>
-$('body').on('click', '.delete-sale', function() {
-    const id = $(this).data('sale-id');
-    Swal.fire({
-        title: "@lang('messages.sweetAlertTitle')",
-        text: "@lang('messages.recoverRecord')",
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonText: "@lang('messages.confirmDelete')",
-        cancelButtonText: "@lang('app.cancel')",
-        customClass: { confirmButton: 'btn btn-primary mr-3', cancelButton: 'btn btn-secondary' },
-        buttonsStyling: false
-    }).then(result => {
-        if (result.isConfirmed) {
-            $.easyAjax({
-                type: 'POST',
-                url: "{{ route('insurance-sales.destroy', ':id') }}".replace(':id', id),
-                blockUI: true,
-                data: { '_token': "{{ csrf_token() }}", '_method': 'DELETE' },
-                success: function(response) {
-                    if (response.status == "success") window.location.reload();
+    @include('sections.datatable_js')
+    {!! $dataTable->scripts() !!}
+    <script>
+        $('body').on('click', '.delete-table-row', function() {
+            const id = $(this).data('row-id');
+            Swal.fire({
+                title: "@lang('messages.sweetAlertTitle')",
+                text: "@lang('messages.recoverRecord')",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: "@lang('messages.confirmDelete')",
+                cancelButtonText: "@lang('app.cancel')",
+                customClass: { confirmButton: 'btn btn-primary mr-3', cancelButton: 'btn btn-secondary' },
+                buttonsStyling: false
+            }).then(result => {
+                if (result.isConfirmed) {
+                    $.easyAjax({
+                        type: 'POST',
+                        url: "{{ route('insurance-sales.destroy', ':id') }}".replace(':id', id),
+                        blockUI: true,
+                        data: { '_token': "{{ csrf_token() }}", '_method': 'DELETE' },
+                        success: function(response) {
+                            if (response.status == "success") window.LaravelDataTables["insurance-sales-table"].draw();
+                        }
+                    });
                 }
             });
-        }
-    });
-});
-</script>
+        });
+    </script>
 @endpush

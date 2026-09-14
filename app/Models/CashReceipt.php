@@ -10,7 +10,6 @@ class CashReceipt extends BaseModel
     use HasCompany;
 
     protected $table = 'cash_receipts';
-    protected $guarded = ['id'];
 
     protected $fillable = [
         'company_id',

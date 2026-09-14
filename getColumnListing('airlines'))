@@ -1,0 +1,14 @@
+
+Deprecated: Amp\ParallelFunctions\parallel(): Implicitly marking parameter $pool as nullable is deprecated, the explicit nullable type must be used instead in C:\Users\urreh\Downloads\project\ZapFlow-Laraval-project-FYP-\vendor\amphp\parallel-functions\src\functions.php on line 23
+
+Deprecated: Amp\ParallelFunctions\parallelMap(): Implicitly marking parameter $pool as nullable is deprecated, the explicit nullable type must be used instead in C:\Users\urreh\Downloads\project\ZapFlow-Laraval-project-FYP-\vendor\amphp\parallel-functions\src\functions.php on line 51
+
+Deprecated: Amp\ParallelFunctions\parallelFilter(): Implicitly marking parameter $callable as nullable is deprecated, the explicit nullable type must be used instead in C:\Users\urreh\Downloads\project\ZapFlow-Laraval-project-FYP-\vendor\amphp\parallel-functions\src\functions.php on line 77
+
+Deprecated: Amp\ParallelFunctions\parallelFilter(): Implicitly marking parameter $pool as nullable is deprecated, the explicit nullable type must be used instead in C:\Users\urreh\Downloads\project\ZapFlow-Laraval-project-FYP-\vendor\amphp\parallel-functions\src\functions.php on line 77
+
+Deprecated: VeeWee\Xml\Dom\Xpath\Locator\evaluate(): Implicitly marking parameter $node as nullable is deprecated, the explicit nullable type must be used instead in C:\Users\urreh\Downloads\project\ZapFlow-Laraval-project-FYP-\vendor\veewee\xml\src\Xml\Dom\Xpath\Locator\evaluate.php on line 20
+
+Deprecated: VeeWee\Xml\Dom\Xpath\Locator\query(): Implicitly marking parameter $node as nullable is deprecated, the explicit nullable type must be used instead in C:\Users\urreh\Downloads\project\ZapFlow-Laraval-project-FYP-\vendor\veewee\xml\src\Xml\Dom\Xpath\Locator\query.php on line 18
+
+Deprecated: VeeWee\Xml\Dom\Xpath\Locator\query_single(): Implicitly marking parameter $node as nullable is deprecated, the explicit nullable type must be used instead in C:\Users\urreh\Downloads\project\ZapFlow-Laraval-project-FYP-\vendor\veewee\xml\src\Xml\Dom\Xpath\Locator\query_single.php on line 21

@@ -55,11 +55,11 @@ class DiscountDataTable extends BaseDataTable
 
                 return $action;
             })
-            ->editColumn('type', function ($row) {
-                return $row->type == 'percentage' ? __('app.percentage') : __('app.fixed');
+            ->editColumn('discount_type', function ($row) {
+                return $row->discount_type == 'percentage' ? __('app.percentage') : __('app.fixed');
             })
             ->editColumn('value', function ($row) {
-                return $row->type == 'percentage' ? $row->value . '%' : currency_format($row->value, company()->currency_id);
+                return $row->discount_type == 'percentage' ? $row->value . '%' : currency_format($row->value, company()->currency_id);
             })
             ->editColumn('is_active', function ($row) {
                 if ($row->is_active) {
@@ -110,7 +110,7 @@ class DiscountDataTable extends BaseDataTable
             ],
             '#' => ['data' => 'DT_RowIndex', 'orderable' => false, 'searchable' => false, 'visible' => false, 'title' => '#'],
             __('app.name') => ['data' => 'name', 'name' => 'name', 'title' => __('app.name')],
-            __('app.type') => ['data' => 'type', 'name' => 'type', 'title' => __('app.type')],
+            __('app.type') => ['data' => 'discount_type', 'name' => 'discount_type', 'title' => __('app.type')],
             __('app.value') => ['data' => 'value', 'name' => 'value', 'title' => __('app.value')],
             __('app.active') => ['data' => 'is_active', 'name' => 'is_active', 'title' => __('app.active')],
             Column::computed('action', __('app.action'))

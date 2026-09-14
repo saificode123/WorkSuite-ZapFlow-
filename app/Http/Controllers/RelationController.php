@@ -16,7 +16,7 @@ class RelationController extends AccountBaseController
         $this->pageTitle = 'app.menu.relations';
 
         $this->middleware(function ($request, $next) {
-            abort_403(!in_array('relation', $this->user->modules));
+            abort_403(!in_array('umrah_setup', $this->user->modules));
             return $next($request);
         });
     }

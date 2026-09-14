@@ -86,6 +86,10 @@ class BookingDataTable extends BaseDataTable
             $model = $model->where('added_by', user()->id);
         }
 
+        if ($this->viewPermission == 'owned') {
+            $model = $model->where('customer_id', user()->id);
+        }
+
         return $model;
     }
 

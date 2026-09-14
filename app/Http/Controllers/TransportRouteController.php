@@ -16,7 +16,7 @@ class TransportRouteController extends AccountBaseController
         $this->pageTitle = 'app.menu.transportRoutes';
 
         $this->middleware(function ($request, $next) {
-            abort_403(!in_array('transport_route', $this->user->modules));
+            abort_403(!in_array('umrah_setup', $this->user->modules));
             return $next($request);
         });
     }

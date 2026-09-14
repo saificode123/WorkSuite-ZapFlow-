@@ -10,7 +10,15 @@ class IataRecord extends BaseModel
 {
     use HasCompany;
 
-    protected $guarded = ['id'];
+    protected $fillable = [
+        'company_id',
+        'iata_number',
+        'agency_name',
+        'contact_person',
+        'phone',
+        'email',
+        'address',
+    ];
 
     public function accounts(): HasMany
     {

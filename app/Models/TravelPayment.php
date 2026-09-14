@@ -10,7 +10,6 @@ class TravelPayment extends BaseModel
     use HasCompany;
 
     protected $table = 'travel_payments';
-    protected $guarded = ['id'];
 
     protected $fillable = [
         'company_id',

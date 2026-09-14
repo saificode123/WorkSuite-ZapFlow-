@@ -16,7 +16,7 @@ class CustomerTypeController extends AccountBaseController
         $this->pageTitle = 'app.menu.customerTypes';
 
         $this->middleware(function ($request, $next) {
-            abort_403(!in_array('customer_type', $this->user->modules));
+            abort_403(!in_array('customer_types', $this->user->modules));
             return $next($request);
         });
     }

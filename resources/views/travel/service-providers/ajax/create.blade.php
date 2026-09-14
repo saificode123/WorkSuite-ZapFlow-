@@ -21,7 +21,7 @@
                         <x-forms.text fieldId="contact_person" :fieldLabel="__('app.contactPerson')" fieldName="contact_person"></x-forms.text>
                     </div>
                     <div class="col-md-6">
-                        <x-forms.email fieldId="email" :fieldLabel="__('app.email')" fieldName="email"></x-forms.email>
+                        <x-forms.email fieldId="email" :fieldLabel="__('app.email')" :fieldPlaceholder="__('app.email')" fieldName="email"></x-forms.email>
                     </div>
                     <div class="col-md-6">
                         <x-forms.text fieldId="phone" :fieldLabel="__('app.phone')" fieldName="phone"></x-forms.text>

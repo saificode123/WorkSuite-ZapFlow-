@@ -9,9 +9,9 @@ class RoomAllocation extends Model
 {
 
     protected $table = 'room_allocations';
-    protected $guarded = ['id'];
-
+ 
     protected $fillable = [
+        'company_id',
         'hotel_room_id',
         'passenger_id',
         'booking_group_id',

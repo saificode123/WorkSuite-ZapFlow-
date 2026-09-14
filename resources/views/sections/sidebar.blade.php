@@ -110,7 +110,7 @@
         class="text-center d-flex justify-content-between align-items-center position-fixed sidebarTogglerBox {{ user()->dark_theme ? 'bg-dark' : '' }}">
         <button class="border-0 d-lg-block d-none text-lightest font-weight-bold" id="sidebarToggle"></button>
 
-        <p class="mb-0 text-dark-grey px-1 py-0 rounded f-10">v{{ \Illuminate\Support\Facades\File::get('version.txt') }}</p>
+        <p class="mb-0 text-dark-grey px-1 py-0 rounded f-10">v{{ file_exists(base_path('version.txt')) ? \Illuminate\Support\Facades\File::get('version.txt') : 'dev' }}</p>
     </div>
     <!-- Sidebar Toggler -->
 </aside>

@@ -18,7 +18,7 @@ class PackageController extends AccountBaseController
         $this->pageTitle = 'app.menu.packages';
 
         $this->middleware(function ($request, $next) {
-            abort_403(!in_array('package', $this->user->modules));
+            abort_403(!in_array('umrah_setup', $this->user->modules));
             return $next($request);
         });
     }
@@ -64,13 +64,15 @@ class PackageController extends AccountBaseController
         $package->duration_days = $request->duration_days;
         $package->price = $request->price;
         $package->description = $request->description;
+        $package->transporter_id = $request->transporter_id;
+        $package->visa_company_id = $request->visa_company_id;
         $package->save();
 
         if ($request->has('hotel_ids')) {
             $package->hotels()->sync($request->hotel_ids);
         }
 
-        if ($request->boolean('auto_calculate') && $request->has('hotel_ids')) {
+        if ($request->boolean('auto_calculate')) {
             app(PackageCalculationService::class)->recalculateAndSave($package);
         }
 
@@ -117,10 +119,16 @@ class PackageController extends AccountBaseController
         $package->duration_days = $request->duration_days;
         $package->price = $request->price;
         $package->description = $request->description;
+        $package->transporter_id = $request->transporter_id;
+        $package->visa_company_id = $request->visa_company_id;
         $package->save();
 
         if ($request->has('hotel_ids')) {
             $package->hotels()->sync($request->hotel_ids);
+        }
+
+        if ($request->boolean('auto_calculate')) {
+            app(PackageCalculationService::class)->recalculateAndSave($package);
         }
 
         return Reply::successWithData(__('messages.updateSuccess'), ['redirectUrl' => route('packages.index')]);

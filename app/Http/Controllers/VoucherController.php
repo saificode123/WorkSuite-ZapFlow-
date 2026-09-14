@@ -24,7 +24,7 @@ class VoucherController extends AccountBaseController
         $this->pageTitle = 'app.menu.vouchers';
 
         $this->middleware(function ($request, $next) {
-            abort_403(!in_array('voucher', $this->user->modules));
+            abort_403(!in_array('vouchers', $this->user->modules));
             return $next($request);
         });
     }

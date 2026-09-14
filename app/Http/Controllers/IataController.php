@@ -16,7 +16,7 @@ class IataController extends AccountBaseController
         $this->pageTitle = 'app.menu.iata';
 
         $this->middleware(function ($request, $next) {
-            abort_403(!in_array('iata', $this->user->modules));
+            abort_403(!in_array('umrah_setup', $this->user->modules));
             return $next($request);
         });
     }
@@ -49,12 +49,12 @@ class IataController extends AccountBaseController
         abort_403(!in_array($this->addPermission, ['all', 'added']));
 
         $request->validate([
-            'iata_code' => 'required|max:50',
+            'code' => 'required|max:50',
             'name' => 'required|max:255',
         ]);
 
         $iata = new IataRecord();
-        $iata->iata_code = $request->iata_code;
+        $iata->code = $request->code;
         $iata->name = $request->name;
         $iata->status = $request->status ?? 'active';
         $iata->save();
@@ -89,12 +89,12 @@ class IataController extends AccountBaseController
         abort_403(!in_array($this->editPermission, ['all', 'added']));
 
         $request->validate([
-            'iata_code' => 'required|max:50',
+            'code' => 'required|max:50',
             'name' => 'required|max:255',
         ]);
 
         $iata = IataRecord::findOrFail($id);
-        $iata->iata_code = $request->iata_code;
+        $iata->code = $request->code;
         $iata->name = $request->name;
         $iata->status = $request->status ?? 'active';
         $iata->save();

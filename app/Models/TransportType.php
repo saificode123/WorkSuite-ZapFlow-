@@ -4,5 +4,8 @@ namespace App\Models;
 
 class TransportType extends BaseModel
 {
-    protected $guarded = ['id'];
+    protected $fillable = [
+        'name',
+        'capacity',
+    ];
 }

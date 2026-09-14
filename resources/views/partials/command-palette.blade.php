@@ -89,7 +89,11 @@ function renderResults(items) {
     }
     let html = '';
     items.forEach((item, i) => {
-        const typeLabels = { booking: 'Booking', passenger: 'Passenger', voucher: 'Voucher', customer: 'Customer' };
+        const typeLabels = {
+    booking: 'Booking', passenger: 'Passenger',
+    voucher: 'Voucher', customer: 'Customer',
+    hotel: 'Hotel', package: 'Package',
+};
         html += `<a href="${item.url}" class="cp-item" data-index="${i}" style="display:flex;align-items:center;padding:10px 20px;text-decoration:none;color:#333;border-left:3px solid transparent;transition:all .1s;"
             onmouseenter="cpIndex=${i};highlightItem()" onclick="navigateTo('${item.url}')">
             <span style="width:32px;height:32px;border-radius:8px;background:#f3f4f6;display:flex;align-items:center;justify-content:center;margin-right:12px;flex-shrink:0;">

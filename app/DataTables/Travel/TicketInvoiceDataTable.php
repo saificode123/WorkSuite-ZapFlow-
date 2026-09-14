@@ -66,12 +66,22 @@ class TicketInvoiceDataTable extends BaseDataTable
                 $color = $statusColors[$row->status] ?? 'text-dark-green';
                 return '<i class="fa fa-circle mr-1 ' . $color . ' f-10"></i>' . __('app.' . $row->status);
             })
+            ->editColumn('sale_type', function ($row) {
+                $type = strtoupper($row->sale_type ?? 'direct');
+                $badgeClass = match(strtolower($row->sale_type ?? 'direct')) {
+                    'bsp' => 'badge-info',
+                    'xo' => 'badge-primary',
+                    default => 'badge-secondary',
+                };
+                return '<span class="badge ' . $badgeClass . '">' . $type . '</span>';
+            })
             ->editColumn('total_amount', function ($row) {
                 return currency_format($row->total_amount, company()->currency_id);
             })
             ->addIndexColumn()
             ->setRowId(fn($row) => 'row-' . $row->id)
-            ->rawColumns(['action', 'check', 'status']);
+            ->rawColumns(['action', 'check', 'status', 'sale_type']);
+
     }
 
     public function query(TicketInvoice $model)
@@ -115,6 +125,7 @@ class TicketInvoiceDataTable extends BaseDataTable
             __('app.date') => ['data' => 'date', 'name' => 'date', 'title' => __('app.date')],
             __('modules.ticketing.totalAmount') => ['data' => 'total_amount', 'name' => 'total_amount', 'title' => __('modules.ticketing.totalAmount')],
             __('modules.ticketing.ticketCount') => ['data' => 'ticket_count', 'name' => 'ticket_count', 'title' => __('modules.ticketing.ticketCount')],
+            'Sale Type' => ['data' => 'sale_type', 'name' => 'sale_type', 'title' => 'Sale Type'],
             __('app.status') => ['data' => 'status', 'name' => 'status', 'title' => __('app.status')],
             Column::computed('action', __('app.action'))
                 ->exportable(false)

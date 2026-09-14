@@ -103,7 +103,7 @@ class IataDataTable extends BaseDataTable
                 'searchable' => false
             ],
             '#' => ['data' => 'DT_RowIndex', 'orderable' => false, 'searchable' => false, 'visible' => false, 'title' => '#'],
-            __('app.iataCode') => ['data' => 'iata_code', 'name' => 'iata_code', 'title' => __('app.iataCode')],
+            __('app.iataCode') => ['data' => 'code', 'name' => 'code', 'title' => __('app.iataCode')],
             __('app.name') => ['data' => 'name', 'name' => 'name', 'title' => __('app.name')],
             __('app.status') => ['data' => 'status', 'name' => 'status', 'title' => __('app.status')],
             Column::computed('action', __('app.action'))
